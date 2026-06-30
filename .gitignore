@@ -250,3 +250,7 @@ node_modules/
 graphify-out/
 graph.html
 !app/libs/discord_partner_sdk.aar
+
+recovery/
+main_activity_matches.txt
+ProgressiveBlurImplementationGuide.md
