@@ -1,0 +1,87 @@
+Created At: 2026-06-28T18:48:10Z
+Completed At: 2026-06-28T18:48:10Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2116
+Total Bytes: 118290
+Showing lines 825 to 935
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+825:                             is AlbumItem -> navController.navigate("album/${item.id}")
+826:                             is ArtistItem -> navController.navigate("artist/${item.id}")
+827:                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+828:                         }
+829:                     },
+830:                     onLongClick = {
+831:                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+832:                         menuState.show {
+833:                             when (item) {
+834:                                 is SongItem -> YouTubeSongMenu(
+835:                                     song = item,
+836:                                     navController = navController,
+837:                                     onDismiss = menuState::dismiss
+838:                                 )
+839: 
+840:                                 is AlbumItem -> YouTubeAlbumMenu(
+841:                                     albumItem = item,
+842:                                     navController = navController,
+843:                                     onDismiss = menuState::dismiss
+844:                                 )
+845: 
+846:                                 is ArtistItem -> YouTubeArtistMenu(
+847:                                     artist = item,
+848:                                     onDismiss = menuState::dismiss
+849:                                 )
+850: 
+851:                                 is PlaylistItem -> YouTubePlaylistMenu(
+<truncated 1462 bytes>
+      if (forgottenFavorites?.isNotEmpty() == true) list.add(HomeSection.ForgottenFavorites)
+886: 
+887:         similarRecommendations?.indices?.forEach { i ->
+888:             list.add(HomeSection.SimilarRecommendation(i))
+889:         }
+890: 
+891:         homePage?.sections?.indices?.forEach { i ->
+892:             list.add(HomeSection.HomePageSection(i))
+893:         }
+894: 
+895:         if (explorePage?.moodAndGenres != null) list.add(HomeSection.MoodAndGenres)
+896: 
+897:         if (randomizeHomeOrder) {
+898:             list.sortedByDescending { section ->
+899: 
+900: 
+901: 
+902:                 val sectionRandom = Random(randomSeed + section.id.hashCode())
+903: 
+904: 
+905: 
+906:                 val base = when (section) {
+907:                     HomeSection.QuickPicks -> 10000
+908:                     HomeSection.SpeedDial,
+909:                     HomeSection.DailyDiscover -> 500
+910: 
+911:                     HomeSection.KeepListening,
+912:                     HomeSection.AccountPlaylists,
+913:                     HomeSection.ForgottenFavorites,
+914:                     HomeSection.FromTheCommunity -> 300
+915: 
+916:                     else -> 100
+917:                 }
+918: 
+919:                 val modifier = when (section) {
+920: 
+921: 
+922:                     HomeSection.QuickPicks -> 0
+923:                     HomeSection.SpeedDial,
+924:                     HomeSection.DailyDiscover -> sectionRandom.nextInt(-200, 400)
+925: 
+926: 
+927: 
+928: 
+929:                     HomeSection.KeepListening,
+930:                     HomeSection.AccountPlaylists,
+931:                     HomeSection.ForgottenFavorites,
+932:                     HomeSection.FromTheCommunity -> sectionRandom.nextInt(-100, 400)
+933: 
+934: 
+935:                     else -> sectionRandom.nextInt(-50, 50)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,54 @@
+Created At: 2026-06-28T18:47:31Z
+Completed At: 2026-06-28T18:47:32Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2082
+Total Bytes: 116862
+Showing lines 990 to 1035
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+990:                     ) {
+991:                         Text(
+992:                             text = "Home",
+993:                             style = MaterialTheme.typography.headlineLarge.copy(
+994:                                 fontWeight = FontWeight.Bold,
+995:                                 fontSize = 32.sp
+996:                             ),
+997:                             color = MaterialTheme.colorScheme.onBackground
+998:                         )
+999:                         Spacer(modifier = Modifier.width(120.dp)) // Avoid title overlap with sticky pill
+1000:                     }
+1001:                 }
+1002: 
+1003:                 item {
+1004:                     ChipsRow(
+1005:                         chips = homePage?.chips?.filter {
+1006:                             !it.title.equals("Podcasts", ignoreCase = true) &&
+1007:                             !it.title.equals("Uploaded", ignoreCase = true)
+1008:                         }?.map { it to it.title } ?: emptyList(),
+1009:                         currentValue = selectedChip,
+1010:                         onValueUpdate = {
+1011:                             viewModel.toggleChip(it)
+1012:                         }
+1013:                     )
+1014:                 }
+1015: 
+1016:                 if (isLoading && homePage?.chips.isNullOrEmpty()) {
+1017:                     item(key = "chips_shimmer") {
+1018:                         ShimmerHost {
+1019:                             Row(
+1020:                                 modifier = Modifier
+1021:                                     .padding(horizontal = 16.dp, vertical = 8.dp)
+1022:                                     .horizontalScroll(rememberScrollState()),
+1023:                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
+1024:                             ) {
+1025:                                 repeat(5) {
+1026:                                     TextPlaceholder(
+1027:                                         height = 30.dp,
+1028:                                         shape = RoundedCornerShape(16.dp),
+1029:                                         modifier = Modifier.width(72.dp)
+1030:                                     )
+1031:                                 }
+1032:                             }
+1033:                         }
+1034:                     }
+1035:                 }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

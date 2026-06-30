@@ -3,6 +3,15 @@
 package iad1tya.echo.music.ui.menu
 
 import android.content.Intent
+import android.net.Uri
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import com.yalantis.ucrop.UCrop
+import androidx.core.content.FileProvider
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.foundation.isSystemInDarkTheme
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +52,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import iad1tya.echo.music.constants.InnerTubeCookieKey
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.utils.rememberPreference
+import iad1tya.echo.music.utils.rememberEnumPreference
+import iad1tya.echo.music.constants.DarkModeKey
+import iad1tya.echo.music.ui.screens.settings.DarkMode
 import com.music.innertube.utils.parseCookieString
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -93,8 +106,71 @@ fun PlaylistMenu(
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
     val dbPlaylist by database.playlist(playlist.id).collectAsState(initial = playlist)
+    val result = remember { mutableStateOf<Uri?>(null) }
+    var pendingCropDestUri by remember { mutableStateOf<Uri?>(null) }
+
+    val cropLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        if (res.resultCode == android.app.Activity.RESULT_OK) {
+            val output = res.data?.let { UCrop.getOutput(it) } ?: pendingCropDestUri
+            if (output != null) result.value = output
+        }
+    }
+
+    val (darkMode, _) = rememberEnumPreference<DarkMode>(
+        DarkModeKey,
+        defaultValue = DarkMode.AUTO
+    )
+    val cropColor = MaterialTheme.colorScheme
+    val darkTheme = darkMode == DarkMode.ON || (darkMode == DarkMode.AUTO && isSystemInDarkTheme())
+
+    val pickLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { sourceUri ->
+            val coverDirectory = java.io.File(context.filesDir, "playlist_covers").apply { mkdirs() }
+            val destFile = java.io.File(coverDirectory, "playlist_cover_crop_${System.currentTimeMillis()}.jpg")
+            val destUri = FileProvider.getUriForFile(context, "${context.packageName}.FileProvider", destFile)
+            pendingCropDestUri = destUri
+    
+            val options = UCrop.Options().apply {
+                setCompressionFormat(Bitmap.CompressFormat.JPEG)
+                setCompressionQuality(90)
+                setHideBottomControls(true)
+                setToolbarTitle(context.getString(R.string.edit_playlist_cover))
+                setStatusBarLight(!darkTheme)
+                setToolbarColor(cropColor.surface.toArgb())
+                setToolbarWidgetColor(cropColor.inverseSurface.toArgb())
+                setRootViewBackgroundColor(cropColor.surface.toArgb())
+                setLogoColor(cropColor.surface.toArgb())
+            }
+
+            val intent = UCrop.of(sourceUri, destUri)
+                .withAspectRatio(1f, 1f)
+                .withOptions(options)
+                .getIntent(context)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            cropLauncher.launch(intent)
+        }
+    }
+
+    LaunchedEffect(result.value) {
+        val uri = result.value ?: return@LaunchedEffect
+        withContext(Dispatchers.IO) {
+            database.query {
+                update(playlist.playlist.copy(thumbnailUrl = uri.toString()))
+            }
+        }
+        onDismiss()
+    }
+
     var songs by remember {
         mutableStateOf(emptyList<Song>())
+    }
+
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, playlist.id) {
+        libraryPinnedItems.split(",").contains("playlist:${playlist.id}")
     }
 
     val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
@@ -475,7 +551,51 @@ fun PlaylistMenu(
                                 }
                             )
                         )
+                        add(
+                            Material3MenuItemData(
+                                title = { Text(text = stringResource(R.string.edit_playlist_cover)) },
+                                description = { Text(text = "Change the cover image of this playlist") },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.image),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    pickLauncher.launch(
+                                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            )
+                        )
                     }
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                val currentPinned = libraryPinnedItems
+                                val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                                val itemKey = "playlist:${playlist.id}"
+                                val newItems = if (items.contains(itemKey)) {
+                                    items.filter { it != itemKey }
+                                } else {
+                                    (items + itemKey).distinct()
+                                }
+                                setLibraryPinnedItems(newItems.joinToString(","))
+                                onDismiss()
+                            }
+                        )
+                    )
                     add(
                         Material3MenuItemData(
                             title = {

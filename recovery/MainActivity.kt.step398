@@ -1,0 +1,56 @@
+Created At: 2026-06-28T13:33:57Z
+Completed At: 2026-06-28T13:33:57Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 960 to 1020
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+960:                             if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+961:                                 Box {
+962:                                     BottomSheetPlayer(
+963:                                         state = playerBottomSheetState,
+964:                                         navController = navController,
+965:                                         pureBlack = pureBlack,
+966:                                         themeColor = themeColor
+967:                                     )
+968: 
+969:                                     val navSlideDistance = bottomInset + FloatingToolbarBottomPadding + NavigationBarHeight
+970: 
+971:                                     val navOffsetY = if (navigationBarHeight == 0.dp) {
+972:                                         navSlideDistance
+973:                                     } else {
+974:                                         val slideOffset =
+975:                                             navSlideDistance * playerBottomSheetState.progress.coerceIn(0f, 1f)
+976:                                         val hideOffset =
+977:                                             navSlideDistance * (1 - navigationBarHeight.coerceAtMost(NavigationBarHeight) / NavigationBarHeight)
+978:                                         slideOffset + hideOffset
+979:                                     }
+980: 
+981:            
+<truncated 1191 bytes>
+                                     navController.navigate("settings") {
+997:                                                     launchSingleTop = true
+998:                                                 }
+999:                                             },
+1000:                                             settingsIconRes = R.drawable.settings,
+1001:                                             settingsContentDescription = stringResource(R.string.settings),
+1002:                                             isSelected = { screen ->
+1003:                                                 currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
+1004:                                             },
+1005:                                             onItemClick = onNavItemClick,
+1006:                                             modifier = Modifier
+1007:                                                 .align(Alignment.BottomCenter)
+1008:                                                 .padding(
+1009:                                                     start = FloatingToolbarHorizontalPadding,
+1010:                                                     end = FloatingToolbarHorizontalPadding,
+1011:                                                     bottom = bottomInset + FloatingToolbarBottomPadding,
+1012:                                                 )
+1013:                                                 .height(NavigationBarHeight)
+1014:                                         )
+1015:                                     }
+1016: 
+1017:                                     Box(
+1018:                                         modifier = Modifier
+1019:                                             .fillMaxWidth()
+1020:                                             .align(Alignment.BottomCenter)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

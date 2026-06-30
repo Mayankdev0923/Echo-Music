@@ -98,7 +98,7 @@ fun LyricsMenu(
     val deeplApiKey by rememberPreference(DeeplApiKey, "")
     val aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
-    val translateMode by rememberPreference(TranslateModeKey, "Literal")
+    val translateMode by rememberPreference(TranslateModeKey, defaultValue = "transcription")
     val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
     val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")

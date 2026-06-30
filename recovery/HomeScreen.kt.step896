@@ -1,0 +1,22 @@
+Created At: 2026-06-28T17:29:15Z
+Completed At: 2026-06-28T17:29:16Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2038
+Total Bytes: 114814
+Showing lines 935 to 948
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+935:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+936:                     }
+937:                 )
+938:             }
+939: 
+940:             val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+941:             val bottomPadding = LocalPlayerAwareWindowInsets.current.calculateBottomPadding()
+942: 
+943:             LazyColumn(
+944:                 state = lazylistState,
+945:                 contentPadding = PaddingValues(
+946:                     top = statusBarTop + 8.dp,
+947:                     bottom = bottomPadding
+948:                 )
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -4,8 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import iad1tya.echo.music.R
 
+import androidx.compose.runtime.remember
+import iad1tya.echo.music.utils.rememberPreference
+import iad1tya.echo.music.constants.EnableSpotifyKey
+
 @Composable
 fun getAllSearchableSettings(): List<Triple<String, String, String>> {
+    val (spotifyEnabled) = rememberPreference(EnableSpotifyKey, true)
     return listOf(
             Triple(stringResource(R.string.about), "About", "settings/about"),
             Triple(stringResource(R.string.account), "Account", "settings/account"),
@@ -371,5 +376,5 @@ fun getAllSearchableSettings(): List<Triple<String, String, String>> {
             Triple("YouLyPlus", "Content", "settings/content"),
             Triple("PaxSenix", "Content", "settings/content"),
             Triple("Apple Music Inspired", "Appearance", "settings/appearance")
-    )
+        ).filter { it.first != "Import from Spotify" || spotifyEnabled }
 }

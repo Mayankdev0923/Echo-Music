@@ -1,0 +1,54 @@
+Created At: 2026-06-29T06:15:54Z
+Completed At: 2026-06-29T06:15:55Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2202
+Total Bytes: 122504
+Showing lines 550 to 595
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+550:                                 onDismiss = { menuState.dismiss() }
+551:                             )
+552:                         }
+553:                     }
+554:                 }
+555:             ),
+556:         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+557:         shape = RoundedCornerShape(AppleRadius.large)
+558:     ) {
+559:         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+560:             AsyncImage(
+561:                 model = ImageRequest.Builder(LocalContext.current)
+562:                     .data(dailyDiscover.recommendation.thumbnail?.resize(1200, 1200))
+563:                     .crossfade(true)
+564:                     .build(),
+565:                 contentDescription = null,
+566:                 contentScale = ContentScale.Crop,
+567:                 modifier = Modifier
+568:                     .fillMaxSize()
+569:             )
+570: 
+571:             if (maxWidth > 200.dp) {
+572:                 // Top-only progressive blur overlay with exposure adjustment
+573:                 Box(
+574:                     modifier = Modifier
+575:                         .fillMaxWidth()
+576:                         .height(maxHeight * 0.3f)
+577:                         .align(Alignment.TopCenter)
+578:                         .graphicsLayer { colorFilter = ColorFilter.colorMatrix(matrix) }
+579:                         .blur(16.dp)
+580:                         .background(
+581:                             Brush.verticalGradient(
+582:                                 colors = if (isDark) {
+583:                                     listOf(Color.Black, Color.Black.copy(alpha = 0f))
+584:                                 } else {
+585:                                     listOf(Color.White, Color.White.copy(alpha = 0f))
+586:                                 }
+587:                             )
+588:                         )
+589:                 )
+590: 
+591:                 Column(
+592:                     modifier = Modifier
+593:                         .fillMaxSize()
+594:                         .padding(24.dp),
+595:                     verticalArrangement = Arrangement.SpaceBetween
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,58 @@
+Created At: 2026-06-28T12:52:19Z
+Completed At: 2026-06-28T12:52:20Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1911
+Total Bytes: 108032
+Showing lines 930 to 1090
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+930:                 )
+931:             }
+932: 
+933:             LazyColumn(
+934:                 state = lazylistState,
+935:                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+936:             ) {
+937:                 item {
+938:                     ChipsRow(
+939:                         chips = homePage?.chips?.filter {
+940:                             !it.title.equals("Podcasts", ignoreCase = true) &&
+941:                             !it.title.equals("Uploaded", ignoreCase = true)
+942:                         }?.map { it to it.title } ?: emptyList(),
+943:                         currentValue = selectedChip,
+944:                         onValueUpdate = {
+945:                             viewModel.toggleChip(it)
+946:                         }
+947:                     )
+948:                 }
+949: 
+950:                 if (isLoading && homePage?.chips.isNullOrEmpty()) {
+951:                     item(key = "chips_shimmer") {
+952:                         ShimmerHost {
+953:                             Row(
+954:                                 modifier = Modifier
+955:                                     .padding(horizontal = 16.dp, vertical = 8.dp)
+956:                                     .horizontalScroll(rememberScrollState()),
+957:                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
+958:                             ) {
+959:                                 repeat(5) {
+960:                                     TextPlaceholder(
+961:
+<truncated 9600 bytes>
+deoId = item.id),
+1075:                                                                                                 item.toMediaMetadata()
+1076:                                                                                             )
+1077:                                                                                         )
+1078:                                                                                         is AlbumItem -> navController.navigate("album/${item.id}")
+1079:                                                                                         is ArtistItem -> navController.navigate("artist/${item.id}")
+1080: 
+1081:                                                                                         is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+1082:                                                                                     }
+1083:                                                                                 },
+1084:                                                                                 onLongClick = {
+1085:                                                                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+1086:                                                                                     menuState.show {
+1087:                                                                                         when (item) {
+1088:                                                                                             is SongItem -> YouTubeSongMenu(
+1089:                                                                                                 song = item,
+1090:                                                                                                 navController = navController,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

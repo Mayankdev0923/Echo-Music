@@ -1,0 +1,24 @@
+Created At: 2026-06-28T18:02:01Z
+Completed At: 2026-06-28T18:02:01Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2041
+Total Bytes: 114999
+Showing lines 940 to 955
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+940:                 )
+941:             }
+942: 
+943:             val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+944:             val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
+945: 
+946:             LazyColumn(
+947:                 state = lazylistState,
+948:                 contentPadding = PaddingValues(
+949:                     top = statusBarTop + 8.dp,
+950:                     bottom = bottomPadding
+951:                 )
+952:             ) {
+953:                 item {
+954:                     // Immersive Top Header (Title Only, Pill is Sticky Overlay)
+955:                     Row(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

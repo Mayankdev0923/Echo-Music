@@ -1,0 +1,44 @@
+Created At: 2026-06-28T18:48:18Z
+Completed At: 2026-06-28T18:48:19Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2125
+Total Bytes: 119291
+Showing lines 950 to 985
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+950:             val resultList = mutableListOf<HomeSection>()
+951:             if (remainingSections.isNotEmpty()) {
+952:                 resultList.add(remainingSections.removeAt(0))
+953:             }
+954:             resultList.addAll(homePageSections)
+955:             resultList.addAll(remainingSections)
+956:             resultList
+957:         } else {
+958:             if (sortedList.contains(HomeSection.DailyDiscover)) {
+959:                 val newList = sortedList.toMutableList()
+960:                 newList.remove(HomeSection.DailyDiscover)
+961:                 val targetIndex = minOf(1, newList.size)
+962:                 newList.add(targetIndex, HomeSection.DailyDiscover)
+963:                 newList
+964:             } else {
+965:                 sortedList
+966:             }
+967:         }
+968:     }   }
+969: 
+970:     LaunchedEffect(quickPicks) {
+971:         quickPicksLazyGridState.scrollToItem(0)
+972:     }
+973: 
+974:     LaunchedEffect(forgottenFavorites) {
+975:         forgottenFavoritesLazyGridState.scrollToItem(0)
+976:     }
+977: 
+978:     PullToRefreshBox(
+979:         state = pullRefreshState,
+980:         isRefreshing = isRefreshing,
+981:         onRefresh = viewModel::refresh,
+982:         indicator = {
+983:             PullToRefreshDefaults.LoadingIndicator(
+984:                 state = pullRefreshState,
+985:                 isRefreshing = isRefreshing,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

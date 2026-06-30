@@ -43,8 +43,9 @@ import androidx.navigation.NavController
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
-import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.utils.backToMain
+import iad1tya.echo.music.ui.component.IconButton
+import com.music.echo.ui.component.appleGlass
 
 import androidx.compose.ui.platform.LocalContext
 import android.content.ActivityNotFoundException
@@ -64,56 +65,41 @@ highlightKey: String? = null) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.about),
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBack?.invoke() ?: navController.navigateUp() },
-                        onLongClick = navController::backToMain,
-                    ) {
-                        Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
-                    }
-                },
-                windowInsets = TopAppBarDefaults.windowInsets,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
-                scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { innerPadding ->
-        LazyColumn(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(
-                    LocalPlayerAwareWindowInsets.current.only(
-                        WindowInsetsSides.Horizontal,
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        LocalPlayerAwareWindowInsets.current.only(
+                            WindowInsetsSides.Horizontal,
+                        ),
                     ),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = androidx.compose.foundation.layout.WindowInsets.systemBars.asPaddingValues().calculateTopPadding() + 8.dp,
+                    end = 16.dp,
+                    bottom = androidx.compose.foundation.layout.WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 32.dp,
                 ),
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                top = innerPadding.calculateTopPadding() + 8.dp,
-                end = 16.dp,
-                bottom = androidx.compose.foundation.layout.WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 32.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            item { AboutAppCard() }
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(72.dp))
+                    Text(
+                        text = stringResource(R.string.about),
+                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                    )
+                }
+                
+                item { AboutAppCard() }
 
             item {
                 AboutSectionCard(title = "Developer") {
@@ -191,9 +177,29 @@ highlightKey: String? = null) {
             }
 
         }
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = { onBack?.invoke() ?: navController.navigateUp() },
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    painterResource(R.drawable.arrow_back),
+                    contentDescription = null
+                )
+            }
+        }
     }
 }
-
+}
 @Composable
 private fun AboutAppCard() {
     Card(

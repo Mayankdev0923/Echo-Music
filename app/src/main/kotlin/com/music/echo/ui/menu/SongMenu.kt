@@ -93,6 +93,7 @@ import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.SongListItem
 import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.utils.listItemShape
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.CachePlaylistViewModel
@@ -141,6 +142,11 @@ fun SongMenu(
     )
 
     val isPinned by database.speedDialDao.isPinned(song.id).collectAsState(initial = false)
+
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, song.id) {
+        libraryPinnedItems.split(",").contains("song:${song.id}")
+    }
 
     val orderedArtists by produceState(initialValue = emptyList<ArtistEntity>(), song) {
         withContext(Dispatchers.IO) {
@@ -317,6 +323,7 @@ fun SongMenu(
         badges = {},
         shape = MaterialTheme.shapes.large,
         color = androidx.compose.ui.graphics.Color.Transparent,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
         trailingContent = {
             IconButton(
                 onClick = {
@@ -336,7 +343,9 @@ fun SongMenu(
         },
     )
 
-    HorizontalDivider()
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    )
 
     Spacer(modifier = Modifier.height(12.dp))
 
@@ -348,9 +357,9 @@ fun SongMenu(
 
     LazyColumn(
         contentPadding = PaddingValues(
-            start = 0.dp,
+            start = 16.dp,
             top = 0.dp,
-            end = 0.dp,
+            end = 16.dp,
             bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
         ),
     ) {
@@ -408,7 +417,7 @@ fun SongMenu(
                     )
                 ),
                 columns = 3,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                modifier = Modifier.padding(vertical = 12.dp)
             )
         }
         item {
@@ -492,6 +501,33 @@ fun SongMenu(
         item {
             Material3MenuGroup(
                 items = buildList {
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                val currentPinned = libraryPinnedItems
+                                val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                                val itemKey = "song:${song.id}"
+                                val newItems = if (items.contains(itemKey)) {
+                                    items.filter { it != itemKey }
+                                } else {
+                                    (items + itemKey).distinct()
+                                }
+                                setLibraryPinnedItems(newItems.joinToString(","))
+                                onDismiss()
+                            }
+                        )
+                    )
                     add(
                         Material3MenuItemData(
                             title = { 

@@ -1,0 +1,60 @@
+Created At: 2026-06-28T13:41:33Z
+Completed At: 2026-06-28T13:41:33Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1433
+Total Bytes: 73079
+Showing lines 810 to 940
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+810:                         } else if (intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+811:                             handleAssistantSearchIntent(intent, navController)
+812:                         }
+813:                     }
+814: 
+815:                     addOnNewIntentListener(listener)
+816:                     onDispose { removeOnNewIntentListener(listener) }
+817:                 }
+818: 
+819:                 val currentTitle = when (navBackStackEntry?.destination?.route) {
+820:                     Screens.Home.route -> "Home"
+821:                     Screens.Search.route -> stringResource(R.string.search)
+822:                     Screens.Library.route -> stringResource(R.string.filter_library)
+823:                     Screens.ListenTogether.route -> stringResource(R.string.together)
+824:                     else -> ""
+825:                 }
+826: 
+827: 
+828: 
+829:                 val pauseListenHistory by rememberPreference(PauseListenHistoryKey, defaultValue = false)
+830:                 val eventCount by database.eventCount().collectAsState(initial = 0)
+831:                 val showHistoryButton = remember(pauseListenHistory, eventCount) {
+832:                     !(pauseListenHistory && eventCount == 0)
+833:                 }
+834: 
+835:                 val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+836: 
+837:                 val ringtoneViewModel: RingtoneViewModel = viewModel()
+838:                 val ringtoneUiState by 
+<truncated 5524 bytes>
+  }
+920:                                                  IconButton(onClick = { showSettingDialoge = true }) {
+921:                                                     BadgedBox(badge = {}) {
+922:                                                         if (accountImageUrl != null) {
+923:                                                             AsyncImage(
+924:                                                                 model = accountImageUrl,
+925:                                                                 contentDescription = stringResource(R.string.account),
+926:                                                                 modifier = Modifier
+927:                                                                     .size(36.dp) // Larger premium avatar
+928:                                                                     .clip(CircleShape)
+929:                                                             )
+930:                                                          } else {
+931:                                                              Icon(
+932:                                                                  painter = painterResource(R.drawable.settings),
+933:                                                                  contentDescription = stringResource(R.string.account),
+934:                                                                  modifier = Modifier.size(28.dp) // Slightly larger gear
+935:                                                              )
+936:                                                          }
+937:                                                     }
+938:                                                 }
+939:                                             },
+940:                                             scrollBehavior = topAppBarScrollBehavior,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

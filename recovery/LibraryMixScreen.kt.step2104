@@ -1,0 +1,34 @@
+Created At: 2026-06-29T06:32:22Z
+Completed At: 2026-06-29T06:32:23Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1161
+Total Bytes: 54711
+Showing lines 90 to 115
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+90: import iad1tya.echo.music.ui.menu.AlbumMenu
+91: import iad1tya.echo.music.ui.menu.ArtistMenu
+92: import iad1tya.echo.music.ui.menu.PlaylistMenu
+93: import iad1tya.echo.music.utils.rememberEnumPreference
+94: import iad1tya.echo.music.utils.rememberPreference
+95: import iad1tya.echo.music.LocalDatabase
+96: import iad1tya.echo.music.constants.LibraryPinnedItemsKey
+97: import iad1tya.echo.music.ui.component.ItemThumbnail
+98: import iad1tya.echo.music.constants.ThumbnailCornerRadius
+99: import com.music.echo.ui.component.AppleRadius
+100: import iad1tya.echo.music.ui.component.appleGlass
+101: import androidx.compose.ui.text.style.TextOverflow
+102: import androidx.compose.ui.text.font.FontWeight
+103: import androidx.compose.ui.unit.sp
+104: import androidx.compose.foundation.layout.height
+105: import androidx.compose.foundation.layout.aspectRatio
+106: import androidx.compose.foundation.layout.fillMaxWidth
+107: import androidx.compose.foundation.layout.padding
+108: import androidx.compose.ui.draw.clip
+109: import androidx.compose.foundation.shape.RoundedCornerShape
+110: import iad1tya.echo.music.playback.queues.ListQueue
+111: import iad1tya.echo.music.extensions.toMediaItem
+112: import iad1tya.echo.music.db.entities.Song
+113: import iad1tya.echo.music.ui.menu.SongMenu
+114: import androidx.compose.runtime.mutableStateOf
+115: import androidx.compose.ui.platform.LocalContext
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

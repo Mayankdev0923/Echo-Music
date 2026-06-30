@@ -1,0 +1,79 @@
+Created At: 2026-06-28T19:10:02Z
+Completed At: 2026-06-28T19:10:02Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/MiniPlayer.kt`
+Total Lines: 1243
+Total Bytes: 52764
+Showing lines 240 to 320
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+240:     
+241:     val miniPlayerBackground by rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = PlayerBackgroundStyle.DEFAULT)
+242:     
+243:     
+244:     val playbackState by playerConnection.playbackState.collectAsState()
+245:     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+246:     val canSkipNext by playerConnection.canSkipNext.collectAsState()
+247:     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
+248:     
+249:     
+250:     val castHandler = remember(playerConnection) {
+251:         try {
+252:             playerConnection.service.castConnectionHandler
+253:         } catch (e: Exception) {
+254:             null
+255:         }
+256:     }
+257:     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
+258: 
+259:     
+260:     val context = LocalContext.current
+261:     val isBluetoothConnected = isBluetoothHeadphoneConnected(context)
+262:     var showAudioDeviceBottomSheet by remember { mutableStateOf(false) }
+263: 
+264:     
+265:     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
+266:     val swipeThumbnailPref by rememberPreference(SwipeThumbnailKey, true)
+267:     
+268:     
+269:     val listenTogetherManager = LocalListenTogetherManager.current
+270:     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
+271:     val swipeThumbnail = swipeThumbnailPref && !isListenTogetherGuest
+272:     
+273:     val layoutDirec
+<truncated 616 bytes>
+
+286:     val animationSpec = remember {
+287:         spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)
+288:     }
+289: 
+290:     val autoSwipeThreshold = remember(swipeSensitivity) {
+291:         (600 / (1f + kotlin.math.exp(-(-11.44748 * swipeSensitivity + 9.04945)))).roundToInt()
+292:     }
+293: 
+294:     val (gradientColors, onGradientColorsChange) = remember { mutableStateOf<List<Color>>(emptyList()) }
+295: 
+296:     MiniPlayerColorExtractor(
+297:         mediaMetadata = mediaMetadata,
+298:         miniPlayerBackground = miniPlayerBackground,
+299:         onGradientColorsChange = onGradientColorsChange
+300:     )
+301:     
+302:     
+303:     val isDynamicBackground = miniPlayerBackground != PlayerBackgroundStyle.DEFAULT
+304:     val backgroundColor = if (pureBlack && useDarkTheme) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+305:     
+306:     val primaryColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.primary
+307:     val onPrimaryColor = if (isDynamicBackground) Color.Black else MaterialTheme.colorScheme.onPrimary
+308:     val outlineColor = if (isDynamicBackground) Color.White.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline
+309:     val onSurfaceColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
+310:     val errorColor = MaterialTheme.colorScheme.error
+311: 
+312:     Box(
+313:         modifier = modifier
+314:             .fillMaxWidth()
+315:             .wrapContentWidth(Alignment.CenterHorizontally)
+316:             .widthIn(max = 340.dp)
+317:             .height(MiniPlayerHeight)
+318:             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+319:             .padding(horizontal = 12.dp)
+320:             .let { baseModifier ->
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

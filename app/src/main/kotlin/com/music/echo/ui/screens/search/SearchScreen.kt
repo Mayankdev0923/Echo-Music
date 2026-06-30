@@ -56,7 +56,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -113,7 +115,9 @@ import iad1tya.echo.music.ui.menu.YouTubeAlbumMenu
 import iad1tya.echo.music.constants.GridThumbnailHeight
 import iad1tya.echo.music.constants.GridItemsSizeKey
 import iad1tya.echo.music.constants.GridItemSize
-
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.graphics.RectangleShape
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
@@ -151,16 +155,7 @@ fun SearchScreen(
         }
     }
 
-    val searchBarHorizontalPadding by animateDpAsState(
-        targetValue = if (searchActive) 0.dp else 16.dp,
-        animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing),
-        label = "SearchBarHorizontalPadding"
-    )
-    val searchBarTopPadding by animateDpAsState(
-        targetValue = if (searchActive) 0.dp else 8.dp,
-        animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing),
-        label = "SearchBarTopPadding"
-    )
+
 
     val onSearch: (String) -> Unit = remember {
         { searchQuery ->
@@ -229,106 +224,134 @@ fun SearchScreen(
     }
 
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
+                    .background(Color.Transparent)
             ) {
-                SearchBar(
-                    query = query.text,
-                    onQueryChange = { query = TextFieldValue(it) },
-                    onSearch = { 
-                        onSearch(it)
-                        searchActive = false
-                    },
-                    active = searchActive,
-                    onActiveChange = { searchActive = it },
-                    placeholder = {
-                        Text(
-                            text = stringResource(
-                                when (searchSource) {
-                                    SearchSource.LOCAL -> R.string.search_library
-                                    SearchSource.ONLINE -> R.string.search_yt_music
-                                }
-                            ),
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                fontSize = 16.sp
-                            )
-                        )
-                    },
-                    leadingIcon = {
-                        IconButton(onClick = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 32.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(
+                        onClick = {
                             if (searchActive) {
                                 searchActive = false
-                                query = TextFieldValue("") 
+                                query = TextFieldValue("")
                             } else {
-                                searchActive = true 
+                                navController.navigateUp()
                             }
-                        }) {
+                        },
+                        modifier = Modifier
+                            .appleGlass(CircleShape, elevation = 2.dp)
+                            .clip(CircleShape)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.arrow_back),
+                            contentDescription = stringResource(R.string.dismiss),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp)
+                            .appleGlass(RoundedCornerShape(percent = 50), elevation = 4.dp)
+                            .clip(RoundedCornerShape(percent = 50))
+                            .clickable(
+                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                searchActive = true
+                                try {
+                                    focusRequester.requestFocus()
+                                } catch (e: Exception) {}
+                            },
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        BasicTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 16.sp
+                            ),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    onSearch(query.text)
+                                    searchActive = false
+                                }
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp)
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { focusState ->
+                                    if (focusState.isFocused) {
+                                        searchActive = true
+                                    }
+                                },
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            decorationBox = { innerTextField ->
+                                if (query.text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(
+                                            when (searchSource) {
+                                                SearchSource.LOCAL -> R.string.search_library
+                                                SearchSource.ONLINE -> R.string.search_yt_music
+                                            }
+                                        ),
+                                        style = TextStyle(
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                            fontSize = 16.sp
+                                        )
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        )
+                    }
+
+                    if (searchActive && query.text.isNotEmpty()) {
+                        IconButton(
+                            onClick = { query = TextFieldValue("") },
+                            modifier = Modifier
+                                .appleGlass(CircleShape, elevation = 2.dp)
+                                .clip(CircleShape)
+                        ) {
                             Icon(
-                                painter = painterResource(if (searchActive) R.drawable.arrow_back else R.drawable.search),
-                                contentDescription = if (searchActive) stringResource(R.string.dismiss) else null,
+                                painter = painterResource(R.drawable.close),
+                                contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    },
-                    trailingIcon = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (query.text.isNotEmpty()) {
-                                IconButton(onClick = { query = TextFieldValue("") }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.close),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            }
-                            IconButton(
-                                onClick = {
-                                    searchSource = if (searchSource == SearchSource.ONLINE) 
-                                        SearchSource.LOCAL else SearchSource.ONLINE
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(
-                                        when (searchSource) {
-                                            SearchSource.LOCAL -> R.drawable.library_music
-                                            SearchSource.ONLINE -> R.drawable.globe_search
-                                        }
-                                    ),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-                    },
-                    colors = SearchBarDefaults.colors(
-                        containerColor = if (pureBlack) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = searchBarHorizontalPadding)
-                        .padding(top = searchBarTopPadding)
-                ) {
-                    if (showSearchContent) {
-                        when (searchSource) {
-                            SearchSource.LOCAL -> LocalSearchScreen(
-                                query = query.text,
-                                navController = navController,
-                                onDismiss = { searchActive = false },
-                                pureBlack = pureBlack
-                            )
-                            SearchSource.ONLINE -> OnlineSearchScreen(
-                                query = query.text,
-                                onQueryChange = { query = it },
-                                navController = navController,
-                                onSearch = {
-                                    onSearchFromSuggestion(it)
-                                    searchActive = false
-                                },
-                                onDismiss = { searchActive = false },
-                                pureBlack = pureBlack
+                    } else {
+                        IconButton(
+                            onClick = {
+                                searchSource = if (searchSource == SearchSource.ONLINE) 
+                                    SearchSource.LOCAL else SearchSource.ONLINE
+                            },
+                            modifier = Modifier
+                                .appleGlass(CircleShape, elevation = 2.dp)
+                                .clip(CircleShape)
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    when (searchSource) {
+                                        SearchSource.LOCAL -> R.drawable.library_music
+                                        SearchSource.ONLINE -> R.drawable.globe_search
+                                    }
+                                ),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -339,55 +362,57 @@ fun SearchScreen(
                     enter = expandVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing)) + fadeIn(),
                     exit = shrinkVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing)) + fadeOut()
                 ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        SecondaryTabRow(
-                            selectedTabIndex = selectedTabIndex,
-                            containerColor = Color.Transparent,
-                            indicator = {
-                                Box(
-                                    modifier = Modifier
-                                        .tabIndicatorOffset(selectedTabIndex)
-                                        .fillMaxWidth(),
-                                    contentAlignment = Alignment.BottomCenter
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .width(32.dp)
-                                            .height(3.dp)
-                                            .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
-                                            .background(MaterialTheme.colorScheme.primary)
-                                    )
-                                }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val tabs = listOf(
+                            stringResource(R.string.tab_explore),
+                            stringResource(R.string.tab_Suggestions),
+                            stringResource(R.string.tab_album)
+                        )
+                        tabs.forEachIndexed { index, title ->
+                            val isSelected = selectedTabIndex == index
+                            val backgroundColor = if (isSelected) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            } else {
+                                Color.Transparent
                             }
-                        ) {
-                            Tab(
-                                selected = selectedTabIndex == 0,
-                                onClick = { selectedTabIndex = 0 },
-                                selectedContentColor = MaterialTheme.colorScheme.primary,
-                                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                text = { Text(stringResource(R.string.tab_explore)) }
-                            )
-                            Tab(
-                                selected = selectedTabIndex == 1,
-                                onClick = { selectedTabIndex = 1 },
-                                selectedContentColor = MaterialTheme.colorScheme.primary,
-                                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                text = { Text(stringResource(R.string.tab_Suggestions)) }
-                            )
-                            Tab(
-                                selected = selectedTabIndex == 2,
-                                onClick = { selectedTabIndex = 2 },
-                                selectedContentColor = MaterialTheme.colorScheme.primary,
-                                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                text = { Text(stringResource(R.string.tab_album)) }
-                            )
+                            val contentColor = if (isSelected) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                            
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .shadow(
+                                        elevation = if (isSelected) 16.dp else 0.dp,
+                                        shape = RoundedCornerShape(16.dp),
+                                        ambientColor = MaterialTheme.colorScheme.primary,
+                                        spotColor = MaterialTheme.colorScheme.primary
+                                    )
+                                    .appleGlass(RoundedCornerShape(16.dp), elevation = if (isSelected) 4.dp else 2.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(backgroundColor)
+                                    .clickable { selectedTabIndex = index }
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = title,
+                                    color = contentColor,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
                         }
                     }
                 }
             }
-        },
-        containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.background
+        }
     ) { paddingValues ->
         val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
         
@@ -396,7 +421,37 @@ fun SearchScreen(
                 .padding(top = paddingValues.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            if (!searchActive) {
+            AnimatedVisibility(
+                visible = showSearchContent,
+                enter = fadeIn() + expandVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing)),
+                exit = fadeOut() + shrinkVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing))
+            ) {
+                when (searchSource) {
+                    SearchSource.LOCAL -> LocalSearchScreen(
+                        query = query.text,
+                        navController = navController,
+                        onDismiss = { searchActive = false },
+                        pureBlack = pureBlack
+                    )
+                    SearchSource.ONLINE -> OnlineSearchScreen(
+                        query = query.text,
+                        onQueryChange = { query = it },
+                        navController = navController,
+                        onSearch = {
+                            onSearchFromSuggestion(it)
+                            searchActive = false
+                        },
+                        onDismiss = { searchActive = false },
+                        pureBlack = pureBlack
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = !searchActive,
+                enter = fadeIn() + expandVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing)),
+                exit = fadeOut() + shrinkVertically(animationSpec = tween(durationMillis = 245, easing = FastOutSlowInEasing))
+            ) {
                 val tabPadding = PaddingValues(bottom = bottomPadding)
                 when (selectedTabIndex) {
                     0 -> ExploreTabContent(navController = navController, contentPadding = tabPadding)
@@ -417,12 +472,6 @@ fun SearchScreen(
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     } else if (isFirstLaunch) {
-                        
-                        try {
-                            focusRequester.requestFocus()
-                        } catch (e: Exception) {
-                            
-                        }
                         isFirstLaunch = false
                     }
                 }
@@ -479,8 +528,8 @@ fun ExploreTabContent(
                                 .weight(1f)
                                 .padding(6.dp)
                                 .height(64.dp)
+                                .appleGlass(RoundedCornerShape(10.dp), elevation = 2.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainer)
                                 .clickable {
                                     navController.navigate(
                                         "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"

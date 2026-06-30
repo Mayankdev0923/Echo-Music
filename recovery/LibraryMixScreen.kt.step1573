@@ -1,0 +1,24 @@
+Created At: 2026-06-29T05:27:15Z
+Completed At: 2026-06-29T05:27:15Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 913
+Total Bytes: 44998
+Showing lines 30 to 45
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+30: import androidx.compose.material3.IconButton
+31: import androidx.compose.material3.ToggleButton
+32: import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+33: import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+34: import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+35: import androidx.compose.runtime.Composable
+36: import androidx.compose.runtime.LaunchedEffect
+37: import androidx.compose.runtime.collectAsState
+38: import androidx.compose.runtime.getValue
+39: import androidx.compose.runtime.rememberCoroutineScope
+40: import androidx.compose.runtime.setValue
+41: import androidx.compose.ui.Alignment
+42: import androidx.compose.ui.Modifier
+43: import androidx.compose.ui.draw.blur
+44: import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+45: import androidx.compose.ui.platform.LocalHapticFeedback
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

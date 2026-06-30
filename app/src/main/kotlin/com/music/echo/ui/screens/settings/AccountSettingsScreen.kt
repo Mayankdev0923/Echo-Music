@@ -22,6 +22,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +48,8 @@ import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.AccountSettingsViewModel
 import iad1tya.echo.music.viewmodels.HomeViewModel
 import iad1tya.echo.music.R
+import com.music.echo.ui.component.appleGlass
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AccountSettingsScreen(
@@ -76,35 +82,32 @@ fun AccountSettingsScreen(
     var showTokenEditor by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.account)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = navController::navigateUp,
-                        onLongClick = navController::backToMain
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.arrow_back),
-                            contentDescription = null
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .windowInsetsPadding(
-                    LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)
+                    )
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp)
+            ) {
+                Spacer(
+                    Modifier.windowInsetsPadding(
+                        WindowInsets.systemBars.only(WindowInsetsSides.Top)
+                    )
                 )
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp)
-        ) {
-            
+                Spacer(modifier = Modifier.height(72.dp))
+                Text(
+                    text = stringResource(R.string.account),
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                )
+                
             Material3SettingsGroup(scrollState = scrollState, 
                 title = stringResource(R.string.settings),
                 items = listOf(
@@ -352,4 +355,25 @@ fun AccountSettingsScreen(
         
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
+        
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        iad1tya.echo.music.ui.component.IconButton(
+            onClick = navController::navigateUp,
+            onLongClick = navController::backToMain,
+            modifier = Modifier
+                .appleGlass(CircleShape, elevation = 2.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painterResource(R.drawable.arrow_back),
+                contentDescription = null
+            )
+        }
+    }
+}
 }

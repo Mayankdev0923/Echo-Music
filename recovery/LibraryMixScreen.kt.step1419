@@ -1,0 +1,29 @@
+Created At: 2026-06-28T19:10:43Z
+Completed At: 2026-06-28T19:10:43Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 863
+Total Bytes: 42916
+Showing lines 580 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+580: 
+581:             LibraryViewType.GRID ->
+582:                 LazyVerticalGrid(
+583:                     state = lazyGridState,
+584:                     columns =
+585:                     GridCells.Adaptive(
+586:                         minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+587:                     ),
+588:                     contentPadding = PaddingValues(
+589:                         top = statusBarTop + 32.dp,
+590:                         bottom = bottomPadding
+591:                     ),
+592:                 ) {
+593:                     item(
+594:                         key = "immersive_header",
+595:                         span = { GridItemSpan(maxLineSpan) },
+596:                         contentType = CONTENT_TYPE_HEADER,
+597:                     ) {
+598:                         Row(
+599:                             modifier = Modifier
+600:                                 .fillMaxWidth()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

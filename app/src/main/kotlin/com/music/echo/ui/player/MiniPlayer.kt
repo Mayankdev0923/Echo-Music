@@ -238,7 +238,7 @@ private fun NewMiniPlayer(
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
     
-    val miniPlayerBackground by rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = PlayerBackgroundStyle.DEFAULT)
+    val miniPlayerBackground by rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.GLOW_ANIMATED)
     
     
     val playbackState by playerConnection.playbackState.collectAsState()
@@ -274,8 +274,9 @@ private fun NewMiniPlayer(
     val coroutineScope = rememberCoroutineScope()
     
     val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isTabletLandscape = remember(configuration.screenWidthDp, configuration.orientation) {
-        configuration.screenWidthDp >= 600 && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        configuration.screenWidthDp >= 600 && isLandscape
     }
 
     
@@ -312,7 +313,7 @@ private fun NewMiniPlayer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally)
+            .wrapContentWidth(if (isLandscape && !isTabletLandscape) Alignment.Start else Alignment.CenterHorizontally)
             .widthIn(max = 340.dp)
             .height(MiniPlayerHeight)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
@@ -610,8 +611,9 @@ private fun LegacyMiniPlayer(
     val coroutineScope = rememberCoroutineScope()
     
     val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isTabletLandscape = remember(configuration.screenWidthDp, configuration.orientation) {
-        configuration.screenWidthDp >= 600 && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        configuration.screenWidthDp >= 600 && isLandscape
     }
 
     val offsetXAnimatable = remember { Animatable(0f) }
@@ -632,7 +634,7 @@ private fun LegacyMiniPlayer(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentWidth(Alignment.CenterHorizontally)
+            .wrapContentWidth(if (isLandscape && !isTabletLandscape) Alignment.Start else Alignment.CenterHorizontally)
             .widthIn(max = 340.dp)
             .height(MiniPlayerHeight)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))

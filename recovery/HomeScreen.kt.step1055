@@ -1,0 +1,83 @@
+Created At: 2026-06-28T18:21:10Z
+Completed At: 2026-06-28T18:21:10Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2050
+Total Bytes: 115436
+Showing lines 190 to 280
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+190:     data object MoodAndGenres : HomeSection("mood_and_genres", 5)
+191: }
+192: 
+193: @Composable
+194: fun CommunityPlaylistCard(
+195:     item: CommunityPlaylistItem,
+196:     onClick: () -> Unit,
+197:     onSongClick: (SongItem) -> Unit,
+198:     modifier: Modifier = Modifier
+199: ) {
+200:     val database = LocalDatabase.current
+201:     val playerConnection = LocalPlayerConnection.current
+202:     val scope = rememberCoroutineScope()
+203:     val colorScheme = MaterialTheme.colorScheme
+204:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+205: 
+206:     val containerColor = if (isDark) {
+207:         MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
+208:     } else {
+209:         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+210:     }
+211: 
+212:     val dbPlaylist by database.playlistByBrowseId(item.playlist.id).collectAsState(initial = null)
+213:     val isBookmarked = dbPlaylist?.playlist?.bookmarkedAt != null
+214: 
+215:     Card(
+216:         modifier = modifier
+217:             .width(320.dp)
+218:             .height(420.dp)
+219:             .appleGlass(RoundedCornerShape(AppleRadius.large)),
+220:         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+221:         shape = RoundedCornerShape(AppleRadius.large),
+222:         onClick = onClick
+223:     ) {
+224:         Column(
+225:             modifier = Modifier.fillMaxSize()
+226:         ) {
+227:             Row(
+228:    
+<truncated 945 bytes>
+             .weight(1f)
+247:                                     .fillMaxSize()
+248:                             )
+249:                             AsyncImage(
+250:                                 model = item.songs.getOrNull(1)?.thumbnail?.resize(544, 544),
+251:                                 contentDescription = null,
+252:                                 contentScale = ContentScale.Crop,
+253:                                 modifier = Modifier
+254:                                     .weight(1f)
+255:                                     .fillMaxSize()
+256:                             )
+257:                         }
+258:                         Row(modifier = Modifier.weight(1f)) {
+259:                             AsyncImage(
+260:                                 model = item.songs.getOrNull(2)?.thumbnail?.resize(544, 544),
+261:                                 contentDescription = null,
+262:                                 contentScale = ContentScale.Crop,
+263:                                 modifier = Modifier
+264:                                     .weight(1f)
+265:                                     .fillMaxSize()
+266:                             )
+267:                             AsyncImage(
+268:                                 model = item.songs.getOrNull(3)?.thumbnail?.resize(544, 544),
+269:                                 contentDescription = null,
+270:                                 contentScale = ContentScale.Crop,
+271:                                 modifier = Modifier
+272:                                     .weight(1f)
+273:                                     .fillMaxSize()
+274:                             )
+275:                         }
+276:                     }
+277:                 }
+278: 
+279:                 Column(
+280:                     modifier = Modifier.weight(1f),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

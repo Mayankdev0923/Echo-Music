@@ -1,0 +1,59 @@
+Created At: 2026-06-28T19:10:16Z
+Completed At: 2026-06-28T19:10:16Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/AppleComponents.kt`
+Total Lines: 160
+Total Bytes: 5059
+Showing lines 60 to 110
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+60: /**
+61:  * Apple Gradient Overlay for Images
+62:  */
+63: @Composable
+64: fun appleGradientOverlay(
+65:     isLight: Boolean = false
+66: ): Brush {
+67:     return if (isLight) {
+68:         Brush.verticalGradient(
+69:             colors = listOf(
+70:                 Color.Black.copy(alpha = 0.1f),
+71:                 Color.Black.copy(alpha = 0.4f)
+72:             )
+73:         )
+74:     } else {
+75:         Brush.verticalGradient(
+76:             colors = listOf(
+77:                 Color.Black.copy(alpha = 0.2f),
+78:                 Color.Black.copy(alpha = 0.6f)
+79:             )
+80:         )
+81:     }
+82: }
+83: 
+84: /**
+85:  * Apple Surface Colors
+86:  */
+87: @Composable
+88: fun appleSurfaceColor(depth: Int = 1): Color {
+89:     val colorScheme = MaterialTheme.colorScheme
+90:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+91:     return when {
+92:         isDark && depth == 1 -> Color(0xFF1C1C1E).copy(alpha = 0.75f)
+93:         isDark && depth == 2 -> Color(0xFF2C2C2E).copy(alpha = 0.55f)
+94:         !isDark && depth == 1 -> Color(0xFFFFFFFF).copy(alpha = 0.85f)
+95:         else -> Color(0xFFF2F2F7).copy(alpha = 0.65f)
+96:     }
+97: }
+98: 
+99: /**
+100:  * Apple Glassmorphic Modifier
+101:  * Applies a consistent translucent background, a thin glass-edge border, and custom shadows for depth.
+102:  */
+103: fun Modifier.appleGlass(
+104:     shape: Shape = RoundedCornerShape(20.dp),
+105:     elevation: androidx.compose.ui.unit.Dp = 6.dp
+106: ): Modifier = this.composed {
+107:     val colorScheme = MaterialTheme.colorScheme
+108:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+109:     Modifier
+110:         .shadow(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

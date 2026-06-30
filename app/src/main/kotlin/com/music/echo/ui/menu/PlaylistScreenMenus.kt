@@ -9,6 +9,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -16,10 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.offline.Download
 import iad1tya.echo.music.LocalListenTogetherManager
 import iad1tya.echo.music.R
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.db.entities.Playlist
 import iad1tya.echo.music.db.entities.PlaylistSong
 import iad1tya.echo.music.ui.component.Material3MenuGroup
 import iad1tya.echo.music.ui.component.Material3MenuItemData
+import iad1tya.echo.music.utils.rememberPreference
 
 
 @Composable
@@ -38,6 +41,10 @@ fun LocalPlaylistMenu(
 ) {
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, playlist.id) {
+        libraryPinnedItems.split(",").contains("playlist:${playlist.id}")
+    }
 
     val downloadMenuItem = when (downloadState) {
         Download.STATE_COMPLETED -> Material3MenuItemData(
@@ -161,6 +168,36 @@ fun LocalPlaylistMenu(
         }
 
         add(downloadMenuItem)
+
+        add(
+            Material3MenuItemData(
+                title = {
+                    Text(
+                        text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                    )
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_push_pin),
+                        contentDescription = null
+                    )
+                },
+                onClick = {
+                    val items =
+                        if (libraryPinnedItems.isBlank()) emptyList()
+                        else libraryPinnedItems.split(",")
+                    val itemKey = "playlist:${playlist.id}"
+                    val newItems =
+                        if (items.contains(itemKey)) {
+                            items.filter { it != itemKey }
+                        } else {
+                            (items + itemKey).distinct()
+                        }
+                    setLibraryPinnedItems(newItems.joinToString(","))
+                    onDismiss()
+                }
+            )
+        )
 
         add(
             Material3MenuItemData(

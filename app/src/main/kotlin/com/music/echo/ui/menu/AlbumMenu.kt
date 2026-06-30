@@ -84,6 +84,8 @@ import iad1tya.echo.music.ui.component.Material3MenuItemData
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.SongListItem
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
+import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -147,6 +149,10 @@ fun AlbumMenu(
     )
 
     val isPinned by database.speedDialDao.isPinned(album.id).collectAsState(initial = false)
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, album.id) {
+        libraryPinnedItems.split(",").contains("album:${album.id}")
+    }
 
     var showChoosePlaylistDialog by rememberSaveable {
         mutableStateOf(false)
@@ -422,6 +428,31 @@ fun AlbumMenu(
                         },
                         onClick = {
                             showChoosePlaylistDialog = true
+                        }
+                    ),
+                    Material3MenuItemData(
+                        title = {
+                            Text(
+                                text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_push_pin),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            val currentPinned = libraryPinnedItems
+                            val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                            val itemKey = "album:${album.id}"
+                            val newItems = if (items.contains(itemKey)) {
+                                items.filter { it != itemKey }
+                            } else {
+                                (items + itemKey).take(6)
+                            }
+                            setLibraryPinnedItems(newItems.joinToString(","))
+                            onDismiss()
                         }
                     ),
                     Material3MenuItemData(

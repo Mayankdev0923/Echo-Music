@@ -1,0 +1,22 @@
+Created At: 2026-06-29T10:14:44Z
+Completed At: 2026-06-29T10:14:45Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1186
+Total Bytes: 55678
+Showing lines 1012 to 1025
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1012:             }
+1013:         }
+1014:     }
+1015: }
+1016: 
+1017: data class SixTuple(
+1018:     val title: String,
+1019:     val thumbnailUrl: String?,
+1020:     val isPlaylist: Boolean,
+1021:     val isArtist: Boolean,
+1022:     val onClick: () -> Unit,
+1023:     val onLongClick: () -> Unit
+1024: )
+1025: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

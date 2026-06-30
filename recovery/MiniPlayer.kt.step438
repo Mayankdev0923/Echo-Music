@@ -1,0 +1,85 @@
+Created At: 2026-06-28T13:34:47Z
+Completed At: 2026-06-28T13:34:47Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/MiniPlayer.kt`
+Total Lines: 1243
+Total Bytes: 52764
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: 
+2: 
+3: package iad1tya.echo.music.ui.player
+4: 
+5: import android.content.res.Configuration
+6: import android.os.Build
+7: import androidx.compose.animation.AnimatedVisibility
+8: import androidx.compose.animation.core.Animatable
+9: import androidx.compose.animation.core.LinearEasing
+10: import androidx.compose.animation.core.RepeatMode
+11: import androidx.compose.animation.core.Spring
+12: import androidx.compose.animation.core.animateDpAsState
+13: import androidx.compose.animation.core.animateFloat
+14: import androidx.compose.animation.core.infiniteRepeatable
+15: import androidx.compose.animation.core.rememberInfiniteTransition
+16: import androidx.compose.animation.core.spring
+17: import androidx.compose.animation.fadeIn
+18: import androidx.compose.animation.fadeOut
+19: import androidx.compose.animation.core.tween
+20: import androidx.compose.animation.togetherWith
+21: import androidx.compose.foundation.background
+22: import androidx.compose.foundation.basicMarquee
+23: import androidx.compose.foundation.border
+24: import androidx.compose.foundation.clickable
+25: import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+26: import androidx.compose.foundation.isSystemInDarkTheme
+27: import androidx.compose.foundation.layout.Arrangement
+28: import androidx.compose.foundation.layout.Box
+29: import androidx.compose.foundation.layout.Column
+30: import androidx.compose.foundation.layout.Row
+31: import androidx.compose.foundation.layout.Spacer
+32: import androidx.compose.foundation.layout.W
+<truncated 34812 bytes>
+         contentDescription = null,
+758:                     tint = primaryColor.copy(
+759:                         alpha = (offsetXAnimatable.value.absoluteValue / autoSwipeThreshold).coerceIn(0f, 1f)
+760:                     ),
+761:                     modifier = Modifier.size(24.dp)
+762:                 )
+763:             }
+764:         }
+765:     }
+766: }
+767: 
+768: @Composable
+769: private fun LegacyPlayPauseButton(
+770:     playbackState: Int,
+771:     isCasting: Boolean,
+772:     castHandler: CastConnectionHandler?,
+773:     playerConnection: PlayerConnection,
+774:     listenTogetherManager: ListenTogetherManager?,
+775:     tint: Color = androidx.compose.material3.LocalContentColor.current
+776: ) {
+777:     val isPlaying by playerConnection.isPlaying.collectAsState()
+778:     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
+779:     val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
+780:     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
+781:     val isMuted by playerConnection.isMuted.collectAsState()
+782: 
+783: 
+784:     IconButton(
+785:         onClick = {
+786:             if (isListenTogetherGuest) {
+787:                 playerConnection.toggleMute()
+788:                 return@IconButton
+789:             }
+790:             if (isCasting) {
+791:                 if (castIsPlaying) castHandler?.pause() else castHandler?.play()
+792:             } else if (playbackState == Player.STATE_ENDED) {
+793:                 playerConnection.player.seekTo(0, 0)
+794:                 playerConnection.player.playWhenReady = true
+795:             } else {
+796:                 playerConnection.togglePlayPause()
+797:             }
+798:         },
+799:     ) {
+800:         Icon(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

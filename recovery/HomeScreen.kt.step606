@@ -1,0 +1,34 @@
+Created At: 2026-06-28T13:59:03Z
+Completed At: 2026-06-28T13:59:04Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1947
+Total Bytes: 110514
+Showing lines 930 to 955
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+930:                     lazyGridState = forgottenFavoritesLazyGridState,
+931:                     positionInLayout = { layoutSize, itemSize ->
+932:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+933:                     }
+934:                 )
+935:             }
+936: 
+937:             LazyColumn(
+938:                 state = lazylistState,
+939:                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+940:             ) {
+941:                 item {
+942:                     ChipsRow(
+943:                         chips = homePage?.chips?.filter {
+944:                             !it.title.equals("Podcasts", ignoreCase = true) &&
+945:                             !it.title.equals("Uploaded", ignoreCase = true)
+946:                         }?.map { it to it.title } ?: emptyList(),
+947:                         currentValue = selectedChip,
+948:                         onValueUpdate = {
+949:                             viewModel.toggleChip(it)
+950:                         }
+951:                     )
+952:                 }
+953: 
+954:                 if (isLoading && homePage?.chips.isNullOrEmpty()) {
+955:                     item(key = "chips_shimmer") {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

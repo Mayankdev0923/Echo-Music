@@ -1,0 +1,34 @@
+Created At: 2026-06-29T10:43:36Z
+Completed At: 2026-06-29T10:43:36Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2158
+Total Bytes: 120512
+Showing lines 2120 to 2145
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2120:                     modifier = Modifier.size(32.dp)
+2121:                 ) {
+2122:                     Icon(
+2123:                         painter = painterResource(R.drawable.stats),
+2124:                         contentDescription = stringResource(R.string.stats),
+2125:                         modifier = Modifier.size(20.dp),
+2126:                         tint = MaterialTheme.colorScheme.onSurfaceVariant
+2127:                     )
+2128:                 }
+2129:                 // Settings / Avatar
+2130:                 val showSettingsDialog = LocalShowSettingsDialog.current
+2131:                 val accountImageUrl by viewModel.accountImageUrl.collectAsState()
+2132:                 IconButton(
+2133:                     onClick = { showSettingsDialog?.invoke() },
+2134:                     modifier = Modifier.size(32.dp)
+2135:                 ) {
+2136:                     if (accountImageUrl != null) {
+2137:                         AsyncImage(
+2138:                             model = accountImageUrl,
+2139:                             contentDescription = stringResource(R.string.account),
+2140:                             modifier = Modifier
+2141:                                 .size(24.dp)
+2142:                                 .clip(CircleShape)
+2143:                         )
+2144:                     } else {
+2145:                         Icon(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

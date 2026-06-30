@@ -1,0 +1,69 @@
+Created At: 2026-06-28T12:52:02Z
+Completed At: 2026-06-28T12:52:03Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1911
+Total Bytes: 108032
+Showing lines 270 to 330
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+270:                     modifier = Modifier.weight(1f),
+271:                     verticalArrangement = Arrangement.Center
+272:                 ) {
+273:                     Text(
+274:                         text = item.playlist.title,
+275:                         style = MaterialTheme.typography.titleMedium,
+276:                         maxLines = 2,
+277:                         overflow = TextOverflow.Ellipsis
+278:                     )
+279:                     Spacer(modifier = Modifier.height(4.dp))
+280:                     Text(
+281:                         text = item.playlist.author?.name ?: "",
+282:                         style = MaterialTheme.typography.bodyMedium,
+283:                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+284:                         maxLines = 1
+285:                     )
+286:                 }
+287:             }
+288: 
+289:             Column(
+290:                 modifier = Modifier
+291:                     .fillMaxWidth()
+292:                     .weight(1f)
+293:                     .padding(horizontal = 16.dp)
+294:             ) {
+295:                 item.songs.take(3).forEach { song ->
+296:                     Row(
+297:                         modifier = Modifier
+298:                             .fillMaxWidth()
+299:                             .padding(vertical = 4.dp)
+300:                             .clip(RoundedCornerShape(12.dp))
+301:                             .combinedClickable(onClick = { onSongClick(song) }),
+302:                         verticalAlignment = Alignment.CenterVertically,
+303:                         horizontalArrangement = Arrangement.spacedBy(12.dp)
+304:                     ) {
+305:                         AsyncImage(
+306:                             model = song.thumbnail.resize(544, 544),
+307:                             contentDescription = null,
+308:                             modifier = Modifier
+309:                                 .size(56.dp)
+310:                                 .clip(RoundedCornerShape(12.dp)),
+311:                             contentScale = ContentScale.Crop
+312:                         )
+313:                         Column(modifier = Modifier.weight(1f)) {
+314:                             Text(
+315:                                 text = song.title,
+316:                                 style = MaterialTheme.typography.bodyMedium,
+317:                                 maxLines = 1,
+318:                                 overflow = TextOverflow.Ellipsis
+319:                             )
+320:                             Text(
+321:                                 text = song.artists.joinToString(", ") { it.name },
+322:                                 style = MaterialTheme.typography.bodySmall,
+323:                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+324:                                 maxLines = 1,
+325:                                 overflow = TextOverflow.Ellipsis
+326:                             )
+327:                         }
+328:                     }
+329:                 }
+330:             }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

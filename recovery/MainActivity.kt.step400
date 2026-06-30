@@ -1,0 +1,64 @@
+Created At: 2026-06-28T13:33:59Z
+Completed At: 2026-06-28T13:33:59Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 1020 to 1100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1020:                                             .align(Alignment.BottomCenter)
+1021:                                             .height(bottomInsetDp)
+1022:                                             
+1023:                                             .graphicsLayer {
+1024:                                                 val progress = playerBottomSheetState.progress
+1025:                                                 alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1026:                                             }
+1027:                                             .background(baseBg)
+1028:                                     )
+1029:                                 }
+1030:                             } else {
+1031:                                 if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+1032:                                     BottomSheetPlayer(
+1033:                                         state = playerBottomSheetState,
+1034:                                         navController = navController,
+1035:                                         pureBlack = pureBlack,
+1036:                                         themeColor = themeColor
+1037:                                     )
+1038:                                 }
+1039: 
+1040:                                 Box(
+1041:                                     modifier = Modi
+<truncated 1923 bytes>
+et()
+1069:                                         }
+1070:                                     } else {
+1071:                                         navController.navigate(screen.route) {
+1072:                                             popUpTo(navController.graph.startDestinationId) {
+1073:                                                 saveState = true
+1074:                                             }
+1075:                                             launchSingleTop = true
+1076:                                             restoreState = true
+1077:                                         }
+1078:                                     }
+1079:                                 }
+1080:                             }
+1081: 
+1082:                             val onRailSearchLongClick: () -> Unit = remember(navController) {
+1083:                                 {
+1084:                                     navController.navigate("recognition") {
+1085:                                         launchSingleTop = true
+1086:                                     }
+1087:                                 }
+1088:                             }
+1089: 
+1090:                             if (showRail && currentRoute != "update") {
+1091:                                 AppNavigationRail(
+1092:                                     navigationItems = navigationItems,
+1093:                                     currentRoute = currentRoute,
+1094:                                     onItemClick = onRailItemClick,
+1095:                                     pureBlack = pureBlack,
+1096:                                     onSearchLongClick = onRailSearchLongClick
+1097:                                 )
+1098:                             }
+1099:                             Box(Modifier.weight(1f)) {
+1100:                                 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

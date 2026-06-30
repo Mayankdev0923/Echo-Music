@@ -18,6 +18,8 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.first
 import android.app.PendingIntent
 import android.content.ComponentName
+import android.content.Context
+import android.content.res.Configuration
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
@@ -115,6 +117,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -164,6 +169,7 @@ import iad1tya.echo.music.echomusic.updater.saveUpdateAvailableState
 import iad1tya.echo.music.echomusic.updater.getUpdateNotificationsSetting
 import iad1tya.echo.music.echomusic.UpdateNotificationHelper
 import android.util.Log
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import iad1tya.echo.music.constants.PauseListenHistoryKey
 import iad1tya.echo.music.constants.PauseSearchHistoryKey
@@ -225,6 +231,9 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.Locale
 import javax.inject.Inject
+
+import androidx.compose.runtime.staticCompositionLocalOf
+val LocalShowSettingsDialog = staticCompositionLocalOf<(() -> Unit)?> { null }
 
 @Suppress("DEPRECATION", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
 @AndroidEntryPoint
@@ -377,7 +386,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             dataStore.data
-                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: false }
+                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: true }
                 .distinctUntilChanged()
                 .collectLatest { enabled ->
                     echoBrainEngine.isEnabled.value = enabled
@@ -403,7 +412,7 @@ class MainActivity : ComponentActivity() {
         downloadUtil: DownloadUtil,
         syncUtils: SyncUtils,
     ) {
-        val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
+        val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = false)
         val enableHighRefreshRate by rememberPreference(EnableHighRefreshRateKey, defaultValue = true)
         val context = LocalContext.current
 
@@ -525,6 +534,7 @@ class MainActivity : ComponentActivity() {
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
             themeColor = themeColor,
+            dynamicColor = false,
         ) {
             BoxWithConstraints(
                 modifier = Modifier
@@ -609,21 +619,22 @@ class MainActivity : ComponentActivity() {
                 val shouldShowNavigationBar = remember(currentRoute, navigationItemRoutes) {
                     currentRoute == null ||
                         navigationItemRoutes.contains(currentRoute) ||
-                        currentRoute!!.startsWith("search/")
+                    currentRoute!!.startsWith("search/") ||
+                        currentRoute!!.startsWith("recognition")
                 }
 
-                val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
+                val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val showRail = false
+                val navigationChromeHeight = NavigationBarHeight
 
-                val showRail = isLandscape && !inSearchScreen && currentRoute != "ambient_mode"
-
-                val navPadding = if (shouldShowNavigationBar && !showRail) {
-                    NavigationBarHeight + FloatingToolbarBottomPadding
+                val navPadding = if (shouldShowNavigationBar && !showRail && !isLandscape) {
+                    navigationChromeHeight + FloatingToolbarBottomPadding
                 } else {
                     0.dp
                 }
 
                 val navigationBarHeight by animateDpAsState(
-                    targetValue = if (shouldShowNavigationBar && !showRail) NavigationBarHeight else 0.dp,
+                    targetValue = if (shouldShowNavigationBar && !showRail) navigationChromeHeight else 0.dp,
                     animationSpec = NavigationBarAnimationSpec,
                     label = "navBarHeight",
                 )
@@ -667,7 +678,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     var bottom = bottomInset
                     if (shouldShowNavigationBar && !showRail) {
-                        bottom += NavigationBarHeight
+                        bottom += navigationChromeHeight
                     }
                     if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
                     windowsInsets
@@ -765,6 +776,8 @@ class MainActivity : ComponentActivity() {
                     val isListenTogetherScreen = currentRoute == Screens.ListenTogether.route || 
                         currentRoute == "listen_together_from_topbar"
                     shouldShowTopBar = currentRoute in topLevelScreens &&
+                        currentRoute != Screens.Home.route &&
+                        currentRoute != Screens.Library.route &&
                         currentRoute != "settings" &&
                         !(isListenTogetherScreen && listenTogetherInTopBar)
                 }
@@ -846,6 +859,7 @@ class MainActivity : ComponentActivity() {
                     LocalShimmerTheme provides getShimmerTheme(),
                     LocalSyncUtils provides syncUtils,
                     LocalListenTogetherManager provides listenTogetherManager,
+                    LocalShowSettingsDialog provides { showSettingDialoge = true },
                 ) {
 
                     Scaffold(
@@ -933,7 +947,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         bottomBar = {
-                            val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+                            val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState, currentRoute) {
                                 { screen: Screens, isSelected: Boolean ->
                                     if (playerBottomSheetState.isExpanded) {
                                         playerBottomSheetState.collapseSoft()
@@ -947,10 +961,10 @@ class MainActivity : ComponentActivity() {
                                     } else {
                                         navController.navigate(screen.route) {
                                             popUpTo(navController.graph.startDestinationId) {
-                                                saveState = true
+                                                saveState = currentRoute?.startsWith("recognition") != true
                                             }
                                             launchSingleTop = true
-                                            restoreState = true
+                                            restoreState = currentRoute?.startsWith("recognition") != true
                                         }
                                     }
                                 }
@@ -961,10 +975,11 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
-                                        pureBlack = pureBlack
+                                        pureBlack = pureBlack,
+                                        themeColor = themeColor
                                     )
 
-                                    val navSlideDistance = bottomInset + FloatingToolbarBottomPadding + NavigationBarHeight
+                                    val navSlideDistance = bottomInset + FloatingToolbarBottomPadding + navigationChromeHeight
 
                                     val navOffsetY = if (navigationBarHeight == 0.dp) {
                                         navSlideDistance
@@ -972,13 +987,14 @@ class MainActivity : ComponentActivity() {
                                         val slideOffset =
                                             navSlideDistance * playerBottomSheetState.progress.coerceIn(0f, 1f)
                                         val hideOffset =
-                                            navSlideDistance * (1 - navigationBarHeight.coerceAtMost(NavigationBarHeight) / NavigationBarHeight)
+
+                                    navSlideDistance * (1 - navigationBarHeight.coerceAtMost(navigationChromeHeight) / navigationChromeHeight)
                                         slideOffset + hideOffset
                                     }
 
                                     Box(
                                         modifier = Modifier
-                                            .align(Alignment.BottomCenter)
+                                            .align(if (isLandscape && !showRail) Alignment.BottomEnd else Alignment.BottomCenter)
                                             .height(navSlideDistance)
                                             .offset(y = navOffsetY),
                                     ) {
@@ -990,13 +1006,6 @@ class MainActivity : ComponentActivity() {
                                             shuffleContentDescription = stringResource(R.string.shuffle),
                                             onMusicRecognitionClick = onMusicRecognitionClick,
                                             musicRecognitionContentDescription = stringResource(R.string.recognition),
-                                            onSettingsClick = { 
-                                                navController.navigate("settings") {
-                                                    launchSingleTop = true
-                                                }
-                                            },
-                                            settingsIconRes = R.drawable.settings,
-                                            settingsContentDescription = stringResource(R.string.settings),
                                             isSelected = { screen ->
                                                 currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
                                             },
@@ -1008,7 +1017,7 @@ class MainActivity : ComponentActivity() {
                                                     end = FloatingToolbarHorizontalPadding,
                                                     bottom = bottomInset + FloatingToolbarBottomPadding,
                                                 )
-                                                .height(NavigationBarHeight)
+                                                .height(navigationChromeHeight)
                                         )
                                     }
 
@@ -1022,7 +1031,7 @@ class MainActivity : ComponentActivity() {
                                                 val progress = playerBottomSheetState.progress
                                                 alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
                                             }
-                                            .background(baseBg)
+                                            .background(Color.Transparent)
                                     )
                                 }
                             } else {
@@ -1030,7 +1039,8 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
-                                        pureBlack = pureBlack
+                                        pureBlack = pureBlack,
+                                        themeColor = themeColor
                                     )
                                 }
 
@@ -1044,7 +1054,7 @@ class MainActivity : ComponentActivity() {
                                             val progress = playerBottomSheetState.progress
                                             alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
                                         }
-                                        .background(baseBg)
+                                        .background(Color.Transparent)
                                 )
                             }
                         },
@@ -1093,8 +1103,47 @@ class MainActivity : ComponentActivity() {
                                     onSearchLongClick = onRailSearchLongClick
                                 )
                             }
-                            Box(Modifier.weight(1f)) {
-                                
+                            val activeNavIndex = navigationItems.indexOfFirst { it.route == currentRoute }
+                            var swipeDistance by remember { mutableFloatStateOf(0f) }
+
+                            Box(
+                                Modifier
+                                    .weight(1f)
+                                    .pointerInput(currentRoute) {
+                                        if (activeNavIndex != -1) {
+                                            detectHorizontalDragGestures(
+                                                onDragStart = { swipeDistance = 0f },
+                                                onHorizontalDrag = { _, dragAmount ->
+                                                    swipeDistance += dragAmount
+                                                },
+                                                onDragEnd = {
+                                                    val threshold = 150f
+                                                    val swipeableItems = navigationItems.filter { it != Screens.Settings }
+                                                    val swipeableIndex = swipeableItems.indexOfFirst { it.route == currentRoute }
+                                                    if (swipeableIndex != -1) {
+                                                        val targetIndex = when {
+                                                            swipeDistance <= -threshold -> swipeableIndex + 1
+                                                            swipeDistance >= threshold -> swipeableIndex - 1
+                                                            else -> swipeableIndex
+                                                        }
+                                                        if (targetIndex != swipeableIndex && targetIndex in swipeableItems.indices) {
+                                                            val targetScreen = swipeableItems[targetIndex]
+                                                            navController.navigate(targetScreen.route) {
+                                                                popUpTo(navController.graph.startDestinationId) {
+                                                                    saveState = true
+                                                                }
+                                                                launchSingleTop = true
+                                                                restoreState = true
+                                                            }
+                                                        }
+                                                    }
+                                                    swipeDistance = 0f
+                                                },
+                                                onDragCancel = { swipeDistance = 0f }
+                                            )
+                                        }
+                                    }
+                            ) {
                                 NavHost(
                                     navController = navController,
                                     startDestination = when (tabOpenedFromShortcut ?: defaultOpenTab) {
@@ -1112,9 +1161,9 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         if (currentRouteIndex == -1 || currentRouteIndex > previousRouteIndex)
-                                            slideInHorizontally { it / 8 } + fadeIn(tween(200))
+                                            slideInHorizontally { it } + fadeIn(tween(200))
                                         else
-                                            slideInHorizontally { -it / 8 } + fadeIn(tween(200))
+                                            slideInHorizontally { -it } + fadeIn(tween(200))
                                     },
                                     
                                     exitTransition = {
@@ -1126,9 +1175,9 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         if (targetRouteIndex == -1 || targetRouteIndex > currentRouteIndex)
-                                            slideOutHorizontally { -it / 8 } + fadeOut(tween(200))
+                                            slideOutHorizontally { -it } + fadeOut(tween(200))
                                         else
-                                            slideOutHorizontally { it / 8 } + fadeOut(tween(200))
+                                            slideOutHorizontally { it } + fadeOut(tween(200))
                                     },
                                     
                                     popEnterTransition = {
@@ -1140,9 +1189,9 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         if (previousRouteIndex != -1 && previousRouteIndex < currentRouteIndex)
-                                            slideInHorizontally { it / 8 } + fadeIn(tween(200))
+                                            slideInHorizontally { it } + fadeIn(tween(200))
                                         else
-                                            slideInHorizontally { -it / 8 } + fadeIn(tween(200))
+                                            slideInHorizontally { -it } + fadeIn(tween(200))
                                     },
                                     
                                     popExitTransition = {
@@ -1154,9 +1203,9 @@ class MainActivity : ComponentActivity() {
                                         }
 
                                         if (currentRouteIndex != -1 && currentRouteIndex < targetRouteIndex)
-                                            slideOutHorizontally { -it / 8 } + fadeOut(tween(200))
+                                            slideOutHorizontally { -it } + fadeOut(tween(200))
                                         else
-                                            slideOutHorizontally { it / 8 } + fadeOut(tween(200))
+                                            slideOutHorizontally { it } + fadeOut(tween(200))
                                     },
                                     modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                                 ) {
@@ -1354,11 +1403,16 @@ class MainActivity : ComponentActivity() {
             isAppearanceLightStatusBars = !isDark
             isAppearanceLightNavigationBars = !isDark
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            window.statusBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            window.navigationBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = android.graphics.Color.TRANSPARENT
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        } else {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                window.statusBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                window.navigationBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
+            }
         }
     }
     private fun handleRecognitionIntent(

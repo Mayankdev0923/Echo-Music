@@ -81,6 +81,7 @@ import iad1tya.echo.music.constants.EnableExportAsMp3Key
 import iad1tya.echo.music.constants.ExportDirectoryUriKey
 import iad1tya.echo.music.constants.ExportedSongIdsKey
 import iad1tya.echo.music.constants.ExportingSongIdsKey
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.constants.ListItemHeight
 import iad1tya.echo.music.listentogether.ConnectionState
 import iad1tya.echo.music.listentogether.ListenTogetherEvent
@@ -171,9 +172,13 @@ fun PlayerMenu(
     val (exportDirectoryUri) = rememberPreference(key = ExportDirectoryUriKey, defaultValue = "")
     val (exportingSongIds) = rememberPreference(key = ExportingSongIdsKey, defaultValue = "")
     val (exportedSongIds) = rememberPreference(key = ExportedSongIdsKey, defaultValue = "")
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
 
     val isExporting = remember(exportingSongIds, mediaMetadata.id) { exportingSongIds.split(",").contains(mediaMetadata.id) }
     val isExported = remember(exportedSongIds, mediaMetadata.id) { exportedSongIds.split(",").contains(mediaMetadata.id) }
+    val isLibraryPinned = remember(libraryPinnedItems, mediaMetadata.id) {
+        libraryPinnedItems.split(",").contains("song:${mediaMetadata.id}")
+    }
     
     var showListenTogetherDialog by rememberSaveable {
         mutableStateOf(false)
@@ -488,6 +493,39 @@ fun PlayerMenu(
                             onClick = {
                                 navController.navigate("ambient_mode")
                                 playerBottomSheetState.collapseSoft()
+                                onDismiss()
+                            }
+                        )
+                    )
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            onClick = {
+                                val items =
+                                    if (libraryPinnedItems.isBlank()) emptyList()
+                                    else libraryPinnedItems.split(",")
+                                val itemKey = "song:${mediaMetadata.id}"
+                                val newItems =
+                                    if (items.contains(itemKey)) {
+                                        items.filter { it != itemKey }
+                                    } else {
+                                        database.transaction {
+                                            insert(mediaMetadata)
+                                        }
+                                        (items + itemKey).distinct()
+                                    }
+                                setLibraryPinnedItems(newItems.joinToString(","))
                                 onDismiss()
                             }
                         )

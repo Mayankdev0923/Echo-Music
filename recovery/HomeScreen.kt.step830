@@ -1,0 +1,49 @@
+Created At: 2026-06-28T17:26:11Z
+Completed At: 2026-06-28T17:26:12Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2028
+Total Bytes: 114932
+Showing lines 935 to 975
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+935:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+936:                     }
+937:                 )
+938:             }
+939: 
+940:             LazyColumn(
+941:                 state = lazylistState,
+942:                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+943:             ) {
+944:                 item {
+945:                     // Immersive Top Header
+946:                     Row(
+947:                         modifier = Modifier
+948:                             .fillMaxWidth()
+949:                             .padding(start = 16.dp, end = 16.dp, top = 44.dp, bottom = 12.dp),
+950:                         verticalAlignment = Alignment.CenterVertically,
+951:                         horizontalArrangement = Arrangement.SpaceBetween
+952:                     ) {
+953:                         Text(
+954:                             text = "Home",
+955:                             style = MaterialTheme.typography.headlineLarge.copy(
+956:                                 fontWeight = FontWeight.Bold,
+957:                                 fontSize = 32.sp
+958:                             ),
+959:                             color = MaterialTheme.colorScheme.onBackground
+960:                         )
+961: 
+962:                         // Pill shaped action icons
+963:                         Row(
+964:                             modifier = Modifier
+965:                                 .appleGlass(CircleShape, elevation = 2.dp)
+966:                                 .padding(horizontal = 8.dp, vertical = 4.dp),
+967:                             verticalAlignment = Alignment.CenterVertically,
+968:                             horizontalArrangement = Arrangement.spacedBy(4.dp)
+969:                         ) {
+970:                             // History
+971:                             IconButton(
+972:                                 onClick = { navController.navigate("history") },
+973:                                 modifier = Modifier.size(32.dp)
+974:                             ) {
+975:                                 Icon(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

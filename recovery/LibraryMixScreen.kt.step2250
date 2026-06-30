@@ -1,0 +1,29 @@
+Created At: 2026-06-29T10:14:02Z
+Completed At: 2026-06-29T10:14:04Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1185
+Total Bytes: 55641
+Showing lines 1165 to 1185
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1165:                 Icon(
+1166:                     painter = painterResource(R.drawable.navigate_next),
+1167:                     contentDescription = null,
+1168:                     tint = textColor,
+1169:                     modifier = Modifier.size(20.dp)
+1170:                 )
+1171:             }
+1172:         }
+1173: 
+1174:         Icon(
+1175:             painter = painterResource(R.drawable.ic_push_pin),
+1176:             contentDescription = null,
+1177:             tint = Color.White,
+1178:             modifier = Modifier
+1179:                 .align(Alignment.TopEnd)
+1180:                 .padding(8.dp)
+1181:                 .size(16.dp)
+1182:         )
+1183:     }
+1184: }
+1185: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

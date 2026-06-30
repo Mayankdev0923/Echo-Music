@@ -1,0 +1,30 @@
+Created At: 2026-06-29T10:14:20Z
+Completed At: 2026-06-29T10:14:21Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1185
+Total Bytes: 55641
+Showing lines 419 to 440
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+419:     Box(modifier = Modifier.fillMaxSize()) {
+420:         PullToRefreshBox(
+421:             modifier = Modifier.fillMaxSize(),
+422:             state = pullRefreshState,
+423:             isRefreshing = isRefreshing,
+424:             onRefresh = viewModel::refresh,
+425:             indicator = {
+426:                 PullToRefreshDefaults.LoadingIndicator(
+427:                     state = pullRefreshState,
+428:                     isRefreshing = isRefreshing,
+429:                     modifier = Modifier.align(Alignment.TopCenter),
+430:                 )
+431:             }
+432:         ) {
+433:         when (viewType) {
+434:             LibraryViewType.LIST ->
+435:                 LazyColumn(
+436:                     state = lazyListState,
+437:                     contentPadding = PaddingValues(
+438:                         top = statusBarTop + 74.dp,
+439:                         bottom = bottomPadding
+440:                     ),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

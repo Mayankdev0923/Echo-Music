@@ -80,6 +80,8 @@ import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.ui.component.YouTubeListItem
 import iad1tya.echo.music.ui.utils.resize
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
+import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.utils.joinByBullet
 import iad1tya.echo.music.utils.makeTimeString
 import kotlinx.coroutines.CoroutineScope
@@ -106,6 +108,11 @@ fun YouTubePlaylistMenu(
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
     val dbPlaylist by database.playlistByBrowseId(playlist.id).collectAsState(initial = null)
     val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initial = false)
+
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, playlist.id) {
+        libraryPinnedItems.split(",").contains("playlist:${playlist.id}")
+    }
 
     var showChoosePlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showImportPlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -141,6 +148,7 @@ fun YouTubePlaylistMenu(
         item = playlist,
         shape = MaterialTheme.shapes.large,
         color = androidx.compose.ui.graphics.Color.Transparent,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
         trailingContent = {
             if (playlist.id != "LM" && !playlist.isEditable) {
                 IconButton(
@@ -195,7 +203,9 @@ fun YouTubePlaylistMenu(
             }
         }
     )
-    HorizontalDivider()
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    )
 
     var downloadState by remember {
         mutableIntStateOf(Download.STATE_STOPPED)
@@ -332,9 +342,9 @@ fun YouTubePlaylistMenu(
 
     LazyColumn(
         contentPadding = PaddingValues(
-            start = 0.dp,
+            start = 16.dp,
             top = 0.dp,
-            end = 0.dp,
+            end = 16.dp,
             bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
         ),
     ) {
@@ -401,7 +411,7 @@ fun YouTubePlaylistMenu(
                         }
                     }
                 },
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                modifier = Modifier.padding(vertical = 12.dp)
             )
         }
 
@@ -482,6 +492,70 @@ fun YouTubePlaylistMenu(
                         },
                         onClick = {
                             showChoosePlaylistDialog = true
+                        }
+                    ),
+                    Material3MenuItemData(
+                        title = {
+                            Text(
+                                text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_push_pin),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            val currentPinned = libraryPinnedItems
+                            val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                            val itemKey = "playlist:${playlist.id}"
+                            if (items.contains(itemKey)) {
+                                setLibraryPinnedItems(items.filter { it != itemKey }.joinToString(","))
+                                onDismiss()
+                            } else {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    val playlistEntity = dbPlaylist?.playlist ?: PlaylistEntity(
+                                        id = playlist.id,
+                                        name = playlist.title,
+                                        browseId = playlist.id,
+                                        thumbnailUrl = playlist.thumbnail,
+                                        isEditable = playlist.isEditable,
+                                        remoteSongCount = playlist.songCountText?.let {
+                                            Regex("""\d+""").find(it)?.value?.toIntOrNull()
+                                        },
+                                        playEndpointParams = playlist.playEndpoint?.params,
+                                        shuffleEndpointParams = playlist.shuffleEndpoint?.params,
+                                        radioEndpointParams = playlist.radioEndpoint?.params,
+                                        isLocal = false
+                                    )
+
+                                    val playlistSongs = songs.ifEmpty {
+                                        YouTube.playlist(playlist.id).completed().getOrNull()?.songs.orEmpty()
+                                    }
+
+                                    database.transaction {
+                                        insert(playlistEntity)
+                                        playlistSongs
+                                            .map(SongItem::toMediaMetadata)
+                                            .onEach(::insert)
+                                            .mapIndexed { index, song ->
+                                                PlaylistSongMap(
+                                                    songId = song.id,
+                                                    playlistId = playlistEntity.id,
+                                                    position = index,
+                                                    setVideoId = song.setVideoId
+                                                )
+                                            }
+                                            .forEach(::insert)
+                                    }
+
+                                    withContext(Dispatchers.Main) {
+                                        setLibraryPinnedItems((items + itemKey).distinct().joinToString(","))
+                                        onDismiss()
+                                    }
+                                }
+                            }
                         }
                     ),
                     Material3MenuItemData(

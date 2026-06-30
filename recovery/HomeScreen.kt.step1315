@@ -1,0 +1,24 @@
+Created At: 2026-06-28T18:47:41Z
+Completed At: 2026-06-28T18:47:42Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2082
+Total Bytes: 116862
+Showing lines 675 to 690
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+675: 
+676:     NetworkReload(
+677:         onReload = viewModel::refresh
+678:     )
+679: 
+680:     if (selectedChip != null) {
+681:         BackHandler {
+682: 
+683:             viewModel.toggleChip(selectedChip)
+684:         }
+685:     }
+686: 
+687:     val localGridItem: @Composable (LocalItem) -> Unit = {
+688:         when (it) {
+689:             is Song -> SongGridItem(
+690:                 song = it,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

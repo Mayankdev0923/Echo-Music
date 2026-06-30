@@ -1,0 +1,39 @@
+Created At: 2026-06-28T18:48:12Z
+Completed At: 2026-06-28T18:48:12Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2116
+Total Bytes: 118290
+Showing lines 935 to 965
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+935:                     else -> sectionRandom.nextInt(-50, 50)
+936:                 }
+937:                 base + modifier
+938:             }
+939:         } else {
+940:             val defaultOrder = mapOf(
+941:                 HomeSection.QuickPicks to 1000,
+942:                 HomeSection.SpeedDial to 100,
+943:                 HomeSection.FromTheCommunity to 80,
+944:                 HomeSection.DailyDiscover to 70,
+945:                 HomeSection.KeepListening to 60,
+946:                 HomeSection.AccountPlaylists to 50,
+947:                 HomeSection.ForgottenFavorites to 40,
+948:                 HomeSection.MoodAndGenres to 10
+949:             )
+950: 
+951:             list.sortedByDescending { section ->
+952:                 when(section) {
+953:                     is HomeSection.SimilarRecommendation -> 30 - section.index
+954:                     is HomeSection.HomePageSection -> 20 - section.index
+955:                     else -> defaultOrder[section] ?: 0
+956:                 }
+957:             }
+958:         }
+959:     }
+960: 
+961:     LaunchedEffect(quickPicks) {
+962:         quickPicksLazyGridState.scrollToItem(0)
+963:     }
+964: 
+965:     LaunchedEffect(forgottenFavorites) {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

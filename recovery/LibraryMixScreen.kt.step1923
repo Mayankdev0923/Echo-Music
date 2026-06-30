@@ -1,0 +1,59 @@
+Created At: 2026-06-29T06:19:02Z
+Completed At: 2026-06-29T06:19:02Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1113
+Total Bytes: 52744
+Showing lines 610 to 660
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+610:                                             )
+611:                                         }
+612:                                     },
+613:                                     modifier =
+614:                                     Modifier
+615:                                         .fillMaxWidth()
+616:                                         .combinedClickable(
+617:                                             onClick = {
+618:                                                 navController.navigate("album/${item.id}")
+619:                                             },
+620:                                             onLongClick = {
+621:                                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+622:                                                 menuState.show {
+623:                                                     AlbumMenu(
+624:                                                         originalAlbum = item,
+625:                                                         navController = navController,
+626:                                                         onDismiss = menuState::dismiss,
+627:                                                     )
+628:                                                 }
+629:                                             },
+630:                                         )
+631:                                         .animateItem(),
+632:                                 )
+633:                             }
+634: 
+635:                             else -> {}
+636:                         }
+637:                     }
+638:                 }
+639: 
+640:             LibraryViewType.GRID ->
+641:                 LazyVerticalGrid(
+642:                     state = lazyGridState,
+643:                     columns =
+644:                     GridCells.Adaptive(
+645:                         minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+646:                     ),
+647:                     contentPadding = PaddingValues(
+648:                         top = statusBarTop + 74.dp,
+649:                         bottom = bottomPadding
+650:                     ),
+651:                 ) {
+652:                     item(
+653:                         key = "immersive_header",
+654:                         span = { GridItemSpan(maxLineSpan) },
+655:                         contentType = CONTENT_TYPE_HEADER,
+656:                     ) {
+657:                         Row(
+658:                             modifier = Modifier
+659:                                 .fillMaxWidth()
+660:                                 .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

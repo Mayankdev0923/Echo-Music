@@ -17,8 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -32,9 +37,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Alignment
+import com.music.echo.ui.component.appleGlass
 
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -82,19 +90,21 @@ highlightKey: String? = null) {
     val aboutText = stringResource(R.string.about)
 
     val scrollState = rememberScrollState()
-    Column(
-        Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp)
-    ) {
-        Spacer(
-            Modifier.windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp)
+        ) {
+            Spacer(
+                Modifier.windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Top
+                    )
                 )
             )
-        )
+            Spacer(modifier = Modifier.height(72.dp))
         Text(
             text = stringResource(R.string.settings),
             style = MaterialTheme.typography.displaySmall.copy(
@@ -338,29 +348,24 @@ highlightKey: String? = null) {
         )
     }
 
-    TopAppBar(
-        title = {
-            androidx.compose.animation.AnimatedVisibility(
-                visible = scrollState.value > 100,
-                enter = androidx.compose.animation.fadeIn(),
-                exit = androidx.compose.animation.fadeOut()
-            ) {
-                Text(
-                    text = stringResource(R.string.settings),
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null
-                )
-            }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        iad1tya.echo.music.ui.component.IconButton(
+            onClick = navController::navigateUp,
+            onLongClick = navController::backToMain,
+            modifier = Modifier
+                .appleGlass(CircleShape, elevation = 2.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painterResource(R.drawable.arrow_back),
+                contentDescription = null
+            )
         }
-    )
+    }
+}
 }

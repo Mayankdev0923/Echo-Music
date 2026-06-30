@@ -227,11 +227,11 @@ fun Lyrics(
     val romanizeChineseLyrics by rememberPreference(LyricsRomanizeChineseKey, true)
     val romanizeHindiLyrics by rememberPreference(LyricsRomanizeHindiKey, true)
     val romanizePunjabiLyrics by rememberPreference(LyricsRomanizePunjabiKey, true)
-    val lyricsGlowEffect by rememberPreference(LyricsGlowEffectKey, false)
-    val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.echomusic_1)
-    val lyricsTextSize by rememberPreference(LyricsTextSizeKey, 24f)
-    val lyricsLineSpacing by rememberPreference(LyricsLineSpacingKey, 1.3f)
-    val lyricsStandardBlur by rememberPreference(LyricsStandardBlurKey, false)
+    val lyricsGlowEffect by rememberPreference(LyricsGlowEffectKey, defaultValue = true)
+    val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, defaultValue = iad1tya.echo.music.constants.LyricsAnimationStyle.METRO_LYRICS)
+    val lyricsTextSize by rememberPreference(LyricsTextSizeKey, defaultValue = 32f)
+    val lyricsLineSpacing by rememberPreference(LyricsLineSpacingKey, defaultValue = 1.6f)
+    val lyricsStandardBlur by rememberPreference(LyricsStandardBlurKey, defaultValue = true)
     
     val openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
     val deeplApiKey by rememberPreference(DeeplApiKey, "")
@@ -239,7 +239,7 @@ fun Lyrics(
     val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
     val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
-    val translateMode by rememberPreference(TranslateModeKey, "Literal")
+    val translateMode by rememberPreference(TranslateModeKey, defaultValue = "transcription")
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
     
     val scope = rememberCoroutineScope()
@@ -249,10 +249,7 @@ fun Lyrics(
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val lyrics = remember(lyricsEntity) { lyricsEntity?.lyrics?.trim() }
 
-    val playerBackground by rememberEnumPreference(
-        key = PlayerBackgroundStyleKey,
-        defaultValue = PlayerBackgroundStyle.GRADIENT
-    )
+    val playerBackground by rememberEnumPreference(PlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.APPLE_MUSIC)
 
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
     val isSystemInDarkTheme = isSystemInDarkTheme()

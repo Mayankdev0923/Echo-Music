@@ -1,0 +1,39 @@
+Created At: 2026-06-28T13:41:41Z
+Completed At: 2026-06-28T13:41:41Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1433
+Total Bytes: 73079
+Showing lines 1260 to 1290
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1260:                             onOpenSettings = { ringtoneViewModel.openRingtoneSettings(this@MainActivity) }
+1261:                         )
+1262:                     }
+1263: 
+1264:                     if (showSettingDialoge) {
+1265:                         SettingDialoge(
+1266:                             onDismissRequest = { showSettingDialoge = false },
+1267:                             onNavigate = { route ->
+1268:                                 showSettingDialoge = false
+1269:                                 navController.navigate(route)
+1270:                             },
+1271:                             homeViewModel = homeViewModel
+1272:                         )
+1273:                     }
+1274: 
+1275:                     if (showWelcomeDialog) {
+1276:                         WelcomeDialog(
+1277:                             onDismissRequest = {
+1278:                                 showWelcomeDialog = false
+1279:                                 setLastOpenedVersionCode(BuildConfig.VERSION_CODE)
+1280:                             }
+1281:                         )
+1282:                     }
+1283:                 }
+1284:             }
+1285:             }
+1286:         }
+1287:     }
+1288: 
+1289:     private fun handleDeepLinkIntent(intent: Intent, navController: NavHostController) {
+1290:         val uri = intent.data ?: intent.extras?.getString(Intent.EXTRA_TEXT)?.toUri() ?: return
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

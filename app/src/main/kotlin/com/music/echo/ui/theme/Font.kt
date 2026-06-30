@@ -1,4 +1,4 @@
-package iad1tya.echo.music.ui.theme
+package com.music.echo.ui.theme
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily

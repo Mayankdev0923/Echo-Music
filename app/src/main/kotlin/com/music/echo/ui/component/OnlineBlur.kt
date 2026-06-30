@@ -1,9 +1,8 @@
-
-
 package iad1tya.echo.music.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,7 +20,10 @@ fun OnlineBlur(
     thumbnailUrl: String?,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
+    val baseColor = MaterialTheme.colorScheme.background
+
+    BoxWithConstraints(modifier = modifier) {
+        val height = maxHeight
         if (thumbnailUrl != null) {
             AsyncImage(
                 model = thumbnailUrl,
@@ -30,10 +32,9 @@ fun OnlineBlur(
                 modifier = Modifier
                     .fillMaxSize()
                     .blur(50.dp)
-                    .fadingEdge(bottom = 200.dp)
+                    .fadingEdge(bottom = height)
             )
         }
-        
         
         Box(
             modifier = Modifier
@@ -42,7 +43,8 @@ fun OnlineBlur(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                            baseColor.copy(alpha = 0.3f),
+                            baseColor
                         )
                     )
                 )

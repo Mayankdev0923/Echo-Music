@@ -1,0 +1,39 @@
+Created At: 2026-06-28T13:58:47Z
+Completed At: 2026-06-28T13:58:47Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 110 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+110: import androidx.compose.ui.text.TextRange
+111: import androidx.compose.ui.text.input.TextFieldValue
+112: import androidx.compose.ui.unit.dp
+113: import androidx.compose.ui.unit.sp
+114: import androidx.compose.ui.text.font.FontWeight
+115: import androidx.compose.ui.util.fastAny
+116: import androidx.compose.ui.window.Dialog
+117: import androidx.compose.ui.window.DialogProperties
+118: import androidx.core.app.ActivityCompat
+119: import androidx.core.app.NotificationCompat
+120: import androidx.core.app.NotificationManagerCompat
+121: import androidx.core.content.ContextCompat
+122: import androidx.core.net.toUri
+123: import androidx.core.util.Consumer
+124: import androidx.core.view.WindowCompat
+125: import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+126: import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+127: import androidx.lifecycle.coroutineScope
+128: import androidx.lifecycle.lifecycleScope
+129: import androidx.media3.common.MediaItem
+130: import androidx.media3.common.Player
+131: import androidx.navigation.NavHostController
+132: import androidx.navigation.compose.NavHost
+133: import androidx.navigation.compose.currentBackStackEntryAsState
+134: import androidx.navigation.compose.rememberNavController
+135: import coil3.compose.AsyncImage
+136: import coil3.imageLoader
+137: import coil3.request.CachePolicy
+138: import coil3.request.ImageRequest
+139: import coil3.request.allowHardware
+140: import coil3.request.crossfade
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

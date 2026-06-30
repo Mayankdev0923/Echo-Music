@@ -6,14 +6,23 @@ import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.music.echo.ui.component.appleGlass
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
@@ -54,9 +64,28 @@ fun MoodAndGenresScreen(
 
     val moodAndGenresList by viewModel.moodAndGenres.collectAsState()
 
-    LazyColumn(
-        contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding() + 80.dp
+            ),
+        ) {
+            item(key = "mood_and_genres_header") {
+                Column {
+                    Spacer(Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)))
+                    Spacer(modifier = Modifier.height(72.dp))
+                    Text(
+                        text = stringResource(R.string.mood_and_genres),
+                        style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                    )
+                }
+            }
         if (moodAndGenresList == null) {
             item(key = "mood_and_genres_shimmer") {
                 ShimmerHost(
@@ -104,20 +133,26 @@ fun MoodAndGenresScreen(
         }
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.mood_and_genres)) },
-        navigationIcon = {
-            IconButton(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
                 onClick = navController::navigateUp,
                 onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
+                    contentDescription = null
                 )
             }
-        },
-    )
+        }
+    }
 }
 
 @Composable
@@ -126,13 +161,17 @@ fun MoodAndGenresButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+    val backgroundColor = if (!isDark) Color.White else colorScheme.surfaceContainer
+
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier =
         modifier
             .height(MoodAndGenresButtonHeight)
             .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(backgroundColor)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp),
     ) {

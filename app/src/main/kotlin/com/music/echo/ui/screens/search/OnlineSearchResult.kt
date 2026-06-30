@@ -58,6 +58,15 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.SolidColor
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.music.innertube.YouTube.SearchFilter.Companion.FILTER_ALBUM
@@ -100,6 +109,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.net.URLEncoder
+import com.music.echo.ui.component.appleGlass
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -282,77 +292,86 @@ fun OnlineSearchResult(
             .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
     ) {
-        
-        OutlinedTextField(
-            value = query,
-            onValueChange = { newQuery ->
-                query = newQuery
-            },
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.search_yt_music),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            leadingIcon = {
-                IconButton(
-                    onClick = { navController.navigateUp() }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = stringResource(R.string.dismiss),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            trailingIcon = {
-                if (query.text.isNotEmpty()) {
-                    IconButton(
-                        onClick = {
-                            query = TextFieldValue("")
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.close),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = { 
-                    onSearch(query.text)
-                }
-            ),
-            singleLine = true,
-            shape = RoundedCornerShape(28.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = if (pureBlack) 
-                    MaterialTheme.colorScheme.surface 
-                else 
-                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                unfocusedContainerColor = if (pureBlack) 
-                    MaterialTheme.colorScheme.surface 
-                else 
-                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        isSearchFocused = true
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.arrow_back),
+                    contentDescription = stringResource(R.string.dismiss),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp)
+                    .appleGlass(RoundedCornerShape(percent = 50), elevation = 4.dp)
+                    .clip(RoundedCornerShape(percent = 50)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                BasicTextField(
+                    value = query,
+                    onValueChange = { newQuery -> query = newQuery },
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = { onSearch(query.text) }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                isSearchFocused = true
+                            }
+                        },
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    decorationBox = { innerTextField ->
+                        if (query.text.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.search_yt_music),
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    fontSize = 16.sp
+                                )
+                            )
+                        }
+                        innerTextField()
                     }
+                )
+            }
+
+            if (query.text.isNotEmpty()) {
+                IconButton(
+                    onClick = { query = TextFieldValue("") },
+                    modifier = Modifier
+                        .appleGlass(CircleShape, elevation = 2.dp)
+                        .clip(CircleShape)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.close),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
-        )
+            }
+        }
 
         
         Box(modifier = Modifier.weight(1f)) {

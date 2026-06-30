@@ -1,0 +1,61 @@
+Created At: 2026-06-28T17:24:33Z
+Completed At: 2026-06-28T17:24:33Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 865
+Total Bytes: 44012
+Showing lines 310 to 360
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+310:                     ) {
+311:                         Row(
+312:                             modifier = Modifier
+313:                                 .fillMaxWidth()
+314:                                 .padding(start = 16.dp, end = 16.dp, top = 44.dp, bottom = 12.dp),
+315:                             verticalAlignment = Alignment.CenterVertically,
+316:                             horizontalArrangement = Arrangement.SpaceBetween
+317:                         ) {
+318:                             androidx.compose.material3.Text(
+319:                                 text = stringResource(R.string.filter_library),
+320:                                 style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+321:                                     fontWeight = FontWeight.Bold,
+322:                                     fontSize = 32.sp
+323:                                 ),
+324:                                 color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
+325:                             )
+326: 
+327:                             // Pill shaped action icons
+328:                             Row(
+329:                                 modifier = Modifier
+330:                                     .appleGlass(CircleShape, elevation = 2.dp)
+331:                                     .padding(horizontal = 8.dp, vertical = 4.dp),
+332:                                 verticalAlignment = Alignment.CenterVertically,
+333:                                 horizonta
+<truncated 16 bytes>
+rrangement.spacedBy(4.dp)
+334:                             ) {
+335:                                 // Stats
+336:                                 IconButton(
+337:                                     onClick = { navController.navigate("stats") },
+338:                                     modifier = Modifier.size(32.dp)
+339:                                 ) {
+340:                                     Icon(
+341:                                         painter = painterResource(R.drawable.stats),
+342:                                         contentDescription = stringResource(R.string.stats),
+343:                                         modifier = Modifier.size(20.dp),
+344:                                         tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+345:                                     )
+346:                                 }
+347:                                 // Settings / Avatar
+348:                                 val showSettingsDialog = LocalShowSettingsDialog.current
+349:                                 IconButton(
+350:                                     onClick = { showSettingsDialog?.invoke() },
+351:                                     modifier = Modifier.size(32.dp)
+352:                                 ) {
+353:                                     Icon(
+354:                                         painter = painterResource(R.drawable.settings),
+355:                                         contentDescription = stringResource(R.string.account),
+356:                                         modifier = Modifier.size(20.dp),
+357:                                         tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+358:                                     )
+359:                                 }
+360:                             }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

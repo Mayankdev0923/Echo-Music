@@ -1,0 +1,54 @@
+Created At: 2026-06-29T10:41:56Z
+Completed At: 2026-06-29T10:41:56Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1409
+Total Bytes: 71574
+Showing lines 1030 to 1075
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1030:                                             .background(baseBg)
+1031:                                     )
+1032:                                 }
+1033:                             } else {
+1034:                                 if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+1035:                                     BottomSheetPlayer(
+1036:                                         state = playerBottomSheetState,
+1037:                                         navController = navController,
+1038:                                         pureBlack = pureBlack
+1039:                                     )
+1040:                                 }
+1041: 
+1042:                                 Box(
+1043:                                     modifier = Modifier
+1044:                                         .fillMaxWidth()
+1045:                                         .align(Alignment.BottomCenter)
+1046:                                         .height(bottomInsetDp)
+1047:                                         
+1048:                                         .graphicsLayer {
+1049:                                             val progress = playerBottomSheetState.progress
+1050:                                             alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1051:                                         }
+1052:                                         .background(baseBg)
+1053:                                 )
+1054:                             }
+1055:                         },
+1056:                         modifier = Modifier
+1057:                             .fillMaxSize()
+1058:                     ) {
+1059:                         Row(
+1060:                             Modifier
+1061:                                 .fillMaxSize()
+1062:                                 .haze(
+1063:                                     state = hazeState,
+1064:                                     backgroundColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface
+1065:                                 )
+1066:                         ) {
+1067:                             val onRailItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+1068:                                 { screen: Screens, isSelected: Boolean ->
+1069:                                     if (playerBottomSheetState.isExpanded) {
+1070:                                         playerBottomSheetState.collapseSoft()
+1071:                                     }
+1072: 
+1073:                                     if (isSelected) {
+1074:                                         navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+1075:                                         coroutineScope.launch {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

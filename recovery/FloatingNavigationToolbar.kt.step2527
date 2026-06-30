@@ -1,0 +1,29 @@
+Created At: 2026-06-29T10:38:21Z
+Completed At: 2026-06-29T10:38:22Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/FloatingNavigationToolbar.kt`
+Total Lines: 597
+Total Bytes: 23644
+Showing lines 90 to 110
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+90:     onMusicRecognitionClick: (() -> Unit)? = null,
+91:     musicRecognitionContentDescription: String = "",
+92:     onSettingsClick: (() -> Unit)? = null,
+93:     settingsIconRes: Int? = null,
+94:     settingsContentDescription: String = "",
+95:     scrollBehavior: FloatingToolbarScrollBehavior? = null,
+96:     isSelected: (Screens) -> Boolean,
+97:     onItemClick: (Screens, Boolean) -> Unit,
+98: ) {
+99:     val toolbarContainerColor = floatingToolbarContainerColor(pureBlack = pureBlack)
+100:     val toolbarColors = FloatingToolbarDefaults.standardFloatingToolbarColors(
+101:         toolbarContainerColor = toolbarContainerColor,
+102:     )
+103:     val hasOverflowMenu = (onShuffleClick != null && shuffleIconRes != null) || onMusicRecognitionClick != null
+104:     val hasFabAction = onFabClick != null && fabIconRes != null
+105: 
+106:     BoxWithConstraints(
+107:         modifier = modifier.fillMaxWidth(),
+108:         contentAlignment = Alignment.Center,
+109:     ) {
+110:         val showSelectedLabels = false
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

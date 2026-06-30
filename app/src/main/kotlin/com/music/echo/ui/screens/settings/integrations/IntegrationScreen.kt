@@ -38,6 +38,7 @@ fun IntegrationScreen(
 highlightKey: String? = null) {
     val context = androidx.compose.ui.platform.LocalContext.current
 
+    val (spotifyEnabled, onSpotifyEnabledChange) = iad1tya.echo.music.utils.rememberPreference(iad1tya.echo.music.constants.EnableSpotifyKey, true)
     val (listenBrainzEnabled, onListenBrainzEnabledChange) = iad1tya.echo.music.utils.rememberPreference(iad1tya.echo.music.constants.ListenBrainzEnabledKey, false)
     val (listenBrainzToken, onListenBrainzTokenChange) = iad1tya.echo.music.utils.rememberPreference(iad1tya.echo.music.constants.ListenBrainzTokenKey, "")
 
@@ -51,6 +52,16 @@ highlightKey: String? = null) {
     ) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
         Spacer(modifier = Modifier.padding(top = 16.dp))
+
+        iad1tya.echo.music.ui.component.SwitchPreference(
+            title = { Text("Spotify Integration") },
+            description = "Enable Spotify services like Importing playlists & songs",
+            icon = { Icon(painterResource(R.drawable.ic_spotify), null) },
+            checked = spotifyEnabled,
+            onCheckedChange = onSpotifyEnabledChange,
+        )
+
+        Spacer(modifier = Modifier.padding(top = 8.dp))
 
         iad1tya.echo.music.ui.component.SwitchPreference(
             title = { Text(stringResource(R.string.listenbrainz_scrobbling)) },

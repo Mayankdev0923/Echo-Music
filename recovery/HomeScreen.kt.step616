@@ -1,0 +1,39 @@
+Created At: 2026-06-28T13:59:13Z
+Completed At: 2026-06-28T13:59:13Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1947
+Total Bytes: 110514
+Showing lines 110 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+110: import iad1tya.echo.music.constants.InnerTubeCookieKey
+111: import iad1tya.echo.music.constants.ListItemHeight
+112: import iad1tya.echo.music.constants.ListThumbnailSize
+113: import iad1tya.echo.music.constants.RandomizeHomeOrderKey
+114: import iad1tya.echo.music.constants.ShowSpeedDialKey
+115: import iad1tya.echo.music.constants.SmallGridThumbnailHeight
+116: import iad1tya.echo.music.constants.ThumbnailCornerRadius
+117: import iad1tya.echo.music.db.entities.Album
+118: import iad1tya.echo.music.db.entities.Artist
+119: import iad1tya.echo.music.db.entities.LocalItem
+120: import iad1tya.echo.music.db.entities.Playlist
+121: import iad1tya.echo.music.db.entities.PlaylistEntity
+122: import iad1tya.echo.music.db.entities.PlaylistSongMap
+123: import iad1tya.echo.music.db.entities.Song
+124: import iad1tya.echo.music.extensions.toMediaItem
+125: import iad1tya.echo.music.LocalDatabase
+126: import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+127: import iad1tya.echo.music.LocalPlayerConnection
+128: import iad1tya.echo.music.models.toMediaMetadata
+129: import iad1tya.echo.music.playback.queues.ListQueue
+130: import iad1tya.echo.music.playback.queues.YouTubeQueue
+131: import iad1tya.echo.music.R
+132: import iad1tya.echo.music.ui.component.AlbumGridItem
+133: import iad1tya.echo.music.ui.component.ArtistGridItem
+134: import iad1tya.echo.music.ui.component.ChipsRow
+135: import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
+136: import iad1tya.echo.music.ui.component.LocalMenuState
+137: import iad1tya.echo.music.ui.component.NavigationTitle
+138: import iad1tya.echo.music.ui.component.RandomizeGridItem
+139: import iad1tya.echo.music.ui.component.shimmer.GridItemPlaceHolder
+140: import iad1tya.echo.music.ui.component.shimmer.ShimmerHost
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

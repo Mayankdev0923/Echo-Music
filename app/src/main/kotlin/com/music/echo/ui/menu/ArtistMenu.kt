@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +41,8 @@ import iad1tya.echo.music.ui.component.Material3MenuGroup
 import iad1tya.echo.music.ui.component.Material3MenuItemData
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
+import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -60,6 +63,11 @@ fun ArtistMenu(
     val artistState = database.artist(originalArtist.id).collectAsState(initial = originalArtist)
     val artist = artistState.value ?: originalArtist
     val isPinned by database.speedDialDao.isPinned(artist.id).collectAsState(initial = false)
+
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, artist.id) {
+        libraryPinnedItems.split(",").contains("artist:${artist.id}")
+    }
 
     ArtistListItem(
         artist = artist,
@@ -221,7 +229,32 @@ fun ArtistMenu(
 
         item {
             Material3MenuGroup(
-                items = listOf(
+                items = listOfNotNull(
+                    Material3MenuItemData(
+                        title = {
+                            Text(
+                                text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_push_pin),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            val currentPinned = libraryPinnedItems
+                            val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                            val itemKey = "artist:${artist.id}"
+                            val newItems = if (items.contains(itemKey)) {
+                                items.filter { it != itemKey }
+                            } else {
+                                (items + itemKey).take(6)
+                            }
+                            setLibraryPinnedItems(newItems.joinToString(","))
+                            onDismiss()
+                        }
+                    ),
                     Material3MenuItemData(
                         title = {
                             Text(text = if (artist.artist.bookmarkedAt != null) stringResource(R.string.subscribed) else stringResource(R.string.subscribe))

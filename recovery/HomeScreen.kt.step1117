@@ -1,0 +1,69 @@
+Created At: 2026-06-28T18:22:26Z
+Completed At: 2026-06-28T18:22:26Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2050
+Total Bytes: 115436
+Showing lines 740 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+740:         }
+741:     }
+742: 
+743:     val ytGridItem: @Composable (YTItem) -> Unit = { item ->
+744:         YouTubeGridItem(
+745:             item = item,
+746:             isActive = item.id in listOf(mediaMetadata?.album?.id, mediaMetadata?.id),
+747:             isPlaying = isPlaying,
+748:             coroutineScope = scope,
+749:             thumbnailRatio = 1f,
+750:             modifier = Modifier
+751:                 .combinedClickable(
+752:                     onClick = {
+753:                         when (item) {
+754:                             is SongItem -> playerConnection.playQueue(
+755:                                 YouTubeQueue(
+756:                                     item.endpoint ?: WatchEndpoint(
+757:                                         videoId = item.id
+758:                                     ), item.toMediaMetadata()
+759:                                 )
+760:                             )
+761: 
+762:                             is AlbumItem -> navController.navigate("album/${item.id}")
+763:                             is ArtistItem -> navController.navigate("artist/${item.id}")
+764:                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+765:                         }
+766:                     },
+767:                     onLongClick = {
+768:                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+769:                         menuState.show {
+770:                             when (item) {
+771:                                 is SongItem -> YouTubeSongMenu(
+772:                                     song = item,
+773:                                     navController = navController,
+774:                                     onDismiss = menuState::dismiss
+775:                                 )
+776: 
+777:                                 is AlbumItem -> YouTubeAlbumMenu(
+778:                                     albumItem = item,
+779:                                     navController = navController,
+780:                                     onDismiss = menuState::dismiss
+781:                                 )
+782: 
+783:                                 is ArtistItem -> YouTubeArtistMenu(
+784:                                     artist = item,
+785:                                     onDismiss = menuState::dismiss
+786:                                 )
+787: 
+788:                                 is PlaylistItem -> YouTubePlaylistMenu(
+789:                                     playlist = item,
+790:                                     coroutineScope = scope,
+791:                                     onDismiss = menuState::dismiss
+792:                                 )
+793:                             }
+794:                         }
+795:                     }
+796:                 )
+797:         )
+798:     }
+799: 
+800:     val homeSections = remember(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

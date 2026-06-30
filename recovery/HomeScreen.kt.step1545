@@ -1,0 +1,64 @@
+Created At: 2026-06-28T19:37:34Z
+Completed At: 2026-06-28T19:37:34Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2170
+Total Bytes: 121216
+Showing lines 2055 to 2110
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2055:                             ) {
+2056:                                 repeat(4) {
+2057:                                     GridItemPlaceHolder()
+2058:                                 }
+2059:                             }
+2060:                         }
+2061:                     }
+2062:                 }
+2063: 
+2064:                 item(key = "bottom_spacer") {
+2065:                     Spacer(modifier = Modifier.height(30.dp))
+2066:                 }
+2067:             }
+2068: 
+2069:             val colorScheme = MaterialTheme.colorScheme
+2070:             val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+2071: 
+2072:             // Progressive blur overlay at the top (covers status bar down to home text start)
+2073:             Box(
+2074:                 modifier = Modifier
+2075:                     .fillMaxWidth()
+2076:                     .height(statusBarTop + 74.dp)
+2077:                     .blur(16.dp)
+2078:                     .background(
+2079:                         Brush.verticalGradient(
+2080:                             colors = if (isDark) {
+2081:                                 listOf(Color.Black, Color.Black.copy(alpha = 0f))
+2082:                             } else {
+2083:                                 listOf(Color.White, Color.White.copy(alpha = 0f))
+2084:                             }
+2085:                         )
+2086:                     )
+2087:             )
+2088: 
+2089:             // Progressive blur overlay at the bottom (covers bottom content scrolling down)
+2090:             Box(
+2091:                 modifier = Modifier
+2092:                     .fillMaxWidth()
+2093:                     .height(bottomPadding + 74.dp)
+2094:                     .align(Alignment.BottomCenter)
+2095:                     .blur(16.dp)
+2096:                     .background(
+2097:                         Brush.verticalGradient(
+2098:                             colors = if (isDark) {
+2099:                                 listOf(Color.Black.copy(alpha = 0f), Color.Black)
+2100:                             } else {
+2101:                                 listOf(Color.White.copy(alpha = 0f), Color.White)
+2102:                             }
+2103:                         )
+2104:                     )
+2105:             )
+2106: 
+2107:             // Sticky RHS Pill (pinned at initial position, no scroll translation)
+2108:             Row(
+2109:                 modifier = Modifier
+2110:                     .align(Alignment.TopEnd)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

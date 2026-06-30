@@ -21,6 +21,21 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.music.innertube.models.AlbumItem
@@ -67,10 +82,29 @@ fun YouTubeBrowseScreen(
 
     val allItems = browseResult?.items?.flatMap { it.items } ?: emptyList()
 
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
-        contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize()
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)),
+            columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding() + 80.dp
+            ),
+        ) {
+            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
+                Column {
+                    Spacer(Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)))
+                    Spacer(modifier = Modifier.height(72.dp))
+                    Text(
+                        text = browseResult?.title.orEmpty(),
+                        style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                    )
+                }
+            }
         if (browseResult == null) {
             items(8) {
                 ShimmerHost {
@@ -146,13 +180,18 @@ fun YouTubeBrowseScreen(
             )
         }
     }
-
-    TopAppBar(
-        title = { Text(browseResult?.title.orEmpty()) },
-        navigationIcon = {
-            IconButton(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
                 onClick = navController::navigateUp,
-                onLongClick = navController::backToMain
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
@@ -160,5 +199,5 @@ fun YouTubeBrowseScreen(
                 )
             }
         }
-    )
+    }
 }

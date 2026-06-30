@@ -1,0 +1,44 @@
+Created At: 2026-06-28T19:25:39Z
+Completed At: 2026-06-28T19:25:39Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2161
+Total Bytes: 120937
+Showing lines 2050 to 2085
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2050:                 item(key = "bottom_spacer") {
+2051:                     Spacer(modifier = Modifier.height(30.dp))
+2052:                 }
+2053:             }
+2054: 
+2055:             val colorScheme = MaterialTheme.colorScheme
+2056:             val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+2057: 
+2058:             // Progressive blur overlay at the top (covers status bar down to home text start)
+2059:             Box(
+2060:                 modifier = Modifier
+2061:                     .fillMaxWidth()
+2062:                     .height(statusBarTop + 56.dp)
+2063:                     .blur(16.dp)
+2064:                     .background(
+2065:                         Brush.verticalGradient(
+2066:                             colors = if (isDark) {
+2067:                                 listOf(
+2068:                                     Color.Black,
+2069:                                     Color.Black.copy(alpha = 0.95f),
+2070:                                     Color.Black.copy(alpha = 0.85f),
+2071:                                     Color.Black.copy(alpha = 0.55f),
+2072:                                     Color.Black.copy(alpha = 0.2f),
+2073:                                     Color.Transparent
+2074:                                 )
+2075:                             } else {
+2076:                                 listOf(
+2077:                                     Color.White,
+2078:                                     Color.White.copy(alpha = 0.95f),
+2079:                                     Color.White.copy(alpha = 0.85f),
+2080:                                     Color.White.copy(alpha = 0.55f),
+2081:                                     Color.White.copy(alpha = 0.2f),
+2082:                                     Color.Transparent
+2083:                                 )
+2084:                             }
+2085:                         )
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

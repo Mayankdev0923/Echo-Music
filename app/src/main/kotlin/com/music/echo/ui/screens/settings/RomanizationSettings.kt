@@ -5,6 +5,8 @@ package iad1tya.echo.music.ui.screens.settings
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -28,6 +30,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
@@ -78,14 +86,23 @@ highlightKey: String? = null) {
     val (lyricsRomanizeCyrillicByLine, onLyricsRomanizeCyrillicByLineChange) = rememberPreference(LyricsRomanizeCyrillicByLineKey, defaultValue = false)
     val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
 
-    Column(
-        Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp),
-    ) {
-        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
-        Material3SettingsGroup(scrollState = scrollState, 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp),
+        ) {
+            Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
+            Spacer(modifier = Modifier.height(72.dp))
+            androidx.compose.material3.Text(
+                text = stringResource(R.string.lyrics_romanize_title),
+                style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+            )
+
+            Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.general),
             items = listOf(
                 Material3SettingsItem(
@@ -421,20 +438,26 @@ highlightKey: String? = null) {
         }
     
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
-    }
+        }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.lyrics_romanize_title)) },
-        navigationIcon = {
-            IconButton(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
                 onClick = navController::navigateUp,
                 onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
+                    contentDescription = null
                 )
             }
         }
-    )
+    }
 }

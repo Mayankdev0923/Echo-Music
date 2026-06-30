@@ -1,0 +1,29 @@
+Created At: 2026-06-28T18:25:02Z
+Completed At: 2026-06-28T18:25:02Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2055
+Total Bytes: 115778
+Showing lines 210 to 230
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+210:         MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+211:     }
+212: 
+213:     val dbPlaylist by database.playlistByBrowseId(item.playlist.id).collectAsState(initial = null)
+214:     val isBookmarked = dbPlaylist?.playlist?.bookmarkedAt != null
+215: 
+216:     Card(
+217:         modifier = modifier
+218:             .width(320.dp)
+219:             .height(420.dp)
+220:             .appleGlass(RoundedCornerShape(AppleRadius.large)),
+221:         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+222:         shape = RoundedCornerShape(AppleRadius.large),
+223:         onClick = onClick
+224:     ) {
+225:         Column(
+226:             modifier = Modifier.fillMaxSize()
+227:         ) {
+228:             Row(
+229:                 modifier = Modifier
+230:                     .fillMaxWidth()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

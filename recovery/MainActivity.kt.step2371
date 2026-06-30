@@ -1,0 +1,54 @@
+Created At: 2026-06-29T10:30:18Z
+Completed At: 2026-06-29T10:30:18Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1412
+Total Bytes: 71994
+Showing lines 850 to 930
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+850:                     LocalPlayerAwareWindowInsets provides playerAwareWindowInsets,
+851:                     LocalDownloadUtil provides downloadUtil,
+852:                     LocalShimmerTheme provides getShimmerTheme(),
+853:                     LocalSyncUtils provides syncUtils,
+854:                     LocalListenTogetherManager provides listenTogetherManager,
+855:                     LocalShowSettingsDialog provides { showSettingDialoge = true },
+856:                 ) {
+857: 
+858:                     Scaffold(
+859:                         snackbarHost = { SnackbarHost(snackbarHostState) },
+860:                         topBar = {
+861:                             AnimatedVisibility(
+862:                                 visible = shouldShowTopBar,
+863:                                 enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+864:                                 exit = fadeOut(animationSpec = tween(durationMillis = 200))
+865:                             ) {
+866:                                 Row {
+867:                                     TopAppBar(
+868:                                         title = {
+869:                                             Text(
+870:                                                 text = currentTitle,
+871:                                                 style = MaterialTheme.typography.titleLarge.copy(
+872:                                                     fontWeight = FontWeight.Bold,
+873:                                                     fontSize = 24.sp
+<truncated 2938 bytes>
+                                           } else {
+911:                                                          Icon(
+912:                                                              painter = painterResource(R.drawable.settings),
+913:                                                              contentDescription = stringResource(R.string.account),
+914:                                                              modifier = Modifier.size(24.dp)
+915:                                                          )
+916:                                                      }
+917:                                                 }
+918:                                             }
+919:                                         },
+920:                                         scrollBehavior = topAppBarScrollBehavior,
+921:                                         colors = TopAppBarDefaults.topAppBarColors(
+922:                                             containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
+923:                                             scrolledContainerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
+924:                                             titleContentColor = MaterialTheme.colorScheme.onSurface,
+925:                                             actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+926:                                             navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+927:                                         ),
+928:                                         windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
+929:                                         modifier = Modifier
+930:                                             .windowInsetsPadding(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

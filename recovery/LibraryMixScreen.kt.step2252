@@ -1,0 +1,29 @@
+Created At: 2026-06-29T10:14:09Z
+Completed At: 2026-06-29T10:14:10Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1185
+Total Bytes: 55641
+Showing lines 1000 to 1020
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1000:             val showSettingsDialog = LocalShowSettingsDialog.current
+1001:             IconButton(
+1002:                 onClick = { showSettingsDialog?.invoke() },
+1003:                 modifier = Modifier.size(32.dp)
+1004:             ) {
+1005:                 Icon(
+1006:                     painter = painterResource(R.drawable.settings),
+1007:                     contentDescription = stringResource(R.string.account),
+1008:                     modifier = Modifier.size(20.dp),
+1009:                     tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+1010:                 )
+1011:             }
+1012:         }
+1013:     }
+1014: }
+1015: 
+1016: data class SixTuple(
+1017:     val title: String,
+1018:     val thumbnailUrl: String?,
+1019:     val isPlaylist: Boolean,
+1020:     val isArtist: Boolean,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

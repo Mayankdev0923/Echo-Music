@@ -1,0 +1,59 @@
+Created At: 2026-06-29T06:19:00Z
+Completed At: 2026-06-29T06:19:00Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1113
+Total Bytes: 52744
+Showing lines 370 to 420
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+370:             LibraryViewType.LIST ->
+371:                 LazyColumn(
+372:                     state = lazyListState,
+373:                     contentPadding = PaddingValues(
+374:                         top = statusBarTop + 74.dp,
+375:                         bottom = bottomPadding
+376:                     ),
+377:                 ) {
+378:                     item(
+379:                         key = "immersive_header",
+380:                         contentType = CONTENT_TYPE_HEADER,
+381:                     ) {
+382:                         Row(
+383:                             modifier = Modifier
+384:                                 .fillMaxWidth()
+385:                                 .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+386:                             verticalAlignment = Alignment.CenterVertically,
+387:                             horizontalArrangement = Arrangement.SpaceBetween
+388:                         ) {
+389:                             androidx.compose.material3.Text(
+390:                                 text = stringResource(R.string.filter_library),
+391:                                 style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+392:                                     fontWeight = FontWeight.Bold,
+393:                                     fontSize = 32.sp
+394:                                 ),
+395:                                 color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
+396:                             )
+397:                             Spacer(modifier = Modifier.width(120.dp)) // Avoid overlap with sticky pill
+398:                         }
+399:                     }
+400: 
+401:                     item(
+402:                         key = "filter",
+403:                         contentType = CONTENT_TYPE_HEADER,
+404:                     ) {
+405:                         filterContent()
+406:                     }
+407: 
+408:                     item(
+409:                         key = "header",
+410:                         contentType = CONTENT_TYPE_HEADER,
+411:                     ) {
+412:                         headerContent()
+413:                     }
+414: 
+415:                     item(
+416:                         key = "auto_playlists_grid",
+417:                         contentType = CONTENT_TYPE_HEADER,
+418:                     ) {
+419:                         FlowRow(
+420:                             maxItemsInEachRow = 2,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

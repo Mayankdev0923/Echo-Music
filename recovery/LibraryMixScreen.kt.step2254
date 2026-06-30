@@ -1,0 +1,29 @@
+Created At: 2026-06-29T10:14:14Z
+Completed At: 2026-06-29T10:14:14Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1185
+Total Bytes: 55641
+Showing lines 940 to 960
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+940:                                 )
+941:                             }
+942: 
+943:                             else -> {}
+944:                         }
+945:                     }
+946:                 }
+947:         }
+948: 
+949:         val colorScheme = MaterialTheme.colorScheme
+950:         val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+951: 
+952:         ProgressiveTopBlurOverlay(
+953:             progress = 1f,
+954:             height = statusBarTop + 74.dp,
+955:             isDark = isDark,
+956:         )
+957: 
+958:         ProgressiveBottomBlurOverlay(
+959:             progress = 1f,
+960:             height = bottomPadding + 74.dp,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

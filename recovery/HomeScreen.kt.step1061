@@ -1,0 +1,44 @@
+Created At: 2026-06-28T18:21:18Z
+Completed At: 2026-06-28T18:21:18Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2050
+Total Bytes: 115436
+Showing lines 395 to 430
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+395:                                         shuffleEndpointParams = item.playlist.shuffleEndpoint?.params,
+396:                                         radioEndpointParams = item.playlist.radioEndpoint?.params
+397:                                     ).toggleLike()
+398:                                     insert(playlistEntity)
+399:                                     scope.launch(Dispatchers.IO) {
+400:                                         item.songs.ifEmpty {
+401:                                             YouTube.playlist(item.playlist.id).completed()
+402:                                                 .getOrNull()?.songs.orEmpty()
+403:                                         }.map { it.toMediaMetadata() }
+404:                                             .onEach(::insert)
+405:                                             .mapIndexed { index, song ->
+406:                                                 PlaylistSongMap(
+407:                                                     songId = song.id,
+408:                                                     playlistId = playlistEntity.id,
+409:                                                     position = index,
+410:                                                     setVideoId = song.setVideoId
+411:                                                 )
+412:                                             }
+413:                                             .forEach(::insert)
+414:                                     }
+415:                                 }
+416:                             } else {
+417:                                 database.transaction {
+418:                                     val currentPlaylist = dbPlaylist!!.playlist
+419:                                     update(currentPlaylist.toggleLike())
+420:                                 }
+421:                             }
+422:                         }
+423:                     },
+424:                     modifier = Modifier
+425:                         .size(48.dp)
+426:                         .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), CircleShape)
+427:                 ) {
+428:                     Icon(
+429:                         painter = painterResource(if (isBookmarked) R.drawable.library_add_check else R.drawable.library_add),
+430:                         contentDescription = null,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

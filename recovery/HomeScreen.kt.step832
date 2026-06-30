@@ -1,0 +1,29 @@
+Created At: 2026-06-28T17:26:14Z
+Completed At: 2026-06-28T17:26:15Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2028
+Total Bytes: 114932
+Showing lines 1010 to 1030
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1010:                                     Icon(
+1011:                                         painter = painterResource(R.drawable.settings),
+1012:                                         contentDescription = stringResource(R.string.account),
+1013:                                         modifier = Modifier.size(20.dp),
+1014:                                         tint = MaterialTheme.colorScheme.onSurfaceVariant
+1015:                                     )
+1016:                                 }
+1017:                             }
+1018:                         }
+1019:                     }
+1020:                 }
+1021: 
+1022:                 item {
+1023:                     ChipsRow(
+1024:                         chips = homePage?.chips?.filter {
+1025:                             !it.title.equals("Podcasts", ignoreCase = true) &&
+1026:                             !it.title.equals("Uploaded", ignoreCase = true)
+1027:                         }?.map { it to it.title } ?: emptyList(),
+1028:                         currentValue = selectedChip,
+1029:                         onValueUpdate = {
+1030:                             viewModel.toggleChip(it)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

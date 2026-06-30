@@ -1,0 +1,39 @@
+Created At: 2026-06-29T06:19:20Z
+Completed At: 2026-06-29T06:19:20Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1153
+Total Bytes: 54408
+Showing lines 705 to 735
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+705:                                 text = stringResource(R.string.filter_library),
+706:                                 style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+707:                                     fontWeight = FontWeight.Bold,
+708:                                     fontSize = 32.sp
+709:                                 ),
+710:                                 color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
+711:                             )
+712:                             Spacer(modifier = Modifier.width(120.dp)) // Avoid overlap with sticky pill
+713:                         }
+714:                     }
+715: 
+716:                     item(
+717:                         key = "filter",
+718:                         span = { GridItemSpan(maxLineSpan) },
+719:                         contentType = CONTENT_TYPE_HEADER,
+720:                     ) {
+721:                         filterContent()
+722:                     }
+723: 
+724:                     item(
+725:                         key = "header",
+726:                         span = { GridItemSpan(maxLineSpan) },
+727:                         contentType = CONTENT_TYPE_HEADER,
+728:                     ) {
+729:                         headerContent()
+730:                     }
+731: 
+732:                     item(
+733:                         key = "auto_playlists_grid",
+734:                         span = { GridItemSpan(maxLineSpan) },
+735:                         contentType = CONTENT_TYPE_HEADER,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

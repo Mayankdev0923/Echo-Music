@@ -5,6 +5,8 @@ package iad1tya.echo.music.ui.screens.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
 import androidx.navigation.NavController
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
@@ -114,10 +122,7 @@ highlightKey: String? = null) {
         PersistentQueueKey,
         defaultValue = true
     )
-    val (skipSilence, onSkipSilenceChange) = rememberPreference(
-        SkipSilenceKey,
-        defaultValue = false
-    )
+    val (skipSilence, onSkipSilenceChange) = rememberPreference(SkipSilenceKey, defaultValue = true)
     val (skipSilenceInstant, onSkipSilenceInstantChange) = rememberPreference(
         SkipSilenceInstantKey,
         defaultValue = false
@@ -205,10 +210,7 @@ highlightKey: String? = null) {
         StopMusicOnTaskClearKey,
         defaultValue = true
     )
-    val (pauseOnMute, onPauseOnMuteChange) = rememberPreference(
-        PauseOnMute,
-        defaultValue = false
-    )
+    val (pauseOnMute, onPauseOnMuteChange) = rememberPreference(PauseOnMute, defaultValue = true)
     val (resumeOnBluetoothConnect, onResumeOnBluetoothConnectChange) = rememberPreference(
         ResumeOnBluetoothConnectKey,
         defaultValue = false
@@ -284,107 +286,112 @@ highlightKey: String? = null) {
         )
     }
 
-    Column(
-        Modifier
-            .windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Horizontal
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Horizontal
+                    )
                 )
-            )
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp)
-    ) {
-        var showCrossfadeBetaDialog by remember { mutableStateOf(false) }
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp)
+        ) {
+            var showCrossfadeBetaDialog by remember { mutableStateOf(false) }
 
-        if (showCrossfadeBetaDialog) {
-            DefaultDialog(
-                onDismiss = { showCrossfadeBetaDialog = false },
-                title = { Text(stringResource(R.string.crossfade_beta_title)) },
-                buttons = {
-                    TextButton(onClick = { showCrossfadeBetaDialog = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showCrossfadeBetaDialog = false
-                        onCrossfadeEnabledChange(true)
-                    }) {
-                        Text(stringResource(R.string.enable))
-                    }
-                }
-            ) {
-                Text(stringResource(R.string.crossfade_beta_message))
-            }
-        }
-
-        if (showSaavnAudioWarning) {
-            DefaultDialog(
-                onDismiss = { showSaavnAudioWarning = false },
-                title = { Text("Enable Saavn (320kbps)?") },
-                buttons = {
-                    TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
-                        context.startActivity(intent)
-                    }) {
-                        Text("Donate")
-                    }
-                    TextButton(onClick = { showSaavnAudioWarning = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showSaavnAudioWarning = false
-                        onAudioQualityChange(AudioQuality.SAAVN)
-                    }) {
-                        Text(stringResource(R.string.enable))
-                    }
-                }
-            ) {
-                Text("Saavn (320kbps) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
-            }
-        }
-
-        if (showLosslessAudioWarning) {
-            DefaultDialog(
-                onDismiss = { showLosslessAudioWarning = false },
-                title = { Text(stringResource(R.string.enable_lossless_audio)) },
-                buttons = {
-                    TextButton(onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
-                        context.startActivity(intent)
-                    }) {
-                        Text("Donate")
-                    }
-                    TextButton(onClick = { showLosslessAudioWarning = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    TextButton(onClick = {
-                        showLosslessAudioWarning = false
-                        onAudioQualityChange(AudioQuality.LOSSLESS)
-                        if (crossfadeEnabled) {
-                            onCrossfadeEnabledChange(false)
-                            android.widget.Toast.makeText(context, "Crossfade has been turned off for Lossless playback", android.widget.Toast.LENGTH_SHORT).show()
+            if (showCrossfadeBetaDialog) {
+                DefaultDialog(
+                    onDismiss = { showCrossfadeBetaDialog = false },
+                    title = { Text(stringResource(R.string.crossfade_beta_title)) },
+                    buttons = {
+                        TextButton(onClick = { showCrossfadeBetaDialog = false }) {
+                            Text(stringResource(R.string.cancel))
                         }
-                    }) {
-                        Text(stringResource(R.string.enable))
+                        TextButton(onClick = {
+                            showCrossfadeBetaDialog = false
+                            onCrossfadeEnabledChange(true)
+                        }) {
+                            Text(stringResource(R.string.enable))
+                        }
                     }
+                ) {
+                    Text(stringResource(R.string.crossfade_beta_message))
                 }
-            ) {
-                Text("Lossless (Qobuz) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating — it directly helps cover server costs.\n\n" + stringResource(R.string.lossless_audio_warning))
             }
-        }
 
+            if (showSaavnAudioWarning) {
+                DefaultDialog(
+                    onDismiss = { showSaavnAudioWarning = false },
+                    title = { Text("Enable Saavn (320kbps)?") },
+                    buttons = {
+                        TextButton(onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                            context.startActivity(intent)
+                        }) {
+                            Text("Donate")
+                        }
+                        TextButton(onClick = { showSaavnAudioWarning = false }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                        TextButton(onClick = {
+                            showSaavnAudioWarning = false
+                            onAudioQualityChange(AudioQuality.SAAVN)
+                        }) {
+                            Text(stringResource(R.string.enable))
+                        }
+                    }
+                ) {
+                    Text("Saavn (320kbps) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating to help keep this alive.\n\nNote: If Saavn playback fails, the app automatically falls back to YouTube Music's Opus stream.")
+                }
+            }
 
+            if (showLosslessAudioWarning) {
+                DefaultDialog(
+                    onDismiss = { showLosslessAudioWarning = false },
+                    title = { Text(stringResource(R.string.enable_lossless_audio)) },
+                    buttons = {
+                        TextButton(onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://echomusic.fun/donate"))
+                            context.startActivity(intent)
+                        }) {
+                            Text("Donate")
+                        }
+                        TextButton(onClick = { showLosslessAudioWarning = false }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                        TextButton(onClick = {
+                            showLosslessAudioWarning = false
+                            onAudioQualityChange(AudioQuality.LOSSLESS)
+                            if (crossfadeEnabled) {
+                                onCrossfadeEnabledChange(false)
+                                android.widget.Toast.makeText(context, "Crossfade has been turned off for Lossless playback", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }) {
+                            Text(stringResource(R.string.enable))
+                        }
+                    }
+                ) {
+                    Text("Lossless (Qobuz) streams run through Echo Music's servers and cost real money to keep running. If you find it useful, please consider donating — it directly helps cover server costs.\n\n" + stringResource(R.string.lossless_audio_warning))
+                }
+            }
 
-
-        Spacer(
-            Modifier.windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
+            Spacer(
+                Modifier.windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Top
+                    )
                 )
             )
-        )
+            Spacer(modifier = Modifier.height(72.dp))
+            androidx.compose.material3.Text(
+                text = stringResource(R.string.player_and_audio),
+                style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+            )
 
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.player),
+            Material3SettingsGroup(scrollState = scrollState, 
+                title = stringResource(R.string.player),
             items = buildList {
                 add(Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.audio_quality)),
@@ -1105,14 +1112,20 @@ highlightKey: String? = null) {
         Spacer(modifier = Modifier.height(16.dp))
     
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
-    }
+        }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.player_and_audio)) },
-        navigationIcon = {
-            IconButton(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
                 onClick = navController::navigateUp,
-                onLongClick = navController::backToMain
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
@@ -1120,5 +1133,5 @@ highlightKey: String? = null) {
                 )
             }
         }
-    )
+    }
 }

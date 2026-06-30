@@ -1,0 +1,19 @@
+Created At: 2026-06-29T10:33:43Z
+Completed At: 2026-06-29T10:33:44Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1398
+Total Bytes: 71087
+Showing lines 225 to 235
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+225: import java.net.URLEncoder
+226: import java.util.Locale
+227: import javax.inject.Inject
+228: 
+229: @Suppress("DEPRECATION", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+230: @AndroidEntryPoint
+231: class MainActivity : ComponentActivity() {
+232:     companion object {
+233:         const val ACTION_SEARCH = "iad1tya.echo.music.action.SEARCH"
+234:         const val ACTION_LIBRARY = "iad1tya.echo.music.action.LIBRARY"
+235:         const val ACTION_RECOGNITION = "iad1tya.echo.music.action.RECOGNITION"
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

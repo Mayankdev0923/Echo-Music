@@ -1,0 +1,19 @@
+Created At: 2026-06-29T06:32:29Z
+Completed At: 2026-06-29T06:32:30Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1162
+Total Bytes: 54747
+Showing lines 125 to 135
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+125: import androidx.compose.ui.graphics.Color
+126: import androidx.compose.ui.graphics.ColorFilter
+127: import androidx.compose.ui.graphics.ColorMatrix
+128: import androidx.compose.ui.graphics.graphicsLayer
+129: import androidx.compose.ui.graphics.Brush
+130: import androidx.compose.material3.MaterialTheme
+131: import androidx.compose.foundation.background
+132: import androidx.compose.material3.IconButton
+133: import androidx.compose.ui.text.font.FontWeight
+134: import iad1tya.echo.music.LocalShowSettingsDialog
+135: import com.music.echo.ui.component.appleGlass
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

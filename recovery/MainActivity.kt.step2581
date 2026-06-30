@@ -1,0 +1,31 @@
+Created At: 2026-06-29T10:43:19Z
+Completed At: 2026-06-29T10:43:20Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1413
+Total Bytes: 71825
+Showing lines 1390 to 1412
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1390:     }
+1391: 
+1392:     private fun handleAssistantSearchIntent(
+1393:         intent: Intent,
+1394:         navController: NavHostController,
+1395:     ) {
+1396:         if (intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+1397:             val query = intent.getStringExtra(android.app.SearchManager.QUERY) ?: return
+1398:             navController.navigate("search/${URLEncoder.encode(query, "UTF-8")}")
+1399:         }
+1400:     }
+1401: }
+1402: 
+1403: val LocalDatabase = staticCompositionLocalOf<MusicDatabase> { error("No database provided") }
+1404: val LocalRingtoneViewModel = compositionLocalOf<RingtoneViewModel> { error("No RingtoneViewModel provided") }
+1405: 
+1406: val LocalPlayerConnection = staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
+1407: 
+1408: val LocalPlayerAwareWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
+1409: val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
+1410: val LocalSyncUtils = staticCompositionLocalOf<SyncUtils> { error("No SyncUtils provided") }
+1411: val LocalListenTogetherManager = staticCompositionLocalOf<iad1tya.echo.music.listentogether.ListenTogetherManager?> { null }
+1412: val LocalIsPlayerExpanded = compositionLocalOf { false }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -306,7 +306,6 @@ class MusicService :
     fun setMuted(muted: Boolean) {
         isMuted.value = muted
         
-        
         player.volume = if (muted) 0f else playerVolume.value
     }
 
@@ -713,7 +712,7 @@ class MusicService :
         }
 
         dataStore.data
-            .map { (it[SkipSilenceKey] ?: false) to (it[SkipSilenceInstantKey] ?: false) }
+            .map { (it[SkipSilenceKey] ?: true) to (it[SkipSilenceInstantKey] ?: false) }
             .distinctUntilChanged()
             .collectLatest(scope) { (skipSilence, instantSkip) ->
                 player.skipSilenceEnabled = skipSilence
@@ -891,7 +890,7 @@ class MusicService :
 
         
         runBlocking {
-            val skipSilence = dataStore.get(SkipSilenceKey, false)
+            val skipSilence = dataStore.get(SkipSilenceKey, true)
             val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
             silenceProcessor.instantModeEnabled = skipSilence && instantSkip
         }
@@ -920,7 +919,7 @@ class MusicService :
                     val offload = dataStore.get(AudioOffload, false)
                     val crossfade = dataStore.get(CrossfadeEnabledKey, false)
                     setOffloadEnabled(if (crossfade) false else offload)
-                    skipSilenceEnabled = dataStore.get(SkipSilenceKey, false)
+                    skipSilenceEnabled = dataStore.get(SkipSilenceKey, true)
                 }
                 addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
 
@@ -2477,7 +2476,7 @@ class MusicService :
 
     override fun onDeviceVolumeChanged(volume: Int, muted: Boolean) {
         super.onDeviceVolumeChanged(volume, muted)
-        val pauseOnMute = dataStore.get(PauseOnMute, false)
+        val pauseOnMute = dataStore.get(PauseOnMute, true)
 
         if ((volume == 0 || muted) && pauseOnMute) {
             if (player.isPlaying) {

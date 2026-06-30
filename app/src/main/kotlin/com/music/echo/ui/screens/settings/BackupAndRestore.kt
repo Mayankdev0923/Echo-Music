@@ -7,6 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -33,6 +36,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.MaterialTheme
+import com.music.echo.ui.component.appleGlass
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
@@ -49,6 +60,7 @@ import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.viewmodels.BackupRestoreViewModel
 import iad1tya.echo.music.viewmodels.ConvertedSongLog
 import iad1tya.echo.music.viewmodels.CsvImportState
+import iad1tya.echo.music.constants.EnableSpotifyKey
 import iad1tya.echo.music.utils.rememberPreference
 import android.app.backup.BackupManager
 import android.content.Intent
@@ -78,6 +90,7 @@ fun BackupAndRestore(
     viewModel: BackupRestoreViewModel = hiltViewModel(),
     highlightKey: String? = null,
 ) {
+    val (spotifyEnabled) = rememberPreference(EnableSpotifyKey, true)
     var importedTitle by remember { mutableStateOf("") }
     val importedSongs = remember { mutableStateListOf<Song>() }
     var showChoosePlaylistDialogOnline by rememberSaveable {
@@ -148,22 +161,35 @@ fun BackupAndRestore(
         currentScreen = BackupSubScreen.MAIN
     }
 
-    Crossfade(targetState = currentScreen, label = "BackupSubScreen") { screen ->
-        Column(
-            Modifier
-                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-        ) {
-            Spacer(
-                Modifier.windowInsetsPadding(
-                    LocalPlayerAwareWindowInsets.current.only(
-                        WindowInsetsSides.Top
+    val titleRes = when (currentScreen) {
+        BackupSubScreen.MAIN -> stringResource(R.string.backup_restore)
+        BackupSubScreen.IMPORT -> "Import"
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Crossfade(targetState = currentScreen, label = "BackupSubScreen") { screen ->
+            Column(
+                Modifier
+                    .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                Spacer(
+                    Modifier.windowInsetsPadding(
+                        LocalPlayerAwareWindowInsets.current.only(
+                            WindowInsetsSides.Top
+                        )
                     )
                 )
-            )
+                Spacer(modifier = Modifier.height(72.dp))
+                Text(
+                    text = titleRes,
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                )
 
-            when (screen) {
+                when (screen) {
                 BackupSubScreen.MAIN -> {
                     Material3SettingsGroup(
                         items = listOf(
@@ -198,50 +224,59 @@ fun BackupAndRestore(
                 BackupSubScreen.IMPORT -> {
                     Material3SettingsGroup(
                         title = "Import Data",
-                        items = listOf(
-                            Material3SettingsItem(
-                                title = { Text("Import from Spotify") },
-                                icon = painterResource(R.drawable.ic_spotify),
-                                onClick = { navController.navigate("settings/spotify_import") }
-                            ),
-                            Material3SettingsItem(
-                                title = { Text("Import from local file") },
-                                icon = painterResource(R.drawable.restore),
-                                onClick = {
-                                    restoreLauncher.launch(arrayOf("application/octet-stream"))
-                                }
-                            ),
-                            Material3SettingsItem(
-                                title = { Text("Import 'm3u' Playlist") },
-                                icon = painterResource(R.drawable.playlist_add),
-                                onClick = {
-                                    importM3uLauncherOnline.launch(arrayOf("audio/*"))
-                                }
-                            ),
-                            Material3SettingsItem(
-                                title = { Text("Import 'csv' Playlist") },
-                                icon = painterResource(R.drawable.playlist_add),
-                                onClick = {
-                                    importPlaylistFromCsv.launch(arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain"))
-                                }
+                        items = buildList {
+                            if (spotifyEnabled) {
+                                add(
+                                    Material3SettingsItem(
+                                        title = { Text("Import from Spotify") },
+                                        icon = painterResource(R.drawable.ic_spotify),
+                                        onClick = { navController.navigate("settings/spotify_import") }
+                                    )
+                                )
+                            }
+                            add(
+                                Material3SettingsItem(
+                                    title = { Text("Import from local file") },
+                                    icon = painterResource(R.drawable.restore),
+                                    onClick = {
+                                        restoreLauncher.launch(arrayOf("application/octet-stream"))
+                                    }
+                                )
                             )
-                        )
+                            add(
+                                Material3SettingsItem(
+                                    title = { Text("Import 'm3u' Playlist") },
+                                    icon = painterResource(R.drawable.playlist_add),
+                                    onClick = {
+                                        importM3uLauncherOnline.launch(arrayOf("audio/*"))
+                                    }
+                                )
+                            )
+                            add(
+                                Material3SettingsItem(
+                                    title = { Text("Import 'csv' Playlist") },
+                                    icon = painterResource(R.drawable.playlist_add),
+                                    onClick = {
+                                        importPlaylistFromCsv.launch(arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain"))
+                                    }
+                                )
+                            )
+                        }
                     )
                 }
             }
         
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
-    }
-    }
-    val titleRes = when (currentScreen) {
-        BackupSubScreen.MAIN -> stringResource(R.string.backup_restore)
-        BackupSubScreen.IMPORT -> "Import"
-    }
+            }
+        }
 
-    TopAppBar(
-        title = { Text(titleRes) },
-        navigationIcon = {
-            IconButton(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.systemBars.only(WindowInsetsSides.Top))
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
                 onClick = {
                     if (currentScreen != BackupSubScreen.MAIN) {
                         currentScreen = BackupSubScreen.MAIN
@@ -250,14 +285,17 @@ fun BackupAndRestore(
                     }
                 },
                 onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
             ) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
+                    contentDescription = null
                 )
             }
         }
-    )
+    }
 
     AddToPlaylistDialogOnline(
         isVisible = showChoosePlaylistDialogOnline,

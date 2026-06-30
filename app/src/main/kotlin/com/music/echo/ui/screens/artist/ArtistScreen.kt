@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +66,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -1081,42 +1086,57 @@ fun ArtistScreen(
                 .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
                 .align(Alignment.BottomCenter)
         )
-    }
 
-    TopAppBar(
-        title = { if (!transparentAppBar) Text(artistPage?.artist?.title.orEmpty()) },
-        navigationIcon = {
+        // Floating Top Bar Buttons (immersive back and actions)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 44.dp, start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Circular Back Button
             IconButton(
                 onClick = navController::navigateUp,
                 onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .size(40.dp)
+                    .appleGlass(CircleShape, elevation = 4.dp)
             ) {
                 Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
+                    painter = painterResource(R.drawable.arrow_back),
+                    contentDescription = "Back",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        },
-        actions = {
-            IconButton(
-                onClick = {
-                    viewModel.artistPage?.artist?.shareLink?.let { link ->
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("Artist Link", link)
-                        clipboard.setPrimaryClip(clip)
-                        Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
-                    }
-                },
+
+            // Action Pill
+            Row(
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 4.dp)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painterResource(R.drawable.link),
-                    contentDescription = null,
-                )
+                IconButton(
+                    onClick = {
+                        viewModel.artistPage?.artist?.shareLink?.let { link ->
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText("Artist Link", link)
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.link),
+                        contentDescription = "Share",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-        },
-        colors = if (transparentAppBar) {
-            TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-        } else {
-            TopAppBarDefaults.topAppBarColors()
         }
-    )
+    }
 }

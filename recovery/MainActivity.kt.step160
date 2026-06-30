@@ -1,0 +1,39 @@
+Created At: 2026-06-28T12:51:11Z
+Completed At: 2026-06-28T12:51:11Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1398
+Total Bytes: 71087
+Showing lines 515 to 545
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+515:                             themeColor = selectedThemeColor
+516:                         }
+517:                     }
+518:                 } else {
+519:                     themeColor = selectedThemeColor
+520:                 }
+521:             }
+522:         }
+523: 
+524:         echomusicTheme(
+525:             darkTheme = useDarkTheme,
+526:             pureBlack = pureBlack,
+527:             themeColor = themeColor,
+528:         ) {
+529:             BoxWithConstraints(
+530:                 modifier = Modifier
+531:                     .fillMaxSize()
+532:                     .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
+533:             ) {
+534:                 val focusManager = LocalFocusManager.current
+535:                 val density = LocalDensity.current
+536:                 val configuration = LocalWindowInfo.current
+537:                 val cutoutInsets = WindowInsets.displayCutout
+538:                 val windowsInsets = WindowInsets.systemBars
+539:                 val bottomInset = with(density) { windowsInsets.getBottom(density).toDp() }
+540:                 val bottomInsetDp = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+541: 
+542:                 val navController = rememberNavController()
+543:                 val homeViewModel: HomeViewModel = hiltViewModel()
+544:                 val accountImageUrl by homeViewModel.accountImageUrl.collectAsState()
+545:                 val navBackStackEntry by navController.currentBackStackEntryAsState()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

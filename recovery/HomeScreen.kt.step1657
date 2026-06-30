@@ -1,0 +1,34 @@
+Created At: 2026-06-29T05:59:04Z
+Completed At: 2026-06-29T05:59:04Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2202
+Total Bytes: 122493
+Showing lines 570 to 595
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+570: 
+571:             if (maxWidth > 200.dp) {
+572:                 // Top-only progressive blur overlay with exposure adjustment
+573:                 Box(
+574:                     modifier = Modifier
+575:                         .fillMaxWidth()
+576:                         .height(84.dp)
+577:                         .align(Alignment.TopCenter)
+578:                         .graphicsLayer { colorFilter = ColorFilter.colorMatrix(matrix) }
+579:                         .blur(16.dp)
+580:                         .background(
+581:                             Brush.verticalGradient(
+582:                                 colors = if (isDark) {
+583:                                     listOf(Color.Black, Color.Black.copy(alpha = 0f))
+584:                                 } else {
+585:                                     listOf(Color.White, Color.White.copy(alpha = 0f))
+586:                                 }
+587:                             )
+588:                         )
+589:                 )
+590: 
+591:                 Column(
+592:                     modifier = Modifier
+593:                         .fillMaxSize()
+594:                         .padding(24.dp),
+595:                     verticalArrangement = Arrangement.SpaceBetween
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

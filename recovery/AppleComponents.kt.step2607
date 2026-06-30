@@ -1,0 +1,39 @@
+Created At: 2026-06-29T10:46:11Z
+Completed At: 2026-06-29T10:46:11Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/AppleComponents.kt`
+Total Lines: 242
+Total Bytes: 7744
+Showing lines 155 to 185
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+155:  * Liquid Glassmorphic Modifier
+156:  * Uses the Haze library to perform backdrop blur, with custom borders and drop shadows.
+157:  */
+158: fun Modifier.liquidGlass(
+159:     shape: Shape = RoundedCornerShape(20.dp),
+160:     elevation: androidx.compose.ui.unit.Dp = 6.dp,
+161:     hazeState: dev.chrisbanes.haze.HazeState? = null
+162: ): Modifier = this.composed {
+163:     val localHazeState = hazeState ?: LocalHazeState.current
+164:     val colorScheme = MaterialTheme.colorScheme
+165:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+166: 
+167:     val baseModifier = if (localHazeState != null) {
+168:         this.hazeChild(
+169:             state = localHazeState,
+170:             shape = shape,
+171:         ) {
+172:             blurRadius = 24.dp
+173:             noiseFactor = 0.04f
+174:             tints = listOf(
+175:                 dev.chrisbanes.haze.HazeTint(
+176:                     color = if (isDark) Color(0xFF101012).copy(alpha = 0.20f) else Color(0xFFFFFFFF).copy(alpha = 0.25f)
+177:                 )
+178:             )
+179:         }
+180:     } else {
+181:         this.background(
+182:             color = if (isDark) Color(0xFF1A1A1D).copy(alpha = 0.90f) else Color(0xFFF4F4F7).copy(alpha = 0.90f),
+183:             shape = shape
+184:         )
+185:     }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

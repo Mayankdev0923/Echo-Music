@@ -547,7 +547,7 @@ class HomeViewModel @Inject constructor(
     private suspend fun loadNetworkDataPhase() {
         val hideExplicit = context.dataStore.get(HideExplicitKey, false)
         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
 
         coroutineScope {
             launch(Dispatchers.IO) { getDailyDiscover() }
@@ -600,7 +600,7 @@ class HomeViewModel @Inject constructor(
         if (continuation == null || _isLoadingMore.value) return
         val hideExplicit = context.dataStore.get(HideExplicitKey, false)
         val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
 
         viewModelScope.launch(Dispatchers.IO) {
             _isLoadingMore.value = true
@@ -645,7 +645,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val hideExplicit = context.dataStore.get(HideExplicitKey, false)
             val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-            val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+            val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
             val nextSections = YouTube.home(params = chip.endpoint?.params).getOrNull() ?: return@launch
 
             homePage.value = nextSections.copy(
@@ -659,7 +659,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadAccountPlaylists() {
-        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+        val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
         YouTube.library("FEmusic_liked_playlists").completed().onSuccess {
             accountPlaylists.value = it.items.filterIsInstance<PlaylistItem>()
                 .filterNot { it.id == "SE" }
@@ -741,7 +741,7 @@ class HomeViewModel @Inject constructor(
         
         viewModelScope.launch(Dispatchers.IO) {
             context.dataStore.data
-                .map { it[HideYoutubeShortsKey] ?: false }
+                .map { it[HideYoutubeShortsKey] ?: true}
                 .distinctUntilChanged()
                 .collect {
                     if (YouTube.cookie != null && accountPlaylists.value != null) {

@@ -1,0 +1,29 @@
+Created At: 2026-06-29T10:43:29Z
+Completed At: 2026-06-29T10:43:29Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1186
+Total Bytes: 55635
+Showing lines 1110 to 1130
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1110:             else -> SixTuple("", null, false, false, {}, {})
+1111:         }
+1112:     }
+1113: 
+1114:     val itemShape = if (isArtist) CircleShape else RoundedCornerShape(AppleRadius.large)
+1115:     val textColor = Color.White
+1116: 
+1117:     Box(
+1118:         modifier = modifier
+1119:             .fillMaxWidth()
+1120:             .aspectRatio(1f)
+1121:             .appleGlass(shape = itemShape, elevation = 4.dp)
+1122:             .combinedClickable(
+1123:                 onClick = onClick,
+1124:                 onLongClick = onLongClick
+1125:             )
+1126:     ) {
+1127:         ItemThumbnail(
+1128:             thumbnailUrl = thumbnailUrl,
+1129:             isActive = false,
+1130:             isPlaying = false,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,54 @@
+Created At: 2026-06-28T13:33:24Z
+Completed At: 2026-06-28T13:33:24Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1947
+Total Bytes: 110392
+Showing lines 920 to 1100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+920:                 SnapLayoutInfoProvider(
+921:                     lazyGridState = quickPicksLazyGridState,
+922:                     positionInLayout = { layoutSize, itemSize ->
+923:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+924:                     }
+925:                 )
+926:             }
+927:             val forgottenFavoritesSnapLayoutInfoProvider = remember(forgottenFavoritesLazyGridState) {
+928:                 SnapLayoutInfoProvider(
+929:                     lazyGridState = forgottenFavoritesLazyGridState,
+930:                     positionInLayout = { layoutSize, itemSize ->
+931:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+932:                     }
+933:                 )
+934:             }
+935: 
+936:             LazyColumn(
+937:                 state = lazylistState,
+938:                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+939:             ) {
+940:                 item {
+941:                     ChipsRow(
+942:                         chips = homePage?.chips?.filter {
+943:                             !it.title.equals("Podcasts", ignoreCase = true) &&
+944:                             !it.title.equals("Uploaded", ignoreCase = true)
+945:                         }?.map { it to it.title } ?: emptyList(),
+946:                         currentValue = selectedChip,
+947:                         onValueUpdate = {
+948:                             viewModel.toggl
+<truncated 11246 bytes>
+                                                            }
+1086:                                                                                 },
+1087:                                                                                 onLongClick = {
+1088:                                                                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+1089:                                                                                     menuState.show {
+1090:                                                                                         when (item) {
+1091:                                                                                             is SongItem -> YouTubeSongMenu(
+1092:                                                                                                 song = item,
+1093:                                                                                                 navController = navController,
+1094:                                                                                                 onDismiss = menuState::dismiss
+1095:                                                                                             )
+1096:                                                                                             is AlbumItem -> YouTubeAlbumMenu(
+1097:                                                                                                 albumItem = item,
+1098:                                                                                                 navController = navController,
+1099:                                                                                                 onDismiss = menuState::dismiss
+1100:                                                                                             )
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

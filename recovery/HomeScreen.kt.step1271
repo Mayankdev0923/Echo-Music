@@ -1,0 +1,29 @@
+Created At: 2026-06-28T18:27:14Z
+Completed At: 2026-06-28T18:27:14Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2081
+Total Bytes: 116859
+Showing lines 450 to 470
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+450:                     },
+451:                     modifier = Modifier
+452:                         .size(48.dp)
+453:                         .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), CircleShape)
+454:                 ) {
+455:                     Icon(
+456:                         painter = painterResource(if (isBookmarked) R.drawable.library_add_check else R.drawable.library_add),
+457:                         contentDescription = null,
+458:                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
+459:                         modifier = Modifier.size(24.dp)
+460:                     )
+461:                 }
+462:             }
+463:         }
+464:     }
+465: }
+466: 
+467: @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+468: @Composable
+469: fun DailyDiscoverCard(
+470:     dailyDiscover: DailyDiscoverItem,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

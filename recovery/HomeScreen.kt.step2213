@@ -1,0 +1,26 @@
+Created At: 2026-06-29T10:08:19Z
+Completed At: 2026-06-29T10:08:20Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2163
+Total Bytes: 120794
+Showing lines 993 to 1010
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+993:     }
+994: 
+995:     PullToRefreshBox(
+996:         state = pullRefreshState,
+997:         isRefreshing = isRefreshing,
+998:         onRefresh = viewModel::refresh,
+999:         indicator = {
+1000:             PullToRefreshDefaults.LoadingIndicator(
+1001:                 state = pullRefreshState,
+1002:                 isRefreshing = isRefreshing,
+1003:                 modifier = Modifier
+1004:                     .align(Alignment.TopCenter)
+1005:                     .padding(LocalPlayerAwareWindowInsets.current.asPaddingValues()),
+1006:             )
+1007:         }
+1008:     ) {
+1009:         BoxWithConstraints(
+1010:             modifier = Modifier.fillMaxSize(),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,17 @@
+Created At: 2026-06-28T14:00:15Z
+Completed At: 2026-06-28T14:00:15Z
+File Path: `file:///C:/Users/mayan/.gemini/antigravity/brain/03b340f4-935b-4dbe-b83c-388aabf90b92/task.md`
+Total Lines: 9
+Total Bytes: 1525
+Showing lines 1 to 9
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: - [x] Step 1: Implement Apple-style design tokens, elevations, and `Modifier.appleGlass()` in [AppleComponents.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/AppleComponents.kt)
+2: - [x] Step 2: Implement Apple light/dark ColorSchemes and `dynamicColor` toggle parameter in [Theme.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/theme/Theme.kt)
+3: - [x] Step 3: Implement stable theme wrapping in [MainActivity.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt) and pass `themeColor` to `BottomSheetPlayer`
+4: - [x] Step 4: Wrap [Player.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/Player.kt) layout in nested dynamic theme composition
+5: - [x] Step 5: Update typography to utilize variable font `sans_flex.ttf` in [Type.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/theme/Type.kt)
+6: - [x] Step 6: Restyle headers and buttons in [NavigationTitle.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/NavigationTitle.kt)
+7: - [x] Step 7: Redesign cards, grids, spacing, and transition animations in [HomeScreen.kt](file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt)
+8: - [x] Step 8: Verify build and compile universal debug variant using `./gradlew assembleUniversalFossDebug`
+9: 
+The above content shows the entire, complete file contents of the requested file.

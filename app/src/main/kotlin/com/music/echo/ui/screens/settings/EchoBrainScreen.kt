@@ -20,10 +20,14 @@ import androidx.datastore.preferences.core.edit
 import iad1tya.echo.music.utils.dataStore
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import iad1tya.echo.music.ui.utils.backToMain
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
 import androidx.navigation.NavController
 import iad1tya.echo.music.R
 import iad1tya.echo.music.data.EchoBrainRepository
@@ -60,28 +64,10 @@ fun EchoBrainScreen(
         isLoaded = true
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.echo_brain_beta)) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        scope.launch {
-                            userBrain = engine.getBrainSnapshot()
-                            userBrain?.let { persona = engine.neuroEngine.getPersona(it) }
-                        }
-                    }) {
-                        Icon(Icons.Default.Refresh, "Refresh")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        ) { padding ->
         if (userBrain == null) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -101,7 +87,14 @@ fun EchoBrainScreen(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)))
+                    Spacer(modifier = Modifier.height(72.dp))
+                    Text(
+                        text = stringResource(R.string.echo_brain_beta),
+                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                    )
 
                     Material3SettingsGroup(scrollState = scrollState, 
                         items = listOf(
@@ -175,6 +168,41 @@ fun EchoBrainScreen(
                     
                     Spacer(Modifier.height(24.dp))
                 }
+            }
+        }
+        }
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = navController::navigateUp,
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+            }
+
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = {
+                    scope.launch {
+                        userBrain = engine.getBrainSnapshot()
+                        userBrain?.let { persona = engine.neuroEngine.getPersona(it) }
+                    }
+                },
+                onLongClick = {},
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(Icons.Default.Refresh, "Refresh")
             }
         }
     }

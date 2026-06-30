@@ -1,0 +1,39 @@
+Created At: 2026-06-28T17:24:48Z
+Completed At: 2026-06-28T17:24:49Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 865
+Total Bytes: 44012
+Showing lines 240 to 270
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+240:     val scrollToTop =
+241:         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+242: 
+243:     LaunchedEffect(scrollToTop?.value) {
+244:         if (scrollToTop?.value == true) {
+245:             when (viewType) {
+246:                 LibraryViewType.LIST -> lazyListState.animateScrollToItem(0)
+247:                 LibraryViewType.GRID -> lazyGridState.animateScrollToItem(0)
+248:             }
+249:             backStackEntry?.savedStateHandle?.set("scrollToTop", false)
+250:         }
+251:     }
+252: 
+253:     LaunchedEffect(Unit) {
+254:          if (ytmSync) {
+255:              withContext(Dispatchers.IO) {
+256:                  viewModel.syncAllLibrary()
+257:              }
+258:          }
+259:     }
+260: 
+261:     val headerContent = @Composable {
+262:         Row(
+263:             verticalAlignment = Alignment.CenterVertically,
+264:             modifier = Modifier.padding(start = 16.dp),
+265:         ) {
+266:             SortHeader(
+267:                 sortType = sortType,
+268:                 sortDescending = sortDescending,
+269:                 onSortTypeChange = onSortTypeChange,
+270:                 onSortDescendingChange = onSortDescendingChange,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

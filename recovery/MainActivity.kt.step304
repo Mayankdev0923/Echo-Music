@@ -1,0 +1,57 @@
+Created At: 2026-06-28T13:10:18Z
+Completed At: 2026-06-28T13:10:18Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1401
+Total Bytes: 71254
+Showing lines 1350 to 1398
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1350:             }
+1351:         }
+1352:     }
+1353: 
+1354:     @SuppressLint("ObsoleteSdkInt")
+1355:     private fun setSystemBarAppearance(isDark: Boolean) {
+1356:         WindowCompat.getInsetsController(window, window.decorView.rootView).apply {
+1357:             isAppearanceLightStatusBars = !isDark
+1358:             isAppearanceLightNavigationBars = !isDark
+1359:         }
+1360:         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+1361:             window.statusBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
+1362:         }
+1363:         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+1364:             window.navigationBarColor = (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
+1365:         }
+1366:     }
+1367:     private fun handleRecognitionIntent(
+1368:         intent: Intent,
+1369:         navController: NavHostController,
+1370:     ) {
+1371:         if (intent.action != ACTION_RECOGNITION) return
+1372:         val autoStart = intent.getBooleanExtra(EXTRA_AUTO_START_RECOGNITION, false)
+1373: 
+1374:         intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
+1375:         navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {
+1376:             launchSingleTop = true
+1377:         }
+1378:     }
+1379: 
+1380:     private fun handleAssistantSearchIntent(
+1381:         intent: Intent,
+1382:         navController: NavHostController,
+1383:     ) {
+1384:         if (intent.action == android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) {
+1385:             val query = intent.getStringExtra(android.app.SearchManager.QUERY) ?: return
+1386:             navController.navigate("search/${URLEncoder.encode(query, "UTF-8")}")
+1387:         }
+1388:     }
+1389: }
+1390: 
+1391: val LocalDatabase = staticCompositionLocalOf<MusicDatabase> { error("No database provided") }
+1392: val LocalRingtoneViewModel = compositionLocalOf<RingtoneViewModel> { error("No RingtoneViewModel provided") }
+1393: 
+1394: val LocalPlayerConnection = staticCompositionLocalOf<PlayerConnection?> { error("No PlayerConnection provided") }
+1395: 
+1396: val LocalPlayerAwareWindowInsets = compositionLocalOf<WindowInsets> { error("No WindowInsets provided") }
+1397: val LocalDownloadUtil = staticCompositionLocalOf<DownloadUtil> { error("No DownloadUtil provided") }
+1398: val LocalSyncUtils = staticCompositionLocalOf<SyncUtils> { error("No SyncUtils provided") }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

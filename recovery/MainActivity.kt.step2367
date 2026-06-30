@@ -1,0 +1,59 @@
+Created At: 2026-06-29T10:30:11Z
+Completed At: 2026-06-29T10:30:12Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1412
+Total Bytes: 71994
+Showing lines 930 to 980
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+930:                                             .windowInsetsPadding(
+931:                                             if (showRail) {
+932:                                                 WindowInsets(left = NavigationBarHeight)
+933:                                                     .add(cutoutInsets.only(WindowInsetsSides.Start))
+934:                                             } else {
+935:                                                 cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+936:                                             }
+937:                                         )
+938:                                     )
+939:                                 }
+940:                             }
+941:                         },
+942:                         bottomBar = {
+943:                             val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState, currentRoute) {
+944:                                 { screen: Screens, isSelected: Boolean ->
+945:                                     if (playerBottomSheetState.isExpanded) {
+946:                                         playerBottomSheetState.collapseSoft()
+947:                                     }
+948: 
+949:                                     if (isSelected) {
+950:                                         navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+951:                                         coroutineScope.launch {
+952:  
+<truncated 177 bytes>
+      } else {
+955:                                         navController.navigate(screen.route) {
+956:                                             popUpTo(navController.graph.startDestinationId) {
+957:                                                 saveState = screen != Screens.Home && currentRoute?.startsWith("recognition") != true
+958:                                             }
+959:                                             launchSingleTop = true
+960:                                             restoreState = screen != Screens.Home && currentRoute?.startsWith("recognition") != true
+961:                                         }
+962:                                     }
+963:                                 }
+964:                             }
+965: 
+966:                             if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+967:                                 Box {
+968:                                     BottomSheetPlayer(
+969:                                         state = playerBottomSheetState,
+970:                                         navController = navController,
+971:                                         pureBlack = pureBlack,
+972:                                         themeColor = themeColor
+973:                                     )
+974: 
+975:                                     val navSlideDistance = bottomInset + FloatingToolbarBottomPadding + navigationChromeHeight
+976: 
+977:                                     val navOffsetY = if (navigationBarHeight == 0.dp) {
+978:                                         navSlideDistance
+979:                                     } else {
+980:                                         val slideOffset =
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

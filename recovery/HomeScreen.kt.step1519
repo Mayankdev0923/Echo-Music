@@ -1,0 +1,44 @@
+Created At: 2026-06-28T19:36:58Z
+Completed At: 2026-06-28T19:36:59Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2156
+Total Bytes: 120561
+Showing lines 565 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+565:                         )
+566:                 )
+567: 
+568:                 Column(
+569:                     modifier = Modifier
+570:                         .fillMaxSize()
+571:                         .padding(24.dp),
+572:                     verticalArrangement = Arrangement.SpaceBetween
+573:                 ) {
+574:                     Column {
+575:                         Text(
+576:                             text = dailyDiscover.recommendation.title,
+577:                             style = MaterialTheme.typography.titleMedium,
+578:                             color = Color.White
+579:                         )
+580:                         Text(
+581:                             text = buildString {
+582:                                 append((dailyDiscover.recommendation as? SongItem)?.artists?.joinToString(", ") { it.name } ?: "")
+583:                                 if (playCount > 0) {
+584:                                     append(" • $playCount $playsString")
+585:                                 }
+586:                             },
+587:                             style = MaterialTheme.typography.bodyMedium,
+588:                             color = Color.White.copy(alpha = 0.7f)
+589:                         )
+590:                     }
+591: 
+592:                     val messages = listOf(
+593:                         R.string.daily_discover_sounds_like,
+594:                         R.string.daily_discover_because_you_listen_to,
+595:                         R.string.daily_discover_similar_to,
+596:                         R.string.daily_discover_based_on,
+597:                         R.string.daily_discover_for_fans_of
+598:                     )
+599:                     val messageRes = remember(dailyDiscover.seed.id) {
+600:                         messages[abs(dailyDiscover.seed.id.hashCode()) % messages.size]
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

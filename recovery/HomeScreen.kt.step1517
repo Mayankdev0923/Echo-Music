@@ -1,0 +1,59 @@
+Created At: 2026-06-28T19:36:55Z
+Completed At: 2026-06-28T19:36:55Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2156
+Total Bytes: 120561
+Showing lines 520 to 570
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+520:             .fillMaxSize()
+521:             .appleGlass(RoundedCornerShape(AppleRadius.large))
+522:             .combinedClickable(
+523:                 onClick = onClick,
+524:                 onLongClick = {
+525:                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+526:                     if (song != null) {
+527:                         menuState.show {
+528:                             YouTubeSongMenu(
+529:                                 song = song,
+530:                                 navController = navController,
+531:                                 onDismiss = { menuState.dismiss() }
+532:                             )
+533:                         }
+534:                     }
+535:                 }
+536:             ),
+537:         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+538:         shape = RoundedCornerShape(AppleRadius.large)
+539:     ) {
+540:         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+541:             AsyncImage(
+542:                 model = ImageRequest.Builder(LocalContext.current)
+543:                     .data(dailyDiscover.recommendation.thumbnail?.resize(1200, 1200))
+544:                     .crossfade(true)
+545:                     .build(),
+546:                 contentDescription = null,
+547:                 contentScale = ContentScale.Crop,
+548:                 modifier = Modifier
+549:                     .fillMaxSize()
+550:             )
+551: 
+552:             if (maxWidth > 200.dp) {
+553:                 Box(
+554:                     modifier = Modifier
+555:                         .fillMaxSize()
+556:                         .background(
+557:                             brush = Brush.verticalGradient(
+558:                                 colors = listOf(
+559:                                     Color.Black.copy(alpha = 0.3f),
+560:                                     Color.Transparent,
+561:                                     Color.Black.copy(alpha = 0.6f),
+562:                                     Color.Black.copy(alpha = 0.9f)
+563:                                 )
+564:                             )
+565:                         )
+566:                 )
+567: 
+568:                 Column(
+569:                     modifier = Modifier
+570:                         .fillMaxSize()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

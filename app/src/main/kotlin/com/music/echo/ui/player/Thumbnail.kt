@@ -276,10 +276,7 @@ fun Thumbnail(
     val swipeThumbnail = swipeThumbnailPref && !isListenTogetherGuest
     val hidePlayerThumbnail by rememberPreference(HidePlayerThumbnailKey, false)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
-    val playerBackground by rememberEnumPreference(
-        key = PlayerBackgroundStyleKey,
-        defaultValue = PlayerBackgroundStyle.GRADIENT
-    )
+    val playerBackground by rememberEnumPreference(PlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.APPLE_MUSIC)
     val thumbnailCornerRadius by rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 3f)
     
     
@@ -600,7 +597,7 @@ private fun ThumbnailItem(
     var skipMultiplier by remember { mutableIntStateOf(1) }
     var lastTapTime by remember { mutableLongStateOf(0L) }
 
-    val canvasThumbnailAnimation by rememberPreference(CanvasThumbnailAnimationKey, defaultValue = false)
+    val canvasThumbnailAnimation by rememberPreference(CanvasThumbnailAnimationKey, defaultValue = true)
 
     Box(
         modifier = modifier

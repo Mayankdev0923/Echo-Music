@@ -23,11 +23,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.WindowInsets
@@ -172,6 +175,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import iad1tya.echo.music.viewmodels.DailyDiscoverItem
+import iad1tya.echo.music.constants.DarkModeKey
+import iad1tya.echo.music.ui.screens.settings.DarkMode
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.NightsStay
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.statusBarsPadding
+import com.music.echo.ui.component.appleGlass
+import iad1tya.echo.music.LocalShowSettingsDialog
 
 
 sealed class HomeSection(val id: String, val baseWeight: Int) {
@@ -940,10 +952,36 @@ fun HomeScreen(
                 )
             }
 
+            // Sticky pill state
+            val (darkMode, onDarkModeChange) = rememberEnumPreference(DarkModeKey, DarkMode.AUTO)
+            val isSystemInDark = isSystemInDarkTheme()
+            val useDarkTheme = remember(darkMode, isSystemInDark) {
+                if (darkMode == DarkMode.AUTO) isSystemInDark else darkMode == DarkMode.ON
+            }
+
             LazyColumn(
                 state = lazylistState,
                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
             ) {
+                item(key = "home_heading") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(start = 20.dp, end = 100.dp, top = 16.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Home",
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 40.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+
                 item {
                     ChipsRow(
                         chips = homePage?.chips?.filter { 
@@ -1916,6 +1954,79 @@ fun HomeScreen(
                 }
             }
 
+            // Pill scroll-up offset (matches Library behaviour)
+            val maxMoveUpPx = with(LocalDensity.current) { 66.dp.toPx() }
+            val scrollOffset = lazylistState.firstVisibleItemScrollOffset
+            val scrollIndex = lazylistState.firstVisibleItemIndex
+            val offsetPx = if (scrollIndex > 0) maxMoveUpPx else minOf(scrollOffset.toFloat(), maxMoveUpPx)
+            val translationY = with(LocalDensity.current) { -offsetPx.toDp() }
+
+            // Sticky RHS Pill — identical to Library pill
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(top = 74.dp, end = 16.dp)
+                    .offset(y = translationY)
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Dark / Light mode toggle
+                IconButton(
+                    onClick = {
+                        onDarkModeChange(
+                            if (useDarkTheme) DarkMode.OFF else DarkMode.ON
+                        )
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (useDarkTheme) Icons.Rounded.LightMode else Icons.Rounded.NightsStay,
+                        contentDescription = if (useDarkTheme) "Switch to Light" else "Switch to Dark",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                // My Top 50
+                IconButton(
+                    onClick = { navController.navigate("top_playlist/50") },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.stats),
+                        contentDescription = "My Top 50",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                // Song History
+                IconButton(
+                    onClick = { navController.navigate("history") },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.history),
+                        contentDescription = "Song History",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                // Settings / Account Avatar
+                val showSettingsDialog = LocalShowSettingsDialog.current
+                IconButton(
+                    onClick = { showSettingsDialog?.invoke() },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.settings),
+                        contentDescription = stringResource(R.string.account),
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

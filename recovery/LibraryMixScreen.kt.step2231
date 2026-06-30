@@ -1,0 +1,49 @@
+Created At: 2026-06-29T10:09:22Z
+Completed At: 2026-06-29T10:09:22Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1201
+Total Bytes: 56392
+Showing lines 1005 to 1045
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1005:                 onClick = { navController.navigate("stats") },
+1006:                 modifier = Modifier.size(32.dp)
+1007:             ) {
+1008:                 Icon(
+1009:                     painter = painterResource(R.drawable.stats),
+1010:                     contentDescription = stringResource(R.string.stats),
+1011:                     modifier = Modifier.size(20.dp),
+1012:                     tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+1013:                 )
+1014:             }
+1015:             // Settings / Avatar
+1016:             val showSettingsDialog = LocalShowSettingsDialog.current
+1017:             IconButton(
+1018:                 onClick = { showSettingsDialog?.invoke() },
+1019:                 modifier = Modifier.size(32.dp)
+1020:             ) {
+1021:                 Icon(
+1022:                     painter = painterResource(R.drawable.settings),
+1023:                     contentDescription = stringResource(R.string.account),
+1024:                     modifier = Modifier.size(20.dp),
+1025:                     tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+1026:                 )
+1027:             }
+1028:         }
+1029:     }
+1030: }
+1031: 
+1032: data class SixTuple(
+1033:     val title: String,
+1034:     val thumbnailUrl: String?,
+1035:     val isPlaylist: Boolean,
+1036:     val isArtist: Boolean,
+1037:     val onClick: () -> Unit,
+1038:     val onLongClick: () -> Unit
+1039: )
+1040: 
+1041: @OptIn(ExperimentalFoundationApi::class)
+1042: @Composable
+1043: fun PinnedLibraryGridItem(
+1044:     item: Any,
+1045:     navController: NavController,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

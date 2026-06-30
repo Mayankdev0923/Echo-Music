@@ -1,0 +1,44 @@
+Created At: 2026-06-28T13:58:55Z
+Completed At: 2026-06-28T13:58:56Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 1020 to 1055
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1020:                                             .align(Alignment.BottomCenter)
+1021:                                             .height(bottomInsetDp)
+1022:                                             
+1023:                                             .graphicsLayer {
+1024:                                                 val progress = playerBottomSheetState.progress
+1025:                                                 alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1026:                                             }
+1027:                                             .background(baseBg)
+1028:                                     )
+1029:                                 }
+1030:                             } else {
+1031:                                 if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+1032:                                     BottomSheetPlayer(
+1033:                                         state = playerBottomSheetState,
+1034:                                         navController = navController,
+1035:                                         pureBlack = pureBlack,
+1036:                                         themeColor = themeColor
+1037:                                     )
+1038:                                 }
+1039: 
+1040:                                 Box(
+1041:                                     modifier = Modifier
+1042:                                         .fillMaxWidth()
+1043:                                         .align(Alignment.BottomCenter)
+1044:                                         .height(bottomInsetDp)
+1045:                                         
+1046:                                         .graphicsLayer {
+1047:                                             val progress = playerBottomSheetState.progress
+1048:                                             alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1049:                                         }
+1050:                                         .background(baseBg)
+1051:                                 )
+1052:                             }
+1053:                         },
+1054:                         modifier = Modifier
+1055:                             .fillMaxSize()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

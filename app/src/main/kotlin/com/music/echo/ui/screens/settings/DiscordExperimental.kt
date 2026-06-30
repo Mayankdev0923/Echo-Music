@@ -18,6 +18,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import com.music.echo.ui.component.appleGlass
+import iad1tya.echo.music.ui.utils.backToMain
 import androidx.navigation.NavController
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.DiscordActivityButton1CustomUrlKey
@@ -32,7 +45,11 @@ import iad1tya.echo.music.ui.component.EditTextPreference
 import iad1tya.echo.music.ui.component.ListPreference
 import iad1tya.echo.music.ui.component.SwitchPreference
 import iad1tya.echo.music.utils.rememberPreference
-
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.foundation.layout.asPaddingValues
 private val DiscordExperimentalButtonUrlOptions =
     listOf("songurl", "artisturl", "albumurl", "custom")
 
@@ -83,25 +100,28 @@ fun DiscordExperimental(navController: NavController) {
             defaultValue = "https://github.com/1aditya7/Echo-Music",
         )
 
-    Scaffold { inner ->
-        Column(Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = { Text(stringResource(R.string.experiment_settings)) },
-                navigationIcon = {
-                    IconButton(onClick = navController::navigateUp) {
-                        Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
-                    }
-                },
-            )
-
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        ) { inner ->
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding =
                     PaddingValues(
+                        top = WindowInsets.Companion.systemBars.asPaddingValues().calculateTopPadding(),
                         bottom = inner.calculateBottomPadding() + 80.dp,
                     ),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(72.dp))
+                    Text(
+                        text = stringResource(R.string.experiment_settings),
+                        style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 24.dp, bottom = 16.dp)
+                    )
+                }
                 item {
                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
                         Text(
@@ -195,6 +215,26 @@ fun DiscordExperimental(navController: NavController) {
                         }
                     }
                 }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = navController::navigateUp,
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    painterResource(R.drawable.arrow_back),
+                    contentDescription = null
+                )
             }
         }
     }

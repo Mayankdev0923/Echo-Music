@@ -1,0 +1,79 @@
+Created At: 2026-06-29T10:24:52Z
+Completed At: 2026-06-29T10:24:52Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/MiniPlayer.kt`
+Total Lines: 1242
+Total Bytes: 52527
+Showing lines 1 to 100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: 
+2: 
+3: package iad1tya.echo.music.ui.player
+4: 
+5: import android.content.res.Configuration
+6: import android.os.Build
+7: import androidx.compose.animation.AnimatedVisibility
+8: import androidx.compose.animation.core.Animatable
+9: import androidx.compose.animation.core.LinearEasing
+10: import androidx.compose.animation.core.RepeatMode
+11: import androidx.compose.animation.core.Spring
+12: import androidx.compose.animation.core.animateDpAsState
+13: import androidx.compose.animation.core.animateFloat
+14: import androidx.compose.animation.core.infiniteRepeatable
+15: import androidx.compose.animation.core.rememberInfiniteTransition
+16: import androidx.compose.animation.core.spring
+17: import androidx.compose.animation.fadeIn
+18: import androidx.compose.animation.fadeOut
+19: import androidx.compose.animation.core.tween
+20: import androidx.compose.animation.togetherWith
+21: import androidx.compose.foundation.background
+22: import androidx.compose.foundation.basicMarquee
+23: import androidx.compose.foundation.border
+24: import androidx.compose.foundation.clickable
+25: import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+26: import androidx.compose.foundation.isSystemInDarkTheme
+27: import androidx.compose.foundation.layout.Arrangement
+28: import androidx.compose.foundation.layout.Box
+29: import androidx.compose.foundation.layout.Column
+30: import androidx.compose.foundation.layout.Row
+31: import androidx.compose.foundation.layout.Spacer
+32: import androidx.compose.foundation.layout.W
+<truncated 1649 bytes>
+port androidx.compose.runtime.rememberCoroutineScope
+64: import androidx.compose.runtime.setValue
+65: import androidx.compose.ui.Alignment
+66: import androidx.compose.ui.Modifier
+67: import androidx.compose.ui.draw.alpha
+68: import androidx.compose.ui.draw.blur
+69: import androidx.compose.ui.draw.clip
+70: import androidx.compose.ui.draw.drawWithContent
+71: import androidx.compose.ui.geometry.Offset
+72: import androidx.compose.ui.geometry.Size
+73: import androidx.compose.ui.graphics.BlendMode
+74: import androidx.compose.ui.graphics.Brush
+75: import androidx.compose.ui.graphics.Color
+76: import androidx.compose.ui.graphics.ColorFilter
+77: import androidx.compose.ui.graphics.ColorMatrix
+78: import androidx.compose.ui.graphics.CompositingStrategy
+79: import androidx.compose.ui.graphics.StrokeCap
+80: import androidx.compose.ui.graphics.drawscope.Stroke
+81: import androidx.compose.ui.graphics.graphicsLayer
+82: import androidx.compose.ui.graphics.lerp
+83: import androidx.compose.ui.graphics.toArgb
+84: import androidx.compose.ui.input.pointer.pointerInput
+85: import androidx.compose.ui.layout.ContentScale
+86: import androidx.compose.ui.platform.LocalConfiguration
+87: import androidx.compose.ui.platform.LocalContext
+88: import androidx.compose.ui.platform.LocalLayoutDirection
+89: import androidx.compose.ui.res.painterResource
+90: import androidx.compose.ui.res.stringResource
+91: import androidx.compose.ui.text.font.FontWeight
+92: import androidx.compose.ui.text.style.TextOverflow
+93: import androidx.compose.ui.unit.IntOffset
+94: import androidx.compose.ui.unit.LayoutDirection
+95: import androidx.compose.ui.unit.dp
+96: import androidx.compose.ui.unit.sp
+97: import androidx.media3.common.Player
+98: import androidx.palette.graphics.Palette
+99: import coil3.compose.AsyncImage
+100: import coil3.imageLoader
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

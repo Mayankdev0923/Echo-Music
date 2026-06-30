@@ -86,6 +86,7 @@ import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.ui.utils.resize
 import iad1tya.echo.music.utils.joinByBullet
 import iad1tya.echo.music.utils.makeTimeString
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -110,6 +111,11 @@ fun YouTubeSongMenu(
     val listenTogetherManager = LocalListenTogetherManager.current
     val ringtoneViewModel = iad1tya.echo.music.LocalRingtoneViewModel.current
     val isPinned by database.speedDialDao.isPinned(song.id).collectAsState(initial = false)
+
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, song.id) {
+        libraryPinnedItems.split(",").contains("song:${song.id}")
+    }
     val artists = remember {
         song.artists.mapNotNull {
             it.id?.let { artistId ->
@@ -251,11 +257,12 @@ fun YouTubeSongMenu(
                 )  
             }  
         },  
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
     )  
-
-    HorizontalDivider()
-
-    Spacer(modifier = Modifier.height(12.dp))
+ 
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    )
 
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val configuration = LocalConfiguration.current
@@ -265,9 +272,9 @@ fun YouTubeSongMenu(
 
     LazyColumn(
         contentPadding = PaddingValues(
-            start = 0.dp,
+            start = 16.dp,
             top = 0.dp,
-            end = 0.dp,
+            end = 16.dp,
             bottom = 8.dp + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
         ),
     ) {
@@ -327,7 +334,7 @@ fun YouTubeSongMenu(
                     )
                 ),
                 columns = 3,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                modifier = Modifier.padding(vertical = 12.dp)
             )
         }
 
@@ -420,6 +427,36 @@ fun YouTubeSongMenu(
                             )
                         )
                     }
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                val currentPinned = libraryPinnedItems
+                                val items = if (currentPinned.isBlank()) emptyList() else currentPinned.split(",")
+                                val itemKey = "song:${song.id}"
+                                val newItems = if (items.contains(itemKey)) {
+                                    items.filter { it != itemKey }
+                                } else {
+                                    database.query {
+                                        insert(song.toMediaMetadata())
+                                    }
+                                    (items + itemKey).distinct()
+                                }
+                                setLibraryPinnedItems(newItems.joinToString(","))
+                                onDismiss()
+                            }
+                        )
+                    )
                     add(
                         Material3MenuItemData(
                             title = { 

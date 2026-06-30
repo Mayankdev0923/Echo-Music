@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +34,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
+import iad1tya.echo.music.constants.AppBarHeight
+import iad1tya.echo.music.ui.component.OnlineBlur
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -138,6 +146,7 @@ import iad1tya.echo.music.playback.queues.YouTubeQueue
 import iad1tya.echo.music.ui.component.ActionPromptDialog
 import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.DraggableScrollbar
+import com.music.echo.ui.component.appleGlass
 import iad1tya.echo.music.ui.component.EmptyPlaceholder
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.LocalMenuState
@@ -812,117 +821,150 @@ fun LocalPlaylistScreen(
             headerItems = 2
         )
 
-        TopAppBar(
-            title = {
-                if (inSelectMode) {
-                    Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
-                } else if (isSearching) {
-                    TextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.search),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        },
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
+        if (isSearching) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 44.dp, start = 16.dp, end = 16.dp)
+                    .appleGlass(CircleShape, elevation = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        isSearching = false
+                        query = TextFieldValue()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.arrow_back),
+                        contentDescription = "Cancel Search",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.search),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester)
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 44.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Circular Back Button
+                IconButton(
+                    onClick = {
+                        if (inSelectMode) {
+                            onExitSelectionMode()
+                        } else {
+                            navController.navigateUp()
+                        }
+                    },
+                    onLongClick = {
+                        if (!inSelectMode) {
+                            navController.backToMain()
+                        }
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .appleGlass(CircleShape, elevation = 4.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            if (inSelectMode) R.drawable.close else R.drawable.arrow_back
                         ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)
+                        contentDescription = "Back",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
-                } else if (showTopBarTitle) {
-                    Text(playlist?.playlist?.name.orEmpty())
                 }
-            },
-            navigationIcon = {
-                if (inSelectMode) {
-                    IconButton(onClick = onExitSelectionMode) {
-                        Icon(
-                            painter = painterResource(R.drawable.close),
-                            contentDescription = null,
+
+                // Action Pill
+                Row(
+                    modifier = Modifier
+                        .appleGlass(CircleShape, elevation = 4.dp)
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (inSelectMode) {
+                        Checkbox(
+                            checked = selection.size == songs.size && selection.isNotEmpty(),
+                            onCheckedChange = {
+                                if (selection.size == songs.size) {
+                                    selection.clear()
+                                } else {
+                                    selection.clear()
+                                    selection.addAll(songs.map { it.map.id })
+                                }
+                            }
                         )
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            if (isSearching) {
-                                isSearching = false
-                                query = TextFieldValue()
-                            } else {
-                                navController.navigateUp()
-                            }
-                        },
-                        onLongClick = {
-                            if (!isSearching) {
-                                navController.backToMain()
-                            }
+                        IconButton(
+                            enabled = selection.isNotEmpty(),
+                            onClick = {
+                                menuState.show {
+                                    SelectionSongMenu(
+                                        songSelection = selection.mapNotNull { mapId ->
+                                            songs.find { it.map.id == mapId }?.song
+                                        },
+                                        songPosition = selection.mapNotNull { mapId ->
+                                            songs.find { it.map.id == mapId }?.map
+                                        },
+                                        onDismiss = menuState::dismiss,
+                                        clearAction = onExitSelectionMode
+                                    )
+                                }
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.more_vert),
+                                contentDescription = "Menu",
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back),
-                            contentDescription = null
-                        )
-                    }
-                }
-            },
-            actions = {
-                if (inSelectMode) {
-                    Checkbox(
-                        checked = selection.size == songs.size && selection.isNotEmpty(),
-                        onCheckedChange = {
-                            if (selection.size == songs.size) {
-                                selection.clear()
-                            } else {
-                                selection.clear()
-                                selection.addAll(songs.map { it.map.id })
-                            }
+                    } else {
+                        IconButton(
+                            onClick = { isSearching = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.search),
+                                contentDescription = "Search",
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
-                    )
-                    IconButton(
-                        enabled = selection.isNotEmpty(),
-                        onClick = {
-                            menuState.show {
-                                SelectionSongMenu(
-                                    songSelection = selection.mapNotNull { mapId ->
-                                        songs.find { it.map.id == mapId }?.song
-                                    },
-                                    songPosition = selection.mapNotNull { mapId ->
-                                        songs.find { it.map.id == mapId }?.map
-                                    },
-                                    onDismiss = menuState::dismiss,
-                                    clearAction = onExitSelectionMode
-                                )
-                            }
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.more_vert),
-                            contentDescription = null
-                        )
-                    }
-                } else if (!isSearching) {
-                    
-                    IconButton(
-                        onClick = { isSearching = true }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.search),
-                            contentDescription = null
-                        )
                     }
                 }
             }
-        )
+        }
 
         SnackbarHost(
             hostState = snackbarHostState,
@@ -968,7 +1010,7 @@ fun LocalPlaylistHeader(
 
     val overrideThumbnail = remember {mutableStateOf<String?>(null)}
     var isCustomThumbnail: Boolean = playlist.thumbnails.firstOrNull()?.let {
-        it.contains("studio_square_thumbnail") || it.contains("content://com.echomusic.music")
+        it.contains("studio_square_thumbnail") || it.startsWith("content://${context.packageName}.FileProvider")
     } ?: false
 
 
@@ -995,7 +1037,8 @@ fun LocalPlaylistHeader(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         uri?.let { sourceUri ->
-            val destFile = java.io.File(context.cacheDir, "playlist_cover_crop_${System.currentTimeMillis()}.jpg")
+            val coverDirectory = java.io.File(context.filesDir, "playlist_covers").apply { mkdirs() }
+            val destFile = java.io.File(coverDirectory, "playlist_cover_crop_${System.currentTimeMillis()}.jpg")
             val destUri = FileProvider.getUriForFile(context, "${context.packageName}.FileProvider", destFile)
             pendingCropDestUri = destUri
     
@@ -1086,12 +1129,30 @@ fun LocalPlaylistHeader(
         }
     }
 
-    Column(
+    val density = LocalDensity.current
+    val systemBarsTopPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val headerOffset = with(density) {
+        -(systemBarsTopPadding + AppBarHeight).roundToPx()
+    }
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        OnlineBlur(
+            thumbnailUrl = overrideThumbnail.value ?: playlist.thumbnails.firstOrNull(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .offset { IntOffset(0, headerOffset) }
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
         if (showEditNoteDialog) {
             ActionPromptDialog(
                 title = stringResource(R.string.edit_playlist_cover),
@@ -1507,6 +1568,8 @@ fun LocalPlaylistHeader(
             )
         }
     }
+}
+
 }
 
 @Composable

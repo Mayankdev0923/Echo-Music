@@ -1,0 +1,94 @@
+Created At: 2026-06-29T10:24:39Z
+Completed At: 2026-06-29T10:24:40Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/FloatingNavigationToolbar.kt`
+Total Lines: 656
+Total Bytes: 25108
+Showing lines 1 to 656
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: 
+2: 
+3: @file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+4: 
+5: package iad1tya.echo.music.ui.component
+6: 
+7: import androidx.compose.animation.AnimatedVisibility
+8: import androidx.compose.animation.Crossfade
+9: import androidx.compose.animation.animateColor
+10: import androidx.compose.animation.core.Spring
+11: import androidx.compose.animation.core.animateDp
+12: import androidx.compose.animation.core.animateDpAsState
+13: import androidx.compose.animation.core.animateFloat
+14: import androidx.compose.animation.core.animateFloatAsState
+15: import androidx.compose.animation.core.spring
+16: import androidx.compose.animation.core.updateTransition
+17: import androidx.compose.animation.expandHorizontally
+18: import androidx.compose.animation.fadeIn
+19: import androidx.compose.animation.fadeOut
+20: import androidx.compose.animation.shrinkHorizontally
+21: import androidx.compose.foundation.LocalIndication
+22: import androidx.compose.foundation.background
+23: import androidx.compose.foundation.border
+24: import androidx.compose.foundation.clickable
+25: import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+26: import androidx.compose.foundation.interaction.MutableInteractionSource
+27: import androidx.compose.foundation.interaction.collectIsPressedAsState
+28: import androidx.compose.foundation.layout.Arrangement
+29: import androidx.compose.foundation.layout.Box
+30: import androidx.compose.foundation.layout.BoxWithConstraints
+31: import androidx.compose.foundation.layout.Ro
+<truncated 24777 bytes>
+oatingToolbarItemContentColor(pureBlack: Boolean): Color {
+604:     return MaterialTheme.colorScheme.onSurfaceVariant
+605: }
+606: 
+607: @Composable
+608: private fun floatingToolbarMenuIconContainerColor(pureBlack: Boolean): Color {
+609:     return MaterialTheme.colorScheme.secondaryContainer
+610: }
+611: 
+612: @Composable
+613: private fun floatingToolbarMenuIconContentColor(pureBlack: Boolean): Color {
+614:     return MaterialTheme.colorScheme.onSecondaryContainer
+615: }
+616: 
+617: @Composable
+618: private fun FloatingNavigationToolbarActionItem(
+619:     iconRes: Int,
+620:     contentDescription: String,
+621:     pureBlack: Boolean,
+622:     onClick: () -> Unit,
+623:     modifier: Modifier = Modifier,
+624: ) {
+625:     val interactionSource = remember { MutableInteractionSource() }
+626:     val isPressed by interactionSource.collectIsPressedAsState()
+627:     val pressScale by animateFloatAsState(
+628:         targetValue = if (isPressed) 0.91f else 1f,
+629:         animationSpec = spring(
+630:             dampingRatio = Spring.DampingRatioMediumBouncy,
+631:             stiffness = Spring.StiffnessMedium,
+632:         ),
+633:         label = "pressScale",
+634:     )
+635: 
+636:     Box(
+637:         modifier = modifier
+638:             .scale(pressScale)
+639:             .appleGlass(CircleShape, elevation = 10.dp)
+640:             .clickable(
+641:                 interactionSource = interactionSource,
+642:                 indication = LocalIndication.current,
+643:                 role = Role.Button,
+644:                 onClick = onClick,
+645:             ),
+646:         contentAlignment = Alignment.Center,
+647:     ) {
+648:         Icon(
+649:             painter = painterResource(iconRes),
+650:             contentDescription = contentDescription,
+651:             tint = floatingToolbarFabContentColor(pureBlack),
+652:             modifier = Modifier.size(24.dp),
+653:         )
+654:     }
+655: }
+656: 
+The above content shows the entire, complete file contents of the requested file.

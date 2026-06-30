@@ -5,6 +5,8 @@ package iad1tya.echo.music.ui.screens.settings
 import android.content.Intent
 
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.only
 import android.os.Build
 import android.provider.Settings
@@ -56,6 +58,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import com.music.echo.ui.component.appleGlass
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
@@ -135,7 +142,7 @@ highlightKey: String? = null) {
     val (hideExplicit, onHideExplicitChange) = rememberPreference(key = HideExplicitKey, defaultValue = false)
     val (hideVideoSongs, onHideVideoSongsChange) = rememberPreference(key = HideVideoSongsKey, defaultValue = false)
 
-    val (hideYoutubeShorts, onHideYoutubeShortsChange) = rememberPreference(key = HideYoutubeShortsKey, defaultValue = false)
+    val (hideYoutubeShorts, onHideYoutubeShortsChange) = rememberPreference(HideYoutubeShortsKey, defaultValue = true)
     val (showArtistDescription, onShowArtistDescriptionChange) = rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val (showArtistSubscriberCount, onShowArtistSubscriberCountChange) = rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
     val (showMonthlyListeners, onShowMonthlyListenersChange) = rememberPreference(key = ShowMonthlyListenersKey, defaultValue = true)
@@ -167,7 +174,7 @@ highlightKey: String? = null) {
         IpVersionKey,
         defaultValue = IpVersion.AUTO
     )
-    val (albumCanvasEnabled, onAlbumCanvasEnabledChange) = rememberPreference(key = AlbumCanvasEnabledKey, defaultValue = false)
+    val (albumCanvasEnabled, onAlbumCanvasEnabledChange) = rememberPreference(AlbumCanvasEnabledKey, defaultValue = true)
 
     var showPlaybackLogsDialog by rememberSaveable { mutableStateOf(false) }
     var showSuggestionSheet by rememberSaveable { mutableStateOf(false) }
@@ -601,15 +608,23 @@ highlightKey: String? = null) {
         )
     }
 
-    Column(
-        Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp),
-    ) {
-        Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
-        Material3SettingsGroup(scrollState = scrollState, 
-            title = stringResource(R.string.general),
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal))
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp),
+        ) {
+            Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)))
+            Spacer(modifier = Modifier.height(72.dp))
+            Text(
+                text = stringResource(R.string.content),
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+            )
+            Material3SettingsGroup(scrollState = scrollState, 
+                title = stringResource(R.string.general),
             items = listOf(
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.content_language)),
@@ -1217,18 +1232,24 @@ highlightKey: String? = null) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.content)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
-            }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.systemBars.only(WindowInsetsSides.Top))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        iad1tya.echo.music.ui.component.IconButton(
+            onClick = navController::navigateUp,
+            onLongClick = navController::backToMain,
+            modifier = Modifier
+                .appleGlass(CircleShape, elevation = 2.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painterResource(R.drawable.arrow_back),
+                contentDescription = null
+            )
         }
-    )
+    }
+}
 }

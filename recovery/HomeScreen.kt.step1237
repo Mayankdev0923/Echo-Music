@@ -1,0 +1,24 @@
+Created At: 2026-06-28T18:24:49Z
+Completed At: 2026-06-28T18:24:49Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2053
+Total Bytes: 115704
+Showing lines 740 to 755
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+740:         }
+741:     }
+742: 
+743:     val ytGridItem: @Composable (YTItem) -> Unit = { item ->
+744:         YouTubeGridItem(
+745:             item = item,
+746:             isActive = item.id in listOf(mediaMetadata?.album?.id, mediaMetadata?.id),
+747:             isPlaying = isPlaying,
+748:             coroutineScope = scope,
+749:             thumbnailRatio = 1f,
+750:             modifier = Modifier
+751:                 .combinedClickable(
+752:                     onClick = {
+753:                         when (item) {
+754:                             is SongItem -> playerConnection.playQueue(
+755:                                 YouTubeQueue(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

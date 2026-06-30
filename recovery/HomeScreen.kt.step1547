@@ -1,0 +1,24 @@
+Created At: 2026-06-28T19:37:35Z
+Completed At: 2026-06-28T19:37:36Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2170
+Total Bytes: 121216
+Showing lines 2110 to 2125
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2110:                     .align(Alignment.TopEnd)
+2111:                     .windowInsetsPadding(WindowInsets.statusBars)
+2112:                     .padding(top = 74.dp, end = 16.dp)
+2113:                     .appleGlass(CircleShape, elevation = 2.dp)
+2114:                     .padding(horizontal = 8.dp, vertical = 4.dp),
+2115:                 verticalAlignment = Alignment.CenterVertically,
+2116:                 horizontalArrangement = Arrangement.spacedBy(4.dp)
+2117:             ) {
+2118:                 // History
+2119:                 IconButton(
+2120:                     onClick = { navController.navigate("history") },
+2121:                     modifier = Modifier.size(32.dp)
+2122:                 ) {
+2123:                     Icon(
+2124:                         painter = painterResource(R.drawable.music_history),
+2125:                         contentDescription = stringResource(R.string.history),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

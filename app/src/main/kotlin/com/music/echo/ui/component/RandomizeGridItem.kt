@@ -20,7 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import iad1tya.echo.music.constants.ThumbnailCornerRadius
+import com.music.echo.ui.component.appleGlass
+import com.music.echo.ui.component.AppleRadius
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -29,8 +30,6 @@ fun RandomizeGridItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    
-    
     val dotOffsetMultiplier by animateFloatAsState(
         targetValue = if (isLoading) 0f else 1f,
         animationSpec = tween(durationMillis = 600),
@@ -46,20 +45,14 @@ fun RandomizeGridItem(
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(ThumbnailCornerRadius))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .appleGlass(RoundedCornerShape(AppleRadius.large)) // Premium glass tile
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        
-        val dotColor = MaterialTheme.colorScheme.onSecondaryContainer
+        val dotColor = MaterialTheme.colorScheme.onSurface
         val dotSize = 14.dp
         val padding = 24.dp
 
-        
-        
-
-        
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -104,11 +97,10 @@ fun RandomizeGridItem(
                 .background(dotColor)
         )
         
-        
         Box(modifier = Modifier.alpha(loadingAlpha)) {
             LoadingIndicator(
                 modifier = Modifier.size(48.dp),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

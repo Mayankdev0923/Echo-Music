@@ -1,0 +1,39 @@
+Created At: 2026-06-28T19:09:59Z
+Completed At: 2026-06-28T19:09:59Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/MiniPlayer.kt`
+Total Lines: 1243
+Total Bytes: 52764
+Showing lines 1115 to 1145
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1115:                     }
+1116:             ) {
+1117:                 val matrix = remember { ColorMatrix().apply { setToSaturation(1.6f) } }
+1118:                 AsyncImage(
+1119:                     model = ImageRequest.Builder(context)
+1120:                         .data(mediaMetadata?.thumbnailUrl)
+1121:                         .size(128, 128)
+1122:                         .allowHardware(false)
+1123:                         .build(),
+1124:                     contentDescription = null,
+1125:                     contentScale = ContentScale.Crop,
+1126:                     colorFilter = ColorFilter.colorMatrix(matrix),
+1127:                     modifier = Modifier
+1128:                         .fillMaxSize()
+1129:                         .blur(40.dp)
+1130:                         .graphicsLayer { rotationZ = rotation.value }
+1131:                 )
+1132:                 Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
+1133:             }
+1134:         }
+1135:         else -> {}
+1136:     }
+1137: }
+1138: 
+1139: @Composable
+1140: private fun MiniPlayerControls(
+1141:     playerConnection: PlayerConnection,
+1142:     playbackState: Int,
+1143:     isCasting: Boolean,
+1144:     castHandler: CastConnectionHandler?,
+1145:     listenTogetherManager: ListenTogetherManager?,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

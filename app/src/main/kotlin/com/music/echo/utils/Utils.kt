@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.ui.graphics.Shape
 import java.util.Locale
@@ -43,5 +44,30 @@ fun listItemShape(index: Int, count: Int, radius: Dp = 24.dp): Shape {
             cornerRadiusBR = radius, smoothnessAsPercentBR = smoothness
         )
         else -> RectangleShape
+    }
+}
+
+fun listThumbnailShape(index: Int, count: Int, baseRadius: Dp = 6.dp): Shape {
+    val outerRadius = 14.dp
+    return when {
+        count == 1 -> RoundedCornerShape(
+            topStart = outerRadius,
+            bottomStart = outerRadius,
+            topEnd = baseRadius,
+            bottomEnd = baseRadius
+        )
+        index == 0 -> RoundedCornerShape(
+            topStart = outerRadius,
+            topEnd = baseRadius,
+            bottomStart = baseRadius,
+            bottomEnd = baseRadius
+        )
+        index == count - 1 -> RoundedCornerShape(
+            topStart = baseRadius,
+            topEnd = baseRadius,
+            bottomStart = outerRadius,
+            bottomEnd = baseRadius
+        )
+        else -> RoundedCornerShape(baseRadius)
     }
 }

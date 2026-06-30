@@ -13,6 +13,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -55,6 +56,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.font.FontWeight
+import com.music.echo.ui.component.appleGlass
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
@@ -138,10 +145,7 @@ fun AppearanceSettings(
 highlightKey: String? = null) {
     val scrollState = androidx.compose.foundation.rememberScrollState()
 
-    val (dynamicTheme, onDynamicThemeChange) = rememberPreference(
-        DynamicThemeKey,
-        defaultValue = true
-    )
+    val (dynamicTheme, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
     val (enableLegacyIcon, onEnableLegacyIconChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableLegacyIconKey,
         defaultValue = false
@@ -199,15 +203,9 @@ highlightKey: String? = null) {
         defaultValue = false
     )
     val (playerBackground, onPlayerBackgroundChange) =
-        rememberEnumPreference(
-            PlayerBackgroundStyleKey,
-            defaultValue = PlayerBackgroundStyle.GRADIENT,
-        )
+        rememberEnumPreference(PlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.APPLE_MUSIC)
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
-        rememberEnumPreference(
-            MiniPlayerBackgroundStyleKey,
-            defaultValue = PlayerBackgroundStyle.DEFAULT,
-        )
+        rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.GLOW_ANIMATED)
 
     val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(
         DefaultOpenTabKey,
@@ -226,15 +224,12 @@ highlightKey: String? = null) {
         LyricsScrollKey,
         defaultValue = true
     )
-    val (lyricsAnimationStyle, onLyricsAnimationStyleChange) = rememberEnumPreference(
-        LyricsAnimationStyleKey,
-        defaultValue = LyricsAnimationStyle.echomusic_1
-    )
-    val (lyricsTextSize, onLyricsTextSizeChange) = rememberPreference(LyricsTextSizeKey, defaultValue = 24f)
-    val (lyricsLineSpacing, onLyricsLineSpacingChange) = rememberPreference(LyricsLineSpacingKey, defaultValue = 1.3f)
-    val (lyricsGlowEffect, onLyricsGlowEffectChange) = rememberPreference(LyricsGlowEffectKey, defaultValue = false)
+    val (lyricsAnimationStyle, onLyricsAnimationStyleChange) = rememberEnumPreference(LyricsAnimationStyleKey, defaultValue = iad1tya.echo.music.constants.LyricsAnimationStyle.METRO_LYRICS)
+    val (lyricsTextSize, onLyricsTextSizeChange) = rememberPreference(LyricsTextSizeKey, defaultValue = 32f)
+    val (lyricsLineSpacing, onLyricsLineSpacingChange) = rememberPreference(LyricsLineSpacingKey, defaultValue = 1.6f)
+    val (lyricsGlowEffect, onLyricsGlowEffectChange) = rememberPreference(LyricsGlowEffectKey, defaultValue = true)
     val (appleMusicLyricsBlur, onAppleMusicLyricsBlurChange) = rememberPreference(AppleMusicLyricsBlurKey, defaultValue = true)
-    val (lyricsStandardBlur, onLyricsStandardBlurChange) = rememberPreference(LyricsStandardBlurKey, defaultValue = false)
+    val (lyricsStandardBlur, onLyricsStandardBlurChange) = rememberPreference(LyricsStandardBlurKey, defaultValue = true)
     val (swipeLyrics, onSwipeLyricsChange) = rememberPreference(SwipeLyricsKey, defaultValue = false)
     val (enableLyricsThumbnailPlayPause, onEnableLyricsThumbnailPlayPauseChange) = rememberPreference(EnableLyricsThumbnailPlayPauseKey, defaultValue = false)
     val (hideStatusBarOnFullscreen, onHideStatusBarOnFullscreenChange) = rememberPreference(HideStatusBarOnFullscreenKey, defaultValue = false)
@@ -255,10 +250,7 @@ highlightKey: String? = null) {
         SwipeSensitivityKey,
         defaultValue = 0.73f
     )
-    val (canvasThumbnailAnimation, onCanvasThumbnailAnimationChange) = rememberPreference(
-        CanvasThumbnailAnimationKey,
-        defaultValue = false
-    )
+    val (canvasThumbnailAnimation, onCanvasThumbnailAnimationChange) = rememberPreference(CanvasThumbnailAnimationKey, defaultValue = true)
     val (rotatingThumbnail, onRotatingThumbnailChange) = rememberPreference(
         RotatingThumbnailKey,
         defaultValue = false
@@ -956,23 +948,31 @@ highlightKey: String? = null) {
         }
     }
 
-    Column(
-        Modifier
-            .windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Horizontal
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Horizontal
+                    )
+                )
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp),
+        ) {
+            Spacer(
+                Modifier.windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Top
+                    )
                 )
             )
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp),
-    ) {
-        Spacer(
-            Modifier.windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
-                )
+            Spacer(modifier = Modifier.height(72.dp))
+            Text(
+                text = stringResource(R.string.appearance),
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
             )
-        )
         Material3SettingsGroup(scrollState = scrollState, 
             title = stringResource(R.string.theme),
             items = buildList {
@@ -1974,20 +1974,26 @@ highlightKey: String? = null) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.appearance)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
-            }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+    ) {
+        iad1tya.echo.music.ui.component.IconButton(
+            onClick = navController::navigateUp,
+            onLongClick = navController::backToMain,
+            modifier = Modifier
+                .appleGlass(CircleShape, elevation = 2.dp)
+                .clip(CircleShape)
+        ) {
+            Icon(
+                painterResource(R.drawable.arrow_back),
+                contentDescription = null
+            )
         }
-    )
+    }
+}
 }
 
 enum class DarkMode {

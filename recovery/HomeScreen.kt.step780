@@ -1,0 +1,54 @@
+Created At: 2026-06-28T17:24:20Z
+Completed At: 2026-06-28T17:24:20Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2028
+Total Bytes: 114932
+Showing lines 920 to 965
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+920:         ) {
+921:             val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
+922:             val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
+923:             val quickPicksSnapLayoutInfoProvider = remember(quickPicksLazyGridState) {
+924:                 SnapLayoutInfoProvider(
+925:                     lazyGridState = quickPicksLazyGridState,
+926:                     positionInLayout = { layoutSize, itemSize ->
+927:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+928:                     }
+929:                 )
+930:             }
+931:             val forgottenFavoritesSnapLayoutInfoProvider = remember(forgottenFavoritesLazyGridState) {
+932:                 SnapLayoutInfoProvider(
+933:                     lazyGridState = forgottenFavoritesLazyGridState,
+934:                     positionInLayout = { layoutSize, itemSize ->
+935:                         (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+936:                     }
+937:                 )
+938:             }
+939: 
+940:             LazyColumn(
+941:                 state = lazylistState,
+942:                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+943:             ) {
+944:                 item {
+945:                     // Immersive Top Header
+946:                     Row(
+947:                         modifier = Modifier
+948:                             .fillMaxWidth()
+949:                             .padding(start = 16.dp, end = 16.dp, top = 44.dp, bottom = 12.dp),
+950:                         verticalAlignment = Alignment.CenterVertically,
+951:                         horizontalArrangement = Arrangement.SpaceBetween
+952:                     ) {
+953:                         Text(
+954:                             text = "Home",
+955:                             style = MaterialTheme.typography.headlineLarge.copy(
+956:                                 fontWeight = FontWeight.Bold,
+957:                                 fontSize = 32.sp
+958:                             ),
+959:                             color = MaterialTheme.colorScheme.onBackground
+960:                         )
+961: 
+962:                         // Pill shaped action icons
+963:                         Row(
+964:                             modifier = Modifier
+965:                                 .appleGlass(CircleShape, elevation = 2.dp)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

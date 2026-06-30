@@ -1,0 +1,19 @@
+Created At: 2026-06-28T13:57:10Z
+Completed At: 2026-06-28T13:57:10Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 565 to 575
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+565:                         else -> null
+566:                     }
+567:                 }
+568: 
+569:                 val topLevelScreens = remember {
+570:                     listOf(
+571:                         Screens.Home.route,
+572:                         Screens.Library.route,
+573:                         Screens.ListenTogether.route,
+574:                         "settings",
+575:                     )
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

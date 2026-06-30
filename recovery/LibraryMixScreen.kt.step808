@@ -1,0 +1,42 @@
+Created At: 2026-06-28T17:24:54Z
+Completed At: 2026-06-28T17:24:54Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 865
+Total Bytes: 44012
+Showing lines 275 to 308
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+275:                         MixSortType.NAME -> R.string.sort_by_name
+276:                     }
+277:                 },
+278:             )
+279: 
+280:             Spacer(Modifier.weight(1f))
+281: 
+282:             Spacer(modifier = Modifier.width(16.dp))
+283:         }
+284:     }
+285: 
+286:     val isRefreshing by viewModel.isRefreshing.collectAsState()
+287:     val pullRefreshState = rememberPullToRefreshState()
+288: 
+289:     PullToRefreshBox(
+290:         state = pullRefreshState,
+291:         isRefreshing = isRefreshing,
+292:         onRefresh = viewModel::refresh,
+293:         indicator = {
+294:             PullToRefreshDefaults.LoadingIndicator(
+295:                 state = pullRefreshState,
+296:                 isRefreshing = isRefreshing,
+297:                 modifier = Modifier.align(Alignment.TopCenter),
+298:             )
+299:         }
+300:     ) {
+301:         when (viewType) {
+302:             LibraryViewType.LIST ->
+303:                 LazyColumn(
+304:                     state = lazyListState,
+305:                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+306:                 ) {
+307:                     item(
+308:                         key = "immersive_header",
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

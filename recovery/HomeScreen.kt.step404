@@ -1,0 +1,54 @@
+Created At: 2026-06-28T13:34:05Z
+Completed At: 2026-06-28T13:34:06Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1947
+Total Bytes: 110392
+Showing lines 1400 to 1445
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1400:                                 }
+1401:                                 item(key = "daily_discover_content") {
+1402:                                     Box(
+1403:                                         modifier = Modifier
+1404:                                             .fillMaxWidth()
+1405:                                             .height(340.dp)
+1406:                                             .padding(horizontal = 16.dp),
+1407:                                         contentAlignment = Alignment.Center
+1408:                                     ) {
+1409:                                         val carouselState = rememberCarouselState { discoverList.size }
+1410:                                         HorizontalMultiBrowseCarousel(
+1411:                                             state = carouselState,
+1412:                                             preferredItemWidth = 320.dp,
+1413:                                             itemSpacing = 16.dp,
+1414:                                             modifier = Modifier
+1415:                                                 .fillMaxWidth()
+1416:                                                 .height(320.dp)
+1417:                                         ) { i ->
+1418:                                             val item = discoverList[i]
+1419:                                             DailyDiscoverCard(
+1420:                                                 dailyDiscover = item,
+1421:                                                 onClick = {
+1422:                                                     val song = item.recommendation as? SongItem
+1423:                                                     val mediaMetadata = song?.toMediaMetadata()
+1424:                                                     if (mediaMetadata != null) {
+1425:                                                         playerConnection.playQueue(
+1426:                                                             YouTubeQueue(
+1427:                                                                 song.endpoint ?: WatchEndpoint(videoId = song.id),
+1428:                                                                 mediaMetadata
+1429:                                                             )
+1430:                                                         )
+1431:                                                     }
+1432:                                                 },
+1433:                                                 navController = navController,
+1434:                                                 modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+1435:                                             )
+1436:                                         }
+1437:                                     }
+1438:                                 }
+1439:                                 item(key = "daily_discover_spacer") {
+1440:                                     Spacer(modifier = Modifier.height(28.dp))
+1441:                                 }
+1442:                             }
+1443:                         }
+1444:                         HomeSection.KeepListening -> {
+1445:                             keepListening?.takeIf { it.isNotEmpty() }?.let { keepListening ->
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

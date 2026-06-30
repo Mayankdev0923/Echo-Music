@@ -1,0 +1,56 @@
+Created At: 2026-06-29T10:38:03Z
+Completed At: 2026-06-29T10:38:04Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/FloatingNavigationToolbar.kt`
+Total Lines: 597
+Total Bytes: 23644
+Showing lines 550 to 597
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+550: 
+551: @Composable
+552: private fun floatingToolbarMenuIconContentColor(pureBlack: Boolean): Color {
+553:     return MaterialTheme.colorScheme.onSecondaryContainer
+554: }
+555: 
+556: @Composable
+557: private fun FloatingNavigationToolbarActionItem(
+558:     iconRes: Int,
+559:     contentDescription: String,
+560:     pureBlack: Boolean,
+561:     onClick: () -> Unit,
+562:     modifier: Modifier = Modifier,
+563: ) {
+564:     val interactionSource = remember { MutableInteractionSource() }
+565:     val isPressed by interactionSource.collectIsPressedAsState()
+566:     val pressScale by animateFloatAsState(
+567:         targetValue = if (isPressed) 0.91f else 1f,
+568:         animationSpec = spring(
+569:             dampingRatio = Spring.DampingRatioMediumBouncy,
+570:             stiffness = Spring.StiffnessMedium,
+571:         ),
+572:         label = "pressScale",
+573:     )
+574: 
+575:     Row(
+576:         modifier = modifier
+577:             .scale(pressScale)
+578:             .clip(RoundedCornerShape(24.dp))
+579:             .clickable(
+580:                 interactionSource = interactionSource,
+581:                 indication = LocalIndication.current,
+582:                 role = Role.Button,
+583:                 onClick = onClick,
+584:             )
+585:             .widthIn(min = 48.dp)
+586:             .padding(horizontal = 12.dp, vertical = 12.dp),
+587:         horizontalArrangement = Arrangement.Center,
+588:         verticalAlignment = Alignment.CenterVertically,
+589:     ) {
+590:         Icon(
+591:             painter = painterResource(iconRes),
+592:             contentDescription = contentDescription,
+593:             tint = floatingToolbarItemContentColor(pureBlack),
+594:         )
+595:     }
+596: }
+597: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
+import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.constants.*
 import iad1tya.echo.music.db.entities.Song
 import com.music.echo.discord.DiscordAuthCoordinator
@@ -61,6 +62,7 @@ import iad1tya.echo.music.utils.makeTimeString
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import timber.log.Timber
+import com.music.echo.ui.component.appleGlass
 
 enum class ActivitySource { ARTIST, ALBUM, SONG, APP }
 
@@ -362,68 +364,16 @@ fun DiscordSettings(
             defaultValue = "",
         )
 
-    Scaffold(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(R.string.discord_integration))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = navController::navigateUp,
-                        onLongClick = navController::backToMain,
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back),
-                            contentDescription = null,
-                        )
-                    }
-                },
-                actions = {
-                    var threeDotMenuExpanded by remember { mutableStateOf(false) }
-
-                    IconButton(onClick = { threeDotMenuExpanded = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.more_vert),
-                            contentDescription = null,
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = threeDotMenuExpanded,
-                        onDismissRequest = { threeDotMenuExpanded = false },
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.experiment_settings)) },
-                            onClick = {
-                                threeDotMenuExpanded = false
-                                navController.navigate("settings/discord/experimental")
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.bug_report),
-                                    contentDescription = null,
-                                )
-                            },
-                        )
-                    }
-                },
-                colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { innerPadding ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+        ) { innerPadding ->
         LazyColumn(
             modifier =
                 Modifier
@@ -440,6 +390,15 @@ fun DiscordSettings(
                 ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(72.dp))
+                Text(
+                    text = stringResource(R.string.discord_integration),
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 24.dp, bottom = 16.dp)
+                )
+            }
             item {
                 PreferenceGroup(title = stringResource(R.string.account)) {
                     item {
@@ -724,6 +683,63 @@ fun DiscordSettings(
                     }
                 },
             )
+        }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = navController::navigateUp,
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    painterResource(R.drawable.arrow_back),
+                    contentDescription = null
+                )
+            }
+            var threeDotMenuExpanded by remember { mutableStateOf(false) }
+
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = { threeDotMenuExpanded = true },
+                onLongClick = {},
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .appleGlass(CircleShape, elevation = 2.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    painterResource(R.drawable.more_vert),
+                    contentDescription = null
+                )
+            }
+
+            Box(modifier = Modifier.align(Alignment.TopEnd)) {
+                DropdownMenu(
+                    expanded = threeDotMenuExpanded,
+                    onDismissRequest = { threeDotMenuExpanded = false },
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.experiment_settings)) },
+                        onClick = {
+                            threeDotMenuExpanded = false
+                            navController.navigate("settings/discord/experimental")
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.bug_report),
+                                contentDescription = null,
+                            )
+                        },
+                    )
+                }
+            }
         }
     }
 }

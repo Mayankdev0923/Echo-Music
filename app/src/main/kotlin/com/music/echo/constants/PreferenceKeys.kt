@@ -15,6 +15,7 @@ import com.music.innertube.models.IpVersion
 
 val IsFirstRunKey = booleanPreferencesKey("isFirstRun")
 val SpotifySpDcKey = stringPreferencesKey("spotify_sp_dc")
+val EnableSpotifyKey = booleanPreferencesKey("enable_spotify")
 val SpotifySpKeyKey = stringPreferencesKey("spotify_sp_key")
 val SpotifyAccountNameKey = stringPreferencesKey("spotify_account_name")
 val SpotifyAccountAvatarUrlKey = stringPreferencesKey("spotify_account_avatar_url")
@@ -778,3 +779,4 @@ val YouTubeSubtitleLyricsEnabledKey = booleanPreferencesKey("youtube_subtitle_ly
 val PreloadNextSongEnabledKey = booleanPreferencesKey("preload_next_song_enabled")
 val PreloadNextSongLimitKey = intPreferencesKey("preload_next_song_limit")
 val PreloadLyricsEnabledKey = booleanPreferencesKey("preload_lyrics_enabled")
+val LibraryPinnedItemsKey = stringPreferencesKey("library_pinned_items")

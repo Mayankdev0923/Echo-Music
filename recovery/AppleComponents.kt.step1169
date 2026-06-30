@@ -1,0 +1,29 @@
+Created At: 2026-06-28T18:23:21Z
+Completed At: 2026-06-28T18:23:21Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/AppleComponents.kt`
+Total Lines: 160
+Total Bytes: 5059
+Showing lines 140 to 160
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+140: fun Modifier.appleGlassRow(
+141:     shape: Shape = RectangleShape,
+142:     isActive: Boolean = false,
+143:     isSelected: Boolean = false,
+144:     drawHighlight: Boolean = true
+145: ): Modifier = this.composed {
+146:     val colorScheme = MaterialTheme.colorScheme
+147:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+148:     val bg = when {
+149:         isActive -> colorScheme.secondaryContainer
+150:         isSelected && drawHighlight -> colorScheme.primary.copy(alpha = 0.35f)
+151:         else -> if (isDark) Color(0xFF1C1C1E).copy(alpha = 0.75f) else Color(0xFFFFFFFF).copy(alpha = 0.82f)
+152:     }
+153:     Modifier
+154:         .background(color = bg, shape = shape)
+155:         .border(
+156:             width = 0.5.dp,
+157:             color = if (isDark) Color(0xFFFFFFFF).copy(alpha = 0.12f) else Color(0xFF000000).copy(alpha = 0.08f),
+158:             shape = shape
+159:         )
+160: }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

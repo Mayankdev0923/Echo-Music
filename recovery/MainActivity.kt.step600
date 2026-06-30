@@ -1,0 +1,29 @@
+Created At: 2026-06-28T13:58:57Z
+Completed At: 2026-06-28T13:58:57Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1406
+Total Bytes: 71525
+Showing lines 200 to 220
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+200: import iad1tya.echo.music.ui.theme.ColorSaver
+201: import iad1tya.echo.music.ui.theme.DefaultThemeColor
+202: import iad1tya.echo.music.ui.theme.echomusicTheme
+203: import iad1tya.echo.music.ui.theme.extractThemeColor
+204: import iad1tya.echo.music.ui.utils.appBarScrollBehavior
+205: import iad1tya.echo.music.ui.utils.resetHeightOffset
+206: import iad1tya.echo.music.utils.SyncUtils
+207: import iad1tya.echo.music.utils.dataStore
+208: import iad1tya.echo.music.utils.get
+209: import iad1tya.echo.music.utils.rememberEnumPreference
+210: import iad1tya.echo.music.utils.rememberPreference
+211: import iad1tya.echo.music.utils.reportException
+212: import iad1tya.echo.music.utils.setAppLocale
+213: import iad1tya.echo.music.viewmodels.HomeViewModel
+214: import com.valentinilk.shimmer.LocalShimmerTheme
+215: import dagger.hilt.android.AndroidEntryPoint
+216: import kotlinx.coroutines.Dispatchers
+217: import kotlinx.coroutines.delay
+218: import kotlinx.coroutines.flow.collectLatest
+219: import kotlinx.coroutines.flow.distinctUntilChanged
+220: import kotlinx.coroutines.flow.map
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

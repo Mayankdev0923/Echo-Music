@@ -1,0 +1,78 @@
+Created At: 2026-06-28T18:21:13Z
+Completed At: 2026-06-28T18:21:13Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2050
+Total Bytes: 115436
+Showing lines 280 to 350
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+280:                     modifier = Modifier.weight(1f),
+281:                     verticalArrangement = Arrangement.Center
+282:                 ) {
+283:                     Text(
+284:                         text = item.playlist.title,
+285:                         style = MaterialTheme.typography.titleMedium,
+286:                         maxLines = 2,
+287:                         overflow = TextOverflow.Ellipsis
+288:                     )
+289:                     Spacer(modifier = Modifier.height(4.dp))
+290:                     Text(
+291:                         text = item.playlist.author?.name ?: "",
+292:                         style = MaterialTheme.typography.bodyMedium,
+293:                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+294:                         maxLines = 1
+295:                     )
+296:                 }
+297:             }
+298: 
+299:             Column(
+300:                 modifier = Modifier
+301:                     .fillMaxWidth()
+302:                     .weight(1f)
+303:                     .padding(horizontal = 16.dp)
+304:             ) {
+305:                 item.songs.take(3).forEach { song ->
+306:                     Row(
+307:                         modifier = Modifier
+308:                             .fillMaxWidth()
+309:                             .padding(vertical = 4.dp)
+310:                             .clip(RoundedCornerShape(12.dp))
+311:                             .combinedClickable(onClick = { onSongClick(song) }),
+31
+<truncated 224 bytes>
+age(
+316:                             model = song.thumbnail.resize(544, 544),
+317:                             contentDescription = null,
+318:                             modifier = Modifier
+319:                                 .size(56.dp)
+320:                                 .clip(RoundedCornerShape(12.dp)),
+321:                             contentScale = ContentScale.Crop
+322:                         )
+323:                         Column(modifier = Modifier.weight(1f)) {
+324:                             Text(
+325:                                 text = song.title,
+326:                                 style = MaterialTheme.typography.bodyMedium,
+327:                                 maxLines = 1,
+328:                                 overflow = TextOverflow.Ellipsis
+329:                             )
+330:                             Text(
+331:                                 text = song.artists.joinToString(", ") { it.name },
+332:                                 style = MaterialTheme.typography.bodySmall,
+333:                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+334:                                 maxLines = 1,
+335:                                 overflow = TextOverflow.Ellipsis
+336:                             )
+337:                         }
+338:                     }
+339:                 }
+340:             }
+341: 
+342:             Row(
+343:                 modifier = Modifier
+344:                     .fillMaxWidth()
+345:                     .padding(horizontal = 16.dp, vertical = 16.dp),
+346:                 horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
+347:             ) {
+348:                 IconButton(
+349:                     onClick = {
+350:                         item.playlist.playEndpoint?.let {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

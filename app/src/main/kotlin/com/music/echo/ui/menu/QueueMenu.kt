@@ -60,6 +60,7 @@ import iad1tya.echo.music.LocalDownloadUtil
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.LocalSyncUtils
 import iad1tya.echo.music.R
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
 import iad1tya.echo.music.constants.ListItemHeight
 import iad1tya.echo.music.constants.ListThumbnailSize
 import iad1tya.echo.music.extensions.toMediaItem
@@ -75,6 +76,7 @@ import iad1tya.echo.music.ui.component.MediaMetadataListItem
 import iad1tya.echo.music.ui.component.NewAction
 import iad1tya.echo.music.ui.component.NewActionGrid
 import iad1tya.echo.music.utils.listItemShape
+import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -99,6 +101,10 @@ fun QueueMenu(
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata.id)
         .collectAsState(initial = null)
+    val (libraryPinnedItems, setLibraryPinnedItems) = rememberPreference(LibraryPinnedItemsKey, "")
+    val isLibraryPinned = remember(libraryPinnedItems, mediaMetadata.id) {
+        libraryPinnedItems.split(",").contains("song:${mediaMetadata.id}")
+    }
 
     var refetchIconDegree by remember { mutableFloatStateOf(0f) }
     val rotationAnimation by animateFloatAsState(
@@ -539,6 +545,37 @@ fun QueueMenu(
                             )
                         )
                     }
+                    add(
+                        Material3MenuItemData(
+                            title = {
+                                Text(
+                                    text = if (isLibraryPinned) "Unpin from Library" else "Pin to Library"
+                                )
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_push_pin),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            onClick = {
+                                val items =
+                                    if (libraryPinnedItems.isBlank()) emptyList()
+                                    else libraryPinnedItems.split(",")
+                                val itemKey = "song:${mediaMetadata.id}"
+                                val newItems =
+                                    if (items.contains(itemKey)) {
+                                        items.filter { it != itemKey }
+                                    } else {
+                                        database.transaction { insert(mediaMetadata) }
+                                        (items + itemKey).distinct()
+                                    }
+                                setLibraryPinnedItems(newItems.joinToString(","))
+                                onDismiss()
+                            }
+                        )
+                    )
                 }
             )
         }

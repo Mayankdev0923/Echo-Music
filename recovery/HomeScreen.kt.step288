@@ -1,0 +1,88 @@
+Created At: 2026-06-28T13:09:53Z
+Completed At: 2026-06-28T13:09:53Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1947
+Total Bytes: 110392
+Showing lines 645 to 805
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+645:     if (selectedChip != null) {
+646:         BackHandler {
+647: 
+648:             viewModel.toggleChip(selectedChip)
+649:         }
+650:     }
+651: 
+652:     val localGridItem: @Composable (LocalItem) -> Unit = {
+653:         when (it) {
+654:             is Song -> SongGridItem(
+655:                 song = it,
+656:                 modifier = Modifier
+657:                     .fillMaxWidth()
+658:                     .combinedClickable(
+659:                         onClick = {
+660:                             if (it.id == mediaMetadata?.id) {
+661:                                 playerConnection.togglePlayPause()
+662:                             } else {
+663:                                 playerConnection.playQueue(
+664:                                     YouTubeQueue.radio(it.toMediaMetadata()),
+665:                                 )
+666:                             }
+667:                         },
+668:                         onLongClick = {
+669:                             haptic.performHapticFeedback(
+670:                                 HapticFeedbackType.LongPress,
+671:                             )
+672:                             menuState.show {
+673:                                 SongMenu(
+674:                                     originalSong = it,
+675:                                     navController = navController,
+676:                                     onDismiss = menuState::dismiss,
+677:                                 )
+678:                             }
+679:       
+<truncated 3863 bytes>
+     menuState.show {
+763:                             when (item) {
+764:                                 is SongItem -> YouTubeSongMenu(
+765:                                     song = item,
+766:                                     navController = navController,
+767:                                     onDismiss = menuState::dismiss
+768:                                 )
+769: 
+770:                                 is AlbumItem -> YouTubeAlbumMenu(
+771:                                     albumItem = item,
+772:                                     navController = navController,
+773:                                     onDismiss = menuState::dismiss
+774:                                 )
+775: 
+776:                                 is ArtistItem -> YouTubeArtistMenu(
+777:                                     artist = item,
+778:                                     onDismiss = menuState::dismiss
+779:                                 )
+780: 
+781:                                 is PlaylistItem -> YouTubePlaylistMenu(
+782:                                     playlist = item,
+783:                                     coroutineScope = scope,
+784:                                     onDismiss = menuState::dismiss
+785:                                 )
+786:                             }
+787:                         }
+788:                     }
+789:                 )
+790:         )
+791:     }
+792: 
+793:     val homeSections = remember(
+794:         randomizeHomeOrder,
+795:         randomSeed,
+796:         speedDialItems,
+797:         quickPicks,
+798:         dailyDiscover,
+799:         keepListening,
+800:         accountPlaylists,
+801:         forgottenFavorites,
+802:         communityPlaylists,
+803:         similarRecommendations,
+804:         homePage?.sections,
+805:         explorePage?.moodAndGenres
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

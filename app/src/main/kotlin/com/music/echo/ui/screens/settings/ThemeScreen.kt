@@ -66,6 +66,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.music.echo.ui.component.appleGlass
+import iad1tya.echo.music.ui.utils.backToMain
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import iad1tya.echo.music.R
@@ -127,7 +135,7 @@ highlightKey: String? = null) {
         SelectedThemeColorKey,
         DefaultThemeColor.toArgb()
     )
-    val (_, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = true)
+    val (_, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
 
     val selectedThemeColor = Color(selectedThemeColorInt)
 
@@ -136,22 +144,7 @@ highlightKey: String? = null) {
         onDynamicThemeChange(color == DefaultThemeColor)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.theme_colors), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(painterResource(R.drawable.arrow_back), contentDescription = stringResource(R.string.cd_back))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { innerPadding ->
+    Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -163,10 +156,26 @@ highlightKey: String? = null) {
                         )
                     )
                 )
-                .padding(innerPadding),
+                .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal)),
             contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            item {
+                Spacer(
+                    Modifier.windowInsetsPadding(
+                        LocalPlayerAwareWindowInsets.current.only(
+                            WindowInsetsSides.Top
+                        )
+                    )
+                )
+                Spacer(modifier = Modifier.height(72.dp))
+                androidx.compose.material3.Text(
+                    text = stringResource(R.string.theme_colors),
+                    style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
+                )
+            }
             item {
                 Text(
                     text = stringResource(R.string.theme_mode),
@@ -269,6 +278,26 @@ highlightKey: String? = null) {
                         }
                     }
                 }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = { navController.navigateUp() },
+                onLongClick = navController::backToMain,
+                modifier = Modifier
+                    .appleGlass(androidx.compose.foundation.shape.CircleShape, elevation = 2.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+            ) {
+                Icon(
+                    painterResource(R.drawable.arrow_back),
+                    contentDescription = null
+                )
             }
         }
     }

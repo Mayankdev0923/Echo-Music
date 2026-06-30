@@ -1,0 +1,54 @@
+Created At: 2026-06-28T18:47:19Z
+Completed At: 2026-06-28T18:47:19Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2082
+Total Bytes: 116862
+Showing lines 820 to 865
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+820:                                     onDismiss = menuState::dismiss
+821:                                 )
+822:                             }
+823:                         }
+824:                     }
+825:                 )
+826:         )
+827:     }
+828: 
+829:     val homeSections = remember(
+830:         randomizeHomeOrder,
+831:         randomSeed,
+832:         speedDialItems,
+833:         quickPicks,
+834:         dailyDiscover,
+835:         keepListening,
+836:         accountPlaylists,
+837:         forgottenFavorites,
+838:         communityPlaylists,
+839:         similarRecommendations,
+840:         homePage?.sections,
+841:         explorePage?.moodAndGenres
+842:     ) {
+843:         val list = mutableListOf<HomeSection>()
+844: 
+845:         if (showSpeedDial && speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
+846:         if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
+847:         if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
+848:         if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
+849:         if (keepListening?.isNotEmpty() == true) list.add(HomeSection.KeepListening)
+850:         if (accountPlaylists?.isNotEmpty() == true) list.add(HomeSection.AccountPlaylists)
+851:         if (forgottenFavorites?.isNotEmpty() == true) list.add(HomeSection.ForgottenFavorites)
+852: 
+853:         similarRecommendations?.indices?.forEach { i ->
+854:             list.add(HomeSection.SimilarRecommendation(i))
+855:         }
+856: 
+857:         homePage?.sections?.indices?.forEach { i ->
+858:             list.add(HomeSection.HomePageSection(i))
+859:         }
+860: 
+861:         if (explorePage?.moodAndGenres != null) list.add(HomeSection.MoodAndGenres)
+862: 
+863:         if (randomizeHomeOrder) {
+864:             list.sortedByDescending { section ->
+865: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

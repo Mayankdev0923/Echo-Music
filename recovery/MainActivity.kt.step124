@@ -1,0 +1,61 @@
+Created At: 2026-06-28T12:47:13Z
+Completed At: 2026-06-28T12:47:14Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1398
+Total Bytes: 71087
+Showing lines 950 to 1050
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+950:                                                 saveState = true
+951:                                             }
+952:                                             launchSingleTop = true
+953:                                             restoreState = true
+954:                                         }
+955:                                     }
+956:                                 }
+957:                             }
+958: 
+959:                             if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+960:                                 Box {
+961:                                     BottomSheetPlayer(
+962:                                         state = playerBottomSheetState,
+963:                                         navController = navController,
+964:                                         pureBlack = pureBlack
+965:                                     )
+966: 
+967:                                     val navSlideDistance = bottomInset + FloatingToolbarBottomPadding + NavigationBarHeight
+968: 
+969:                                     val navOffsetY = if (navigationBarHeight == 0.dp) {
+970:                                         navSlideDistance
+971:                                     } else {
+972:                                         val slideOffset =
+973:                                             navSlideDistance * playerBottomSheetState.progress.
+<truncated 3764 bytes>
+       alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1024:                                             }
+1025:                                             .background(baseBg)
+1026:                                     )
+1027:                                 }
+1028:                             } else {
+1029:                                 if (currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
+1030:                                     BottomSheetPlayer(
+1031:                                         state = playerBottomSheetState,
+1032:                                         navController = navController,
+1033:                                         pureBlack = pureBlack
+1034:                                     )
+1035:                                 }
+1036: 
+1037:                                 Box(
+1038:                                     modifier = Modifier
+1039:                                         .fillMaxWidth()
+1040:                                         .align(Alignment.BottomCenter)
+1041:                                         .height(bottomInsetDp)
+1042:                                         
+1043:                                         .graphicsLayer {
+1044:                                             val progress = playerBottomSheetState.progress
+1045:                                             alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+1046:                                         }
+1047:                                         .background(baseBg)
+1048:                                 )
+1049:                             }
+1050:                         },
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

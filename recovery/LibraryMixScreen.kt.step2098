@@ -1,0 +1,49 @@
+Created At: 2026-06-29T06:32:15Z
+Completed At: 2026-06-29T06:32:15Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 1161
+Total Bytes: 54711
+Showing lines 1050 to 1090
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1050:                 val longClick = {
+1051:                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+1052:                     menuState.show {
+1053:                         PlaylistMenu(
+1054:                             playlist = playlist,
+1055:                             coroutineScope = kotlinx.coroutines.MainScope(),
+1056:                             onDismiss = { menuState.dismiss() }
+1057:                         )
+1058:                     }
+1059:                 }
+1060:                 val thumb = playlist.playlist.thumbnailUrl ?: playlist.songThumbnails.firstOrNull()
+1061:                 FiveTuple(playlist.playlist.name, thumb, true, click, longClick)
+1062:             }
+1063:             is Song -> {
+1064:                 val song = item
+1065:                 val playerConnection = iad1tya.echo.music.LocalPlayerConnection.current
+1066:                 val click = {
+1067:                     playerConnection?.playQueue(ListQueue(title = "Pinned Song", items = listOf(song.toMediaItem())))
+1068:                     Unit
+1069:                 }
+1070:                 val longClick = {
+1071:                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+1072:                     menuState.show {
+1073:                         SongMenu(
+1074:                             originalSong = song,
+1075:                             navController = navController,
+1076:                             onDismiss = { menuState.dismiss() }
+1077:                         )
+1078:                     }
+1079:                 }
+1080:                 val thumb = song.song.thumbnailUrl
+1081:                 FiveTuple(song.song.title, thumb, false, click, longClick)
+1082:             }
+1083:             else -> FiveTuple("", null, false, {}, {})
+1084:         }
+1085:     }
+1086: 
+1087:     val itemShape = RoundedCornerShape(AppleRadius.large)
+1088:     val colorScheme = MaterialTheme.colorScheme
+1089:     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+1090:     val textColor = Color.White
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

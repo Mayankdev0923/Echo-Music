@@ -1,0 +1,34 @@
+Created At: 2026-06-28T19:25:42Z
+Completed At: 2026-06-28T19:25:42Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2161
+Total Bytes: 120937
+Showing lines 2085 to 2110
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2085:                         )
+2086:                     )
+2087:             )
+2088: 
+2089:             val maxMoveUpPx = with(LocalDensity.current) { 48.dp.toPx() }
+2090:             val offsetPx = if (lazylistState.firstVisibleItemIndex > 0) {
+2091:                 maxMoveUpPx
+2092:             } else {
+2093:                 minOf(lazylistState.firstVisibleItemScrollOffset.toFloat(), maxMoveUpPx)
+2094:             }
+2095:             val translationY = with(LocalDensity.current) { -offsetPx.toDp() }
+2096: 
+2097:             // Sticky RHS Pill
+2098:             Row(
+2099:                 modifier = Modifier
+2100:                     .align(Alignment.TopEnd)
+2101:                     .windowInsetsPadding(WindowInsets.statusBars)
+2102:                     .padding(top = 56.dp, end = 16.dp)
+2103:                     .offset(y = translationY)
+2104:                     .appleGlass(CircleShape, elevation = 2.dp)
+2105:                     .padding(horizontal = 8.dp, vertical = 4.dp),
+2106:                 verticalAlignment = Alignment.CenterVertically,
+2107:                 horizontalArrangement = Arrangement.spacedBy(4.dp)
+2108:             ) {
+2109:                 // History
+2110:                 IconButton(
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

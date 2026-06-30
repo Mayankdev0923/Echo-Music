@@ -1,0 +1,29 @@
+Created At: 2026-06-28T18:23:01Z
+Completed At: 2026-06-28T18:23:01Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2050
+Total Bytes: 115436
+Showing lines 175 to 195
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+175: import kotlinx.coroutines.Job
+176: import kotlin.math.abs
+177: 
+178: 
+179: sealed class HomeSection(val id: String, val baseWeight: Int) {
+180:     data object SpeedDial : HomeSection("speed_dial", 100)
+181:     data object QuickPicks : HomeSection("quick_picks", 90)
+182:     data object EchoBrainPlaylists : HomeSection("echo_brain_playlists", 85)
+183:     data object DailyDiscover : HomeSection("daily_discover", 80)
+184:     data object KeepListening : HomeSection("keep_listening", 50)
+185:     data object AccountPlaylists : HomeSection("account_playlists", 40)
+186:     data object ForgottenFavorites : HomeSection("forgotten_favorites", 30)
+187:     data object FromTheCommunity : HomeSection("from_the_community", 20)
+188:     data class SimilarRecommendation(val index: Int) : HomeSection("similar_recommendation_$index", 10)
+189:     data class HomePageSection(val index: Int) : HomeSection("home_page_section_$index", 10)
+190:     data object MoodAndGenres : HomeSection("mood_and_genres", 5)
+191: }
+192: 
+193: @Composable
+194: fun CommunityPlaylistCard(
+195:     item: CommunityPlaylistItem,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

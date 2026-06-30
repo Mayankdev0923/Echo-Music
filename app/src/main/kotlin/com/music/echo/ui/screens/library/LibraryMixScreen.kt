@@ -33,6 +33,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,8 +41,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -89,6 +92,28 @@ import iad1tya.echo.music.ui.menu.ArtistMenu
 import iad1tya.echo.music.ui.menu.PlaylistMenu
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
+import iad1tya.echo.music.LocalDatabase
+import iad1tya.echo.music.constants.LibraryPinnedItemsKey
+import iad1tya.echo.music.ui.component.ItemThumbnail
+import iad1tya.echo.music.constants.ThumbnailCornerRadius
+import com.music.echo.ui.component.AppleRadius
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import iad1tya.echo.music.playback.queues.ListQueue
+import iad1tya.echo.music.extensions.toMediaItem
+import iad1tya.echo.music.db.entities.Song
+import iad1tya.echo.music.ui.menu.SongMenu
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Text
 import iad1tya.echo.music.viewmodels.LibraryMixViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -98,8 +123,21 @@ import java.util.Locale
 import java.util.UUID
 import iad1tya.echo.music.ui.component.AutoPlaylistButton
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.background
 import androidx.compose.material3.IconButton
+import iad1tya.echo.music.LocalShowSettingsDialog
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.offset
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -109,6 +147,63 @@ fun LibraryMixScreen(
     viewModel: LibraryMixViewModel = hiltViewModel(),
 ) {
     val menuState = LocalMenuState.current
+    val database = LocalDatabase.current
+    val (pinnedItemsStr) = rememberPreference(LibraryPinnedItemsKey, "")
+    val pinnedKeys = remember(pinnedItemsStr) {
+        if (pinnedItemsStr.isBlank()) emptyList() else pinnedItemsStr.split(",")
+    }
+    val pinnedPlaylists = remember(pinnedKeys) {
+        pinnedKeys.filter { it.startsWith("playlist:") }.map { it.removePrefix("playlist:") }
+    }
+    val pinnedSongs = remember(pinnedKeys) {
+        pinnedKeys.filter { it.startsWith("song:") }.map { it.removePrefix("song:") }
+    }
+    val pinnedAlbums = remember(pinnedKeys) {
+        pinnedKeys.filter { it.startsWith("album:") }.map { it.removePrefix("album:") }
+    }
+    val pinnedArtists = remember(pinnedKeys) {
+        pinnedKeys.filter { it.startsWith("artist:") }.map { it.removePrefix("artist:") }
+    }
+
+    val loadedPlaylists = pinnedPlaylists.map { id ->
+        database.playlist(id).collectAsState(initial = null)
+    }
+    val loadedSongs = pinnedSongs.map { id ->
+        database.song(id).collectAsState(initial = null)
+    }
+    val loadedAlbums = pinnedAlbums.map { id ->
+        database.album(id).collectAsState(initial = null)
+    }
+    val loadedArtists = pinnedArtists.map { id ->
+        database.artist(id).collectAsState(initial = null)
+    }
+
+    val pinnedItems = pinnedKeys.mapNotNull { key ->
+        when {
+            key.startsWith("playlist:") -> {
+                val id = key.removePrefix("playlist:")
+                val index = pinnedPlaylists.indexOf(id)
+                if (index != -1) loadedPlaylists.getOrNull(index)?.value else null
+            }
+            key.startsWith("song:") -> {
+                val id = key.removePrefix("song:")
+                val index = pinnedSongs.indexOf(id)
+                if (index != -1) loadedSongs.getOrNull(index)?.value else null
+            }
+            key.startsWith("album:") -> {
+                val id = key.removePrefix("album:")
+                val index = pinnedAlbums.indexOf(id)
+                if (index != -1) loadedAlbums.getOrNull(index)?.value else null
+            }
+            key.startsWith("artist:") -> {
+                val id = key.removePrefix("artist:")
+                val index = pinnedArtists.indexOf(id)
+                if (index != -1) loadedArtists.getOrNull(index)?.value else null
+            }
+            else -> null
+        }
+    }
+
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
@@ -279,30 +374,104 @@ fun LibraryMixScreen(
 
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState = rememberPullToRefreshState()
+    val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
 
-    PullToRefreshBox(
-        state = pullRefreshState,
-        isRefreshing = isRefreshing,
-        onRefresh = viewModel::refresh,
-        indicator = {
-            PullToRefreshDefaults.LoadingIndicator(
-                state = pullRefreshState,
-                isRefreshing = isRefreshing,
-                modifier = Modifier.align(Alignment.TopCenter),
-            )
+    val pinnedLibrarySection = @Composable {
+        if (pinnedItems.isNotEmpty()) {
+            androidx.compose.foundation.layout.Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                androidx.compose.material3.Text(
+                    text = "Pinned",
+                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                val rows = pinnedItems.chunked(3)
+                rows.forEach { rowItems ->
+                    androidx.compose.foundation.layout.Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    ) {
+                        rowItems.forEach { item ->
+                            PinnedLibraryGridItem(
+                                item = item,
+                                navController = navController,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        repeat(3 - rowItems.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
         }
-    ) {
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            state = pullRefreshState,
+            isRefreshing = isRefreshing,
+            onRefresh = viewModel::refresh,
+            indicator = {
+                PullToRefreshDefaults.LoadingIndicator(
+                    state = pullRefreshState,
+                    isRefreshing = isRefreshing,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                )
+            }
+        ) {
         when (viewType) {
             LibraryViewType.LIST ->
                 LazyColumn(
                     state = lazyListState,
-                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+                    contentPadding = PaddingValues(
+                        top = statusBarTop + 74.dp,
+                        bottom = bottomPadding
+                    ),
                 ) {
+                    item(
+                        key = "immersive_header",
+                        contentType = CONTENT_TYPE_HEADER,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = stringResource(R.string.filter_library),
+                                style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 40.sp
+                                ),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(120.dp)) // Avoid overlap with sticky pill
+                        }
+                    }
+
                     item(
                         key = "filter",
                         contentType = CONTENT_TYPE_HEADER,
                     ) {
                         filterContent()
+                    }
+
+                    item(
+                        key = "pinned_library_items",
+                        contentType = CONTENT_TYPE_HEADER,
+                    ) {
+                        pinnedLibrarySection()
                     }
 
                     item(
@@ -544,14 +713,49 @@ fun LibraryMixScreen(
                     GridCells.Adaptive(
                         minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
                     ),
-                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+                    contentPadding = PaddingValues(
+                        top = statusBarTop + 74.dp,
+                        bottom = bottomPadding
+                    ),
                 ) {
+                    item(
+                        key = "immersive_header",
+                        span = { GridItemSpan(maxLineSpan) },
+                        contentType = CONTENT_TYPE_HEADER,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = stringResource(R.string.filter_library),
+                                style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 40.sp
+                                ),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(modifier = Modifier.width(120.dp)) // Avoid overlap with sticky pill
+                        }
+                    }
+
                     item(
                         key = "filter",
                         span = { GridItemSpan(maxLineSpan) },
                         contentType = CONTENT_TYPE_HEADER,
                     ) {
                         filterContent()
+                    }
+
+                    item(
+                        key = "pinned_library_items",
+                        span = { GridItemSpan(maxLineSpan) },
+                        contentType = CONTENT_TYPE_HEADER,
+                    ) {
+                        pinnedLibrarySection()
                     }
 
                     item(
@@ -739,5 +943,226 @@ fun LibraryMixScreen(
                     }
                 }
         }
+    }
+
+        val maxMoveUpPx = with(LocalDensity.current) { 66.dp.toPx() }
+        val scrollOffset = if (viewType == LibraryViewType.LIST) lazyListState.firstVisibleItemScrollOffset else lazyGridState.firstVisibleItemScrollOffset
+        val scrollIndex = if (viewType == LibraryViewType.LIST) lazyListState.firstVisibleItemIndex else lazyGridState.firstVisibleItemIndex
+
+        val offsetPx = if (scrollIndex > 0) {
+            maxMoveUpPx
+        } else {
+            minOf(scrollOffset.toFloat(), maxMoveUpPx)
+        }
+        val translationY = with(LocalDensity.current) { -offsetPx.toDp() }
+
+        // Sticky RHS Pill (scrolls up as previous)
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(top = 74.dp, end = 16.dp)
+                .offset(y = translationY)
+                .appleGlass(CircleShape, elevation = 2.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Stats
+            IconButton(
+                onClick = { navController.navigate("stats") },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.stats),
+                    contentDescription = stringResource(R.string.stats),
+                    modifier = Modifier.size(20.dp),
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            // Settings / Avatar
+            val showSettingsDialog = LocalShowSettingsDialog.current
+            IconButton(
+                onClick = { showSettingsDialog?.invoke() },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.settings),
+                    contentDescription = stringResource(R.string.account),
+                    modifier = Modifier.size(20.dp),
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+data class SixTuple(
+    val title: String,
+    val thumbnailUrl: String?,
+    val isPlaylist: Boolean,
+    val isArtist: Boolean,
+    val onClick: () -> Unit,
+    val onLongClick: () -> Unit
+)
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PinnedLibraryGridItem(
+    item: Any,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val haptic = LocalHapticFeedback.current
+    val menuState = LocalMenuState.current
+    val playerConnection = iad1tya.echo.music.LocalPlayerConnection.current
+    
+    val (title, thumbnailUrl, isPlaylist, isArtist, onClick, onLongClick) = remember(item) {
+        when (item) {
+            is Playlist -> {
+                val playlist = item
+                val click = {
+                    navController.navigate("local_playlist/${playlist.playlist.id}")
+                }
+                val longClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    menuState.show {
+                        PlaylistMenu(
+                            playlist = playlist,
+                            coroutineScope = kotlinx.coroutines.MainScope(),
+                            onDismiss = { menuState.dismiss() }
+                        )
+                    }
+                }
+                val thumb = playlist.playlist.thumbnailUrl ?: playlist.songThumbnails.firstOrNull()
+                SixTuple(playlist.playlist.name, thumb, true, false, click, longClick)
+            }
+            is Song -> {
+                val song = item
+                val click = {
+                    playerConnection?.playQueue(ListQueue(title = "Pinned Song", items = listOf(song.toMediaItem())))
+                    Unit
+                }
+                val longClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    menuState.show {
+                        SongMenu(
+                            originalSong = song,
+                            navController = navController,
+                            onDismiss = { menuState.dismiss() }
+                        )
+                    }
+                }
+                val thumb = song.song.thumbnailUrl
+                SixTuple(song.song.title, thumb, false, false, click, longClick)
+            }
+            is Album -> {
+                val album = item
+                val click = {
+                    navController.navigate("album/${album.id}")
+                }
+                val longClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    menuState.show {
+                        AlbumMenu(
+                            originalAlbum = album,
+                            navController = navController,
+                            onDismiss = { menuState.dismiss() }
+                        )
+                    }
+                }
+                SixTuple(album.album.title, album.album.thumbnailUrl, false, false, click, longClick)
+            }
+            is Artist -> {
+                val artist = item
+                val click = {
+                    navController.navigate("artist/${artist.id}")
+                }
+                val longClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    menuState.show {
+                        ArtistMenu(
+                            originalArtist = artist,
+                            coroutineScope = kotlinx.coroutines.MainScope(),
+                            onDismiss = { menuState.dismiss() }
+                        )
+                    }
+                }
+                SixTuple(artist.artist.name, artist.artist.thumbnailUrl, false, true, click, longClick)
+            }
+            else -> SixTuple("", null, false, false, {}, {})
+        }
+    }
+
+    val itemShape = if (isArtist) CircleShape else RoundedCornerShape(AppleRadius.large)
+    val textColor = Color.White
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .appleGlass(shape = itemShape, elevation = 4.dp)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
+    ) {
+        ItemThumbnail(
+            thumbnailUrl = thumbnailUrl,
+            isActive = false,
+            isPlaying = false,
+            shape = if (isArtist) CircleShape else RoundedCornerShape(ThumbnailCornerRadius),
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Bottom gradient for readability
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))
+                    )
+                )
+        )
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+
+            if (isPlaylist) {
+                Icon(
+                    painter = painterResource(R.drawable.navigate_next),
+                    contentDescription = null,
+                    tint = textColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
+        Icon(
+            painter = painterResource(R.drawable.ic_push_pin),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+                .size(16.dp)
+        )
     }
 }

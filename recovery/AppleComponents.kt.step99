@@ -1,0 +1,87 @@
+Created At: 2026-06-28T12:46:42Z
+Completed At: 2026-06-28T12:46:42Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/component/AppleComponents.kt`
+Total Lines: 79
+Total Bytes: 1931
+Showing lines 1 to 79
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: package com.music.echo.ui.component
+2: 
+3: import androidx.compose.foundation.isSystemInDarkTheme
+4: import androidx.compose.material3.CardDefaults
+5: import androidx.compose.runtime.Composable
+6: import androidx.compose.ui.graphics.Brush
+7: import androidx.compose.ui.graphics.Color
+8: import androidx.compose.ui.unit.dp
+9: 
+10: /**
+11:  * Apple Card Colors - Use with CardDefaults.cardColors()
+12:  */
+13: @Composable
+14: fun appleCardColors(
+15:     alpha: Float = 0.12f
+16: ) = CardDefaults.cardColors(
+17:     containerColor = Color(0xFFFFFFFF).copy(
+18:         alpha = if (isSystemInDarkTheme()) alpha else alpha * 0.7f
+19:     )
+20: )
+21: 
+22: /**
+23:  * Apple Padding Values
+24:  */
+25: object ApplePadding {
+26:     val xs = 8.dp
+27:     val sm = 12.dp
+28:     val md = 16.dp
+29:     val lg = 20.dp
+30:     val xl = 24.dp
+31:     val xxl = 32.dp
+32: }
+33: 
+34: /**
+35:  * Apple Border Radius
+36:  */
+37: object AppleRadius {
+38:     val small = 12.dp
+39:     val medium = 16.dp
+40:     val large = 20.dp
+41:     val extraLarge = 24.dp
+42: }
+43: 
+44: /**
+45:  * Apple Gradient Overlay for Images
+46:  */
+47: @Composable
+48: fun appleGradientOverlay(
+49:     isLight: Boolean = false
+50: ): Brush {
+51:     return if (isLight) {
+52:         Brush.verticalGradient(
+53:             colors = listOf(
+54:                 Color.Black.copy(alpha = 0.1f),
+55:                 Color.Black.copy(alpha = 0.4f)
+56:             )
+57:         )
+58:     } else {
+59:         Brush.verticalGradient(
+60:             colors = listOf(
+61:                 Color.Black.copy(alpha = 0.2f),
+62:                 Color.Black.copy(alpha = 0.6f)
+63:             )
+64:         )
+65:     }
+66: }
+67: 
+68: /**
+69:  * Apple Surface Colors
+70:  */
+71: @Composable
+72: fun appleSurfaceColor(depth: Int = 1): Color {
+73:     return when {
+74:         isSystemInDarkTheme() && depth == 1 -> Color(0x1FFFFFFF).copy(alpha = 0.12f)
+75:         isSystemInDarkTheme() && depth == 2 -> Color(0x1FFFFFFF).copy(alpha = 0.08f)
+76:         !isSystemInDarkTheme() && depth == 1 -> Color(0x1F000000).copy(alpha = 0.06f)
+77:         else -> Color(0x1F000000).copy(alpha = 0.04f)
+78:     }
+79: }
+The above content shows the entire, complete file contents of the requested file.

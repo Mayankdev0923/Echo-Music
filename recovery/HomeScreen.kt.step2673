@@ -1,0 +1,18 @@
+Created At: 2026-06-29T10:57:57Z
+Completed At: 2026-06-29T10:57:58Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 1921
+Total Bytes: 109142
+Showing lines 1 to 10
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: package iad1tya.echo.music.ui.screens
+2: import androidx.compose.foundation.rememberScrollState
+3: import androidx.compose.foundation.horizontalScroll
+4: 
+5: 
+6: import androidx.activity.compose.BackHandler
+7: import androidx.compose.animation.AnimatedVisibility
+8: import androidx.compose.foundation.focusGroup
+9: import androidx.compose.foundation.focusable
+10: import androidx.compose.foundation.gestures.detectTapGestures
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

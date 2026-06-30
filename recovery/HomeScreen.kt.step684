@@ -1,0 +1,16 @@
+Created At: 2026-06-28T14:05:29Z
+Completed At: 2026-06-28T14:05:29Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2028
+Total Bytes: 114936
+Showing lines 135 to 142
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+135: import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
+136: import iad1tya.echo.music.ui.component.LocalMenuState
+137: import iad1tya.echo.music.ui.component.NavigationTitle
+138: import iad1tya.echo.music.LocalShowSettingsDialog
+139: import iad1tya.echo.music.ui.component.appleGlass
+140: import androidx.compose.ui.unit.sp
+141: import iad1tya.echo.music.ui.component.RandomizeGridItem
+142: import iad1tya.echo.music.ui.component.shimmer.GridItemPlaceHolder
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

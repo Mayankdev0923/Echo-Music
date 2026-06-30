@@ -1,0 +1,24 @@
+Created At: 2026-06-28T18:47:38Z
+Completed At: 2026-06-28T18:47:39Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/HomeScreen.kt`
+Total Lines: 2082
+Total Bytes: 116862
+Showing lines 610 to 625
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+610: 
+611:     val allLocalItems by viewModel.allLocalItems.collectAsState()
+612:     val allYtItems by viewModel.allYtItems.collectAsState()
+613:     val speedDialItems by viewModel.speedDialItems.collectAsState()
+614:     val selectedChip by viewModel.selectedChip.collectAsState()
+615: 
+616:     val isLoading: Boolean by viewModel.isLoading.collectAsState()
+617:     val isMoodAndGenresLoading = isLoading && explorePage?.moodAndGenres == null
+618:     val isRefreshing by viewModel.isRefreshing.collectAsState()
+619:     val isRandomizing by viewModel.isRandomizing.collectAsState()
+620:     val pullRefreshState = rememberPullToRefreshState()
+621: 
+622:     val quickPicksLazyGridState = rememberLazyGridState()
+623:     val forgottenFavoritesLazyGridState = rememberLazyGridState()
+624: 
+625:     val accountName by viewModel.accountName.collectAsState()
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

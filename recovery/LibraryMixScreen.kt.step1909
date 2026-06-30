@@ -1,0 +1,32 @@
+Created At: 2026-06-29T06:18:43Z
+Completed At: 2026-06-29T06:18:43Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/screens/library/LibraryMixScreen.kt`
+Total Lines: 944
+Total Bytes: 46402
+Showing lines 900 to 923
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+900:             minOf(scrollOffset.toFloat(), maxMoveUpPx)
+901:         }
+902:         val translationY = with(LocalDensity.current) { -offsetPx.toDp() }
+903: 
+904:         // Sticky RHS Pill (scrolls up as previous)
+905:         Row(
+906:             modifier = Modifier
+907:                 .align(Alignment.TopEnd)
+908:                 .windowInsetsPadding(WindowInsets.statusBars)
+909:                 .padding(top = 74.dp, end = 16.dp)
+910:                 .offset(y = translationY)
+911:                 .appleGlass(CircleShape, elevation = 2.dp)
+912:                 .padding(horizontal = 8.dp, vertical = 4.dp),
+913:             verticalAlignment = Alignment.CenterVertically,
+914:             horizontalArrangement = Arrangement.spacedBy(4.dp)
+915:         ) {
+916:             // Stats
+917:             IconButton(
+918:                 onClick = { navController.navigate("stats") },
+919:                 modifier = Modifier.size(32.dp)
+920:             ) {
+921:                 Icon(
+922:                     painter = painterResource(R.drawable.stats),
+923:                     contentDescription = stringResource(R.string.stats),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -203,6 +203,7 @@ import iad1tya.echo.music.ui.component.VolumeSlider
 import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.theme.PlayerColorExtractor
 import iad1tya.echo.music.ui.theme.PlayerSliderColors
+import iad1tya.echo.music.ui.theme.echomusicTheme
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.ui.utils.ShowOffsetDialog
 import iad1tya.echo.music.utils.makeTimeString
@@ -292,6 +293,7 @@ fun BottomSheetPlayer(
     navController: NavController,
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
+    themeColor: Color,
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
@@ -311,10 +313,7 @@ fun BottomSheetPlayer(
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
 
-    val playerBackgroundPref by rememberEnumPreference(
-        key = PlayerBackgroundStyleKey,
-        defaultValue = PlayerBackgroundStyle.GRADIENT
-    )
+    val playerBackgroundPref by rememberEnumPreference(PlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.APPLE_MUSIC)
     val playerBackground = if (isLocalMedia) PlayerBackgroundStyle.DEFAULT else playerBackgroundPref
     val playerButtonsStyle by rememberEnumPreference(
         key = PlayerButtonsStyleKey,
@@ -327,7 +326,7 @@ fun BottomSheetPlayer(
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
 
-    val enableCanvas by rememberPreference(CanvasThumbnailAnimationKey, true)
+    val enableCanvas by rememberPreference(CanvasThumbnailAnimationKey, defaultValue = true)
 
     val shouldUseDarkButtonColors = remember(playerBackground, useDarkTheme) {
         when (playerBackground) {
@@ -890,8 +889,14 @@ fun BottomSheetPlayer(
 
     val backgroundAlpha = state.progress.coerceIn(0f, 1f)
 
-    BottomSheet(
-        state = state,
+    echomusicTheme(
+        darkTheme = useDarkTheme,
+        pureBlack = pureBlack,
+        themeColor = themeColor,
+        dynamicColor = true
+    ) {
+        BottomSheet(
+            state = state,
         modifier = modifier,
         background = {
             val backgroundThumbnailUrl = mediaMetadata?.thumbnailUrl ?: playerConnection.player.currentMediaItem?.mediaMetadata?.artworkUri?.toString()
@@ -2746,6 +2751,7 @@ fun BottomSheetPlayer(
             },
             )
         }
+    }
     }
 }
 

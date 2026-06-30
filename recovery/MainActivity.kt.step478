@@ -1,0 +1,39 @@
+Created At: 2026-06-28T13:41:36Z
+Completed At: 2026-06-28T13:41:36Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/MainActivity.kt`
+Total Lines: 1433
+Total Bytes: 73079
+Showing lines 940 to 970
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+940:                                             scrollBehavior = topAppBarScrollBehavior,
+941:                                             colors = TopAppBarDefaults.topAppBarColors(
+942:                                                 containerColor = Color.Transparent, // Transparent TopAppBar
+943:                                                 scrolledContainerColor = Color.Transparent, // Transparent TopAppBar on scroll
+944:                                                 titleContentColor = MaterialTheme.colorScheme.onSurface,
+945:                                                 actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+946:                                                 navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+947:                                             ),
+948:                                         windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
+949:                                         modifier = Modifier
+950:                                             .windowInsetsPadding(
+951:                                             if (showRail) {
+952:                                                 WindowInsets(left = NavigationBarHeight)
+953:                                                     .add(cutoutInsets.only(WindowInsetsSides.Start))
+954:                                             } else {
+955:                                                 cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+956:                                             }
+957:                                         )
+958:                                     )
+959:                                 }
+960:                             }
+961:                         },
+962:                         bottomBar = {
+963:                             val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+964:                                 { screen: Screens, isSelected: Boolean ->
+965:                                     if (playerBottomSheetState.isExpanded) {
+966:                                         playerBottomSheetState.collapseSoft()
+967:                                     }
+968: 
+969:                                     if (isSelected) {
+970:                                         navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

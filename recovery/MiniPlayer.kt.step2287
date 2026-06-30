@@ -1,0 +1,59 @@
+Created At: 2026-06-29T10:25:04Z
+Completed At: 2026-06-29T10:25:04Z
+File Path: `file:///c:/Users/mayan/Desktop/musicapp/Echo-Music/app/src/main/kotlin/com/music/echo/ui/player/MiniPlayer.kt`
+Total Lines: 1242
+Total Bytes: 52527
+Showing lines 370 to 420
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+370:                                 coroutineScope.launch {
+371:                                     offsetXAnimatable.animateTo(0f, animationSpec)
+372:                                 }
+373:                             }
+374:                         )
+375:                     }
+376:                 } else baseModifier
+377:             }
+378:     ) {
+379:         Box(
+380:             modifier = Modifier
+381:                 .align(Alignment.Center)
+382:                 .widthIn(max = 360.dp)
+383:                 .fillMaxWidth()
+384:                 .height(MiniPlayerHeight)
+385:                 .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
+386:                 .appleGlass(RoundedCornerShape(32.dp), elevation = 10.dp)
+387:         ) {
+388:             
+389:             MiniPlayerBackgroundLayer(
+390:                 style = miniPlayerBackground,
+391:                 mediaMetadata = mediaMetadata,
+392:                 gradientColors = gradientColors
+393:             )
+394: 
+395:             Row(
+396:                 verticalAlignment = Alignment.CenterVertically,
+397:                 modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
+398:             ) {
+399:                 
+400:                 NewMiniPlayerThumbnail(
+401:                     progressState = progressState,
+402:                     mediaMetadata = mediaMetadata,
+403:                     primaryColor = primaryColor,
+404:                     outlineColor = outlineColor,
+405:                 )
+406: 
+407:                 Spacer(modifier = Modifier.width(16.dp))
+408: 
+409:                 
+410:                 NewMiniPlayerSongInfo(
+411:                     mediaMetadata = mediaMetadata,
+412:                     onSurfaceColor = onSurfaceColor,
+413:                     errorColor = errorColor,
+414:                     modifier = Modifier.weight(1f)
+415:                 )
+416: 
+417:                 Spacer(modifier = Modifier.width(4.dp))
+418:                 
+419:                 
+420:                 if (isCasting) {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

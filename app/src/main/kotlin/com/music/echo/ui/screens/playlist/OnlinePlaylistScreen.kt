@@ -36,6 +36,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,6 +121,7 @@ import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.NavigationTitle
 import iad1tya.echo.music.ui.component.YouTubeGridItem
 import iad1tya.echo.music.ui.component.YouTubeListItem
+import com.music.echo.ui.component.appleGlass
 import iad1tya.echo.music.ui.menu.YouTubeAlbumMenu
 import iad1tya.echo.music.ui.menu.YouTubeArtistMenu
 import iad1tya.echo.music.ui.menu.YouTubePlaylistMenu
@@ -431,125 +434,146 @@ fun OnlinePlaylistScreen(
             }
         }
 
-        TopAppBar(
-            title = {
-                if (inSelectMode) {
-                    Text(
-                        text = pluralStringResource(R.plurals.n_song, selection.size, selection.size),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                } else if (isSearching) {
-                    TextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.search),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        },
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                    )
-                } else {
-                    AnimatedContent(
-                        targetState = !transparentAppBar,
-                        transitionSpec = {
-                            fadeIn().togetherWith(fadeOut())
-                        },
-                        label = "TopAppBarTitle"
-                    ) { show ->
-                        if (show) {
-                            Text(playlist?.title ?: "")
-                        }
-                    }
-                }
-            },
-            navigationIcon = {
+        if (isSearching) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 44.dp, start = 16.dp, end = 16.dp)
+                    .appleGlass(CircleShape, elevation = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 IconButton(
                     onClick = {
-                        if (isSearching) {
-                            isSearching = false
-                            query = TextFieldValue()
-                        } else if (inSelectMode) {
+                        isSearching = false
+                        query = TextFieldValue()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.arrow_back),
+                        contentDescription = "Cancel Search",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.search),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester)
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 44.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Circular Back Button
+                IconButton(
+                    onClick = {
+                        if (inSelectMode) {
                             onExitSelectionMode()
                         } else {
                             navController.navigateUp()
                         }
                     },
                     onLongClick = {
-                        if (!isSearching && !inSelectMode) {
+                        if (!inSelectMode) {
                             navController.backToMain()
                         }
-                    }
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .appleGlass(CircleShape, elevation = 4.dp)
                 ) {
                     Icon(
                         painter = painterResource(
                             if (inSelectMode) R.drawable.close else R.drawable.arrow_back
                         ),
-                        contentDescription = null
+                        contentDescription = "Back",
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
-            },
-            actions = {
-                if (inSelectMode) {
-                    Checkbox(
-                        checked = selection.size == filteredSongs.size && selection.isNotEmpty(),
-                        onCheckedChange = {
-                            if (selection.size == filteredSongs.size) {
-                                selection.clear()
-                            } else {
-                                selection.clear()
-                                selection.addAll(filteredSongs.map { it.second.id })
+
+                // Action Pill
+                Row(
+                    modifier = Modifier
+                        .appleGlass(CircleShape, elevation = 4.dp)
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (inSelectMode) {
+                        Checkbox(
+                            checked = selection.size == filteredSongs.size && selection.isNotEmpty(),
+                            onCheckedChange = {
+                                if (selection.size == filteredSongs.size) {
+                                    selection.clear()
+                                } else {
+                                    selection.clear()
+                                    selection.addAll(filteredSongs.map { it.second.id })
+                                }
                             }
-                        }
-                    )
-                    IconButton(
-                        enabled = selection.isNotEmpty(),
-                        onClick = {
-                            menuState.show {
-                                YouTubeSelectionSongMenu(
-                                    songSelection = filteredSongs.filter { it.second.id in selection }
-                                        .map { it.second },
-                                    onDismiss = menuState::dismiss,
-                                    clearAction = onExitSelectionMode
-                                )
-                            }
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.more_vert),
-                            contentDescription = null
                         )
-                    }
-                } else if (!isSearching) {
-                    IconButton(
-                        onClick = { isSearching = true }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.search),
-                            contentDescription = null
-                        )
+                        IconButton(
+                            enabled = selection.isNotEmpty(),
+                            onClick = {
+                                menuState.show {
+                                    YouTubeSelectionSongMenu(
+                                        songSelection = filteredSongs.filter { it.second.id in selection }
+                                            .map { it.second },
+                                        onDismiss = menuState::dismiss,
+                                        clearAction = onExitSelectionMode
+                                    )
+                                }
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.more_vert),
+                                contentDescription = "Menu",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { isSearching = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.search),
+                                contentDescription = "Search",
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
-            },
-            colors = if (transparentAppBar && !isSearching && !inSelectMode) {
-                androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            } else {
-                androidx.compose.material3.TopAppBarDefaults.topAppBarColors()
             }
-        )
+        }
 
         SnackbarHost(
             hostState = snackbarHostState,

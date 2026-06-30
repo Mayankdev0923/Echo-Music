@@ -77,6 +77,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.music.echo.ui.component.appleGlassRow
+import com.music.echo.ui.component.AppleRadius
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.offline.Download
@@ -114,6 +118,7 @@ import iad1tya.echo.music.playback.queues.LocalAlbumRadio
 import iad1tya.echo.music.ui.utils.resize
 import iad1tya.echo.music.utils.isLocalMediaId
 import iad1tya.echo.music.utils.joinByBullet
+import iad1tya.echo.music.utils.listThumbnailShape
 import iad1tya.echo.music.utils.makeTimeString
 import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
@@ -157,12 +162,11 @@ inline fun ListItem(
             .height(ListItemHeight)
             .padding(horizontal = horizontalPadding)
             .clip(shape)
-            .background(
-                color = when {
-                    isActive -> MaterialTheme.colorScheme.secondaryContainer
-                    isSelected == true && drawHighlight -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                    else -> color
-                }
+            .appleGlassRow(
+                shape = shape,
+                isActive = isActive,
+                isSelected = isSelected == true,
+                drawHighlight = drawHighlight
             )
     ) {
         Box(
@@ -305,8 +309,9 @@ fun GridItem(
     thumbnailContent: @Composable BoxWithConstraintsScope.() -> Unit,
     thumbnailRatio: Float = 1f,
     fillMaxWidth: Boolean = false,
+    sizeMultiplier: Float = 1f,
 ) {
-    val gridHeight = currentGridThumbnailHeight()
+    val gridHeight = currentGridThumbnailHeight() * sizeMultiplier
     Column(
         modifier = if (fillMaxWidth) {
             modifier
@@ -351,6 +356,7 @@ fun GridItem(
     thumbnailContent: @Composable BoxWithConstraintsScope.() -> Unit,
     thumbnailRatio: Float = 1f,
     fillMaxWidth: Boolean = false,
+    sizeMultiplier: Float = 1f,
 ) = GridItem(
     modifier = modifier,
     title = {
@@ -375,7 +381,8 @@ fun GridItem(
     },
     thumbnailContent = thumbnailContent,
     thumbnailRatio = thumbnailRatio,
-    fillMaxWidth = fillMaxWidth
+    fillMaxWidth = fillMaxWidth,
+    sizeMultiplier = sizeMultiplier
 )
 
 @Composable
@@ -446,6 +453,8 @@ fun SongListItem(
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
     horizontalPadding: Dp = 16.dp,
+    index: Int = -1,
+    count: Int = -1,
 ) {
     val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
 
@@ -467,7 +476,11 @@ fun SongListItem(
                     isSelected = isSelected,
                     isActive = isActive,
                     isPlaying = isPlaying,
-                    shape = RoundedCornerShape(ThumbnailCornerRadius),
+                    shape = if (index != -1 && count != -1) {
+                        listThumbnailShape(index, count)
+                    } else {
+                        RoundedCornerShape(ThumbnailCornerRadius)
+                    },
                     modifier = Modifier.size(ListThumbnailSize)
                 )
             },
@@ -591,6 +604,7 @@ fun ArtistListItem(
                 .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .build(),
             contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(ListThumbnailSize)
                 .clip(CircleShape),
@@ -1093,6 +1107,8 @@ fun YouTubeListItem(
     },
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
+    index: Int = -1,
+    count: Int = -1,
 ) {
     val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
 
@@ -1113,7 +1129,13 @@ fun YouTubeListItem(
                     isSelected = isSelected,
                     isActive = isActive,
                     isPlaying = isPlaying,
-                    shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(ThumbnailCornerRadius),
+                    shape = if (item is ArtistItem) {
+                        CircleShape
+                    } else if (index != -1 && count != -1) {
+                        listThumbnailShape(index, count)
+                    } else {
+                        RoundedCornerShape(ThumbnailCornerRadius)
+                    },
                     modifier = Modifier.size(ListThumbnailSize)
                 )
             },
@@ -1168,6 +1190,7 @@ fun YouTubeGridItem(
     isActive: Boolean = false,
     isPlaying: Boolean = false,
     fillMaxWidth: Boolean = false,
+    sizeMultiplier: Float = 1f,
 ) = GridItem(
     title = {
         Text(
@@ -1238,7 +1261,8 @@ fun YouTubeGridItem(
     },
     thumbnailRatio = thumbnailRatio,
     fillMaxWidth = fillMaxWidth,
-    modifier = modifier
+    modifier = modifier,
+    sizeMultiplier = sizeMultiplier
 )
 
 @Composable
@@ -1341,11 +1365,25 @@ fun ItemThumbnail(
 ) {
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
     
+    val colorScheme = MaterialTheme.colorScheme
+    val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .aspectRatio(thumbnailRatio)
+            .shadow(
+                elevation = 4.dp,
+                shape = shape,
+                clip = false,
+                ambientColor = Color.Black.copy(alpha = if (isDark) 0.4f else 0.05f),
+                spotColor = Color.Black.copy(alpha = if (isDark) 0.6f else 0.1f)
+            )
+            .border(
+                width = 0.5.dp,
+                color = if (isDark) Color(0xFFFFFFFF).copy(alpha = 0.12f) else Color(0xFF000000).copy(alpha = 0.06f),
+                shape = shape
+            )
             .clip(shape)
     ) {
         if (albumIndex == null) {
@@ -1357,9 +1395,9 @@ fun ItemThumbnail(
                     .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
                     .build(),
                 contentDescription = null,
-                contentScale = if (cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
+                contentScale = if (shape == CircleShape || cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .clip(shape)
             )
         }
@@ -1437,7 +1475,7 @@ fun LocalThumbnail(
                 .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .build(),
             contentDescription = null,
-            contentScale = if (cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
+            contentScale = if (shape == CircleShape || cropAlbumArt) ContentScale.Crop else ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
 
