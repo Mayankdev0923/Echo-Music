@@ -14,7 +14,8 @@ object PlayerColorExtractor {
     
     suspend fun extractGradientColors(
         palette: Palette,
-        fallbackColor: Int
+        fallbackColor: Int,
+        isDark: Boolean = true
     ): List<Color> = withContext(Dispatchers.Default) {
         
         
@@ -54,7 +55,7 @@ object PlayerColorExtractor {
                 green = (primaryColor.green * 0.6f).coerceAtLeast(0f),
                 blue = (primaryColor.blue * 0.6f).coerceAtLeast(0f)
             ), 
-            Color.Black 
+            if (isDark) Color.Black else Color(0xFFFAFAFA)
         )
     }
 

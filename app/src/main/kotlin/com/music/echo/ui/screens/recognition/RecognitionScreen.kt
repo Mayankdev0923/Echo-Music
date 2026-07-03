@@ -19,20 +19,26 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.animation.core.Animatable
 import androidx.compose.material3.Button
@@ -44,10 +50,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -74,8 +78,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.music.echo.ui.component.appleGlass
 import coil3.compose.AsyncImage
 import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.R
@@ -102,7 +108,8 @@ import iad1tya.echo.music.playback.queues.YouTubeQueue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecognitionScreen(
-    navController: NavController
+    navController: NavController,
+    autoStart: Boolean = false
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
@@ -145,6 +152,12 @@ fun RecognitionScreen(
             }
         } else {
             permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    LaunchedEffect(autoStart) {
+        if (autoStart) {
+            startRecognition()
         }
     }
     
@@ -226,43 +239,39 @@ fun RecognitionScreen(
                             )
                     )
 
-                    Scaffold(
-                        containerColor = Color.Transparent,
-                        topBar = {
-                            TopAppBar(
-                                colors = TopAppBarDefaults.topAppBarColors(
-                                    containerColor = Color.Transparent
-                                ),
-                                title = { Text(stringResource(R.string.recognize_music)) },
-                                navigationIcon = {
-                                    androidx.compose.material3.IconButton(
-                                        onClick = { navController.navigateUp() }
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.arrow_back),
-                                            contentDescription = null
-                                        )
-                                    }
-                                },
-                                actions = {
-                                    androidx.compose.material3.IconButton(onClick = { navController.navigate("recognition_history") }) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.history),
-                                            contentDescription = stringResource(R.string.recognition_history)
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    ) { paddingValues ->
+                    Box(modifier = Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(paddingValues)
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
                         ) {
+                            val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+                            Spacer(modifier = Modifier.height(statusBarTop + 74.dp))
+                            
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.recognize_music),
+                                    style = MaterialTheme.typography.displaySmall.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 40.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                            
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
                             when (status) {
                                 is RecognitionStatus.Ready -> {
                                     ReadyState(onStartRecognition = ::startRecognition)
@@ -293,6 +302,35 @@ fun RecognitionScreen(
                                 }
                                 else -> Unit
                             }
+                        }
+                    }
+                }
+
+                    // Floating Pinned Buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .windowInsetsPadding(WindowInsets.statusBars.only(WindowInsetsSides.Top))
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        iad1tya.echo.music.ui.component.IconButton(
+                            onClick = { navController.navigateUp() },
+                            onLongClick = { navController.navigateUp() },
+                            modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
+                        ) {
+                            Icon(painter = painterResource(R.drawable.arrow_back), contentDescription = null)
+                        }
+                        iad1tya.echo.music.ui.component.IconButton(
+                            onClick = { navController.navigate("recognition_history") },
+                            onLongClick = { navController.navigate("recognition_history") },
+                            modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.history),
+                                contentDescription = stringResource(R.string.recognition_history)
+                            )
                         }
                     }
                 }
@@ -327,7 +365,10 @@ private fun ReadyState(
                 .shadow(elevation = 16.dp, shape = CircleShape)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clickable { onStartRecognition() },
+                .combinedClickable(
+                    onClick = onStartRecognition,
+                    onLongClick = onStartRecognition
+                ),
             contentAlignment = Alignment.Center
         ) {
             Icon(

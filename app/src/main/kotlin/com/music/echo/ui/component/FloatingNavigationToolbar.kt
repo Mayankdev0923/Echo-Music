@@ -22,6 +22,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -93,6 +94,7 @@ fun FloatingNavigationToolbar(
     shuffleIconRes: Int? = null,
     shuffleContentDescription: String = "",
     onMusicRecognitionClick: (() -> Unit)? = null,
+    onMusicRecognitionLongClick: (() -> Unit)? = null,
     musicRecognitionContentDescription: String = "",
     scrollBehavior: FloatingToolbarScrollBehavior? = null,
     isSelected: (Screens) -> Boolean,
@@ -143,6 +145,7 @@ fun FloatingNavigationToolbar(
                             contentDescription = musicRecognitionContentDescription,
                             pureBlack = pureBlack,
                             onClick = onMusicRecognitionClick,
+                            onLongClick = onMusicRecognitionLongClick,
                             modifier = Modifier.size(48.dp),
                         )
                     }
@@ -580,6 +583,7 @@ private fun FloatingNavigationToolbarActionItem(
     contentDescription: String,
     pureBlack: Boolean,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -597,11 +601,12 @@ private fun FloatingNavigationToolbarActionItem(
         modifier = modifier
             .scale(pressScale)
             .appleGlass(CircleShape, elevation = 2.dp)
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = LocalIndication.current,
                 role = Role.Button,
                 onClick = onClick,
+                onLongClick = onLongClick,
             ),
         contentAlignment = Alignment.Center,
     ) {

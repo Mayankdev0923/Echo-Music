@@ -82,6 +82,7 @@ import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import com.music.innertube.models.YTItem
 import iad1tya.echo.music.LocalDatabase
+import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.MiniPlayerBottomSpacing
@@ -402,7 +403,7 @@ fun OnlineSearchResult(
 
             LazyColumn(
                 state = lazyListState,
-                contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(),
+                contentPadding = LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom).asPaddingValues(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (searchFilter == null) {
@@ -463,10 +464,6 @@ fun OnlineSearchResult(
                             }
                         }
                     }
-                }
-
-                item(key = "bottom_spacer") {
-                    Spacer(modifier = Modifier.height(MiniPlayerHeight + MiniPlayerBottomSpacing + NavigationBarHeight))
                 }
 
             }

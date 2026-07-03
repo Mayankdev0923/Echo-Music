@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -14,11 +15,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,7 +46,9 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -50,11 +58,13 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachReversed
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.music.innertube.utils.parseCookieString
 import iad1tya.echo.music.LocalDatabase
@@ -73,6 +83,7 @@ import iad1tya.echo.music.ui.component.HideOnScrollFAB
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.NavigationTitle
+import com.music.echo.ui.component.appleGlass
 import iad1tya.echo.music.ui.component.SongListItem
 import iad1tya.echo.music.ui.component.YouTubeListItem
 import iad1tya.echo.music.ui.menu.SelectionMediaMetadataMenu
@@ -209,6 +220,27 @@ fun HistoryScreen(
                 )
             )
         ) {
+            item(key = "header") {
+                Spacer(modifier = Modifier.height(74.dp))
+                if (!isSearching && !inSelectMode) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.history),
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 40.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+            }
+
             item(key = "chips_row") {
                 ChipsRow(
                     chips = if (isLoggedIn) listOf(
@@ -418,73 +450,25 @@ fun HistoryScreen(
                 }
             }
         )
-    }
 
-    TopAppBar(
-        title = {
+        // Floating Pinned Buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.statusBars.only(WindowInsetsSides.Top))
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             if (inSelectMode) {
-                Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
-            } else if (isSearching) {
-                TextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.search),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    },
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                )
-            } else {
-                Text(stringResource(R.string.history))
-            }
-        },
-        navigationIcon = {
-            if (inSelectMode) {
-                IconButton(onClick = onExitSelectionMode) {
-                    Icon(
-                        painter = painterResource(R.drawable.close),
-                        contentDescription = null,
-                    )
-                }
-            } else {
                 IconButton(
-                    onClick = {
-                        if (isSearching) {
-                            isSearching = false
-                            query = TextFieldValue()
-                        } else {
-                            navController.navigateUp()
-                        }
-                    },
-                    onLongClick = {
-                        if (!isSearching) {
-                            navController.backToMain()
-                        }
-                    }
+                    onClick = onExitSelectionMode,
+                    modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = null
-                    )
+                    Icon(painter = painterResource(R.drawable.close), contentDescription = null)
                 }
-            }
-        },
-        actions = {
-            if (inSelectMode) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
+                Spacer(modifier = Modifier.weight(1f))
                 Checkbox(
                     checked = selection.size == allEvents.size && selection.isNotEmpty(),
                     onCheckedChange = {
@@ -509,23 +493,75 @@ fun HistoryScreen(
                                 currentItems = emptyList()
                             )
                         }
-                    }
+                    },
+                    modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.more_vert),
-                        contentDescription = null
-                    )
+                    Icon(painter = painterResource(R.drawable.more_vert), contentDescription = null)
                 }
-            } else if (!isSearching) {
+            } else {
                 IconButton(
-                    onClick = { isSearching = true }
+                    onClick = {
+                        if (isSearching) {
+                            isSearching = false
+                            query = TextFieldValue()
+                        } else {
+                            navController.navigateUp()
+                        }
+                    },
+                    onLongClick = {
+                        if (!isSearching) {
+                            navController.backToMain()
+                        }
+                    },
+                    modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.search),
-                        contentDescription = null
-                    )
+                    Icon(painter = painterResource(R.drawable.arrow_back), contentDescription = null)
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                if (isSearching) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .appleGlass(RoundedCornerShape(percent = 50), elevation = 4.dp)
+                            .clip(RoundedCornerShape(percent = 50)),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        BasicTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp)
+                                .focusRequester(focusRequester),
+                            cursorBrush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.primary),
+                            decorationBox = { innerTextField ->
+                                if (query.text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.search),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(
+                        onClick = { isSearching = true },
+                        modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
+                    ) {
+                        Icon(painter = painterResource(R.drawable.search), contentDescription = null)
+                    }
                 }
             }
         }
-    )
+    }
 }

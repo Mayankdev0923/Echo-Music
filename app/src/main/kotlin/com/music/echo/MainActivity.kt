@@ -1,6 +1,7 @@
 
 
 package iad1tya.echo.music
+import androidx.compose.foundation.layout.systemBars
 import iad1tya.echo.music.R
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.ui.screens.settings.RingtoneViewModel
@@ -60,6 +61,8 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -190,7 +193,6 @@ import iad1tya.echo.music.playback.queues.YouTubeQueue
 import iad1tya.echo.music.ui.component.AppNavigationRail
 import iad1tya.echo.music.ui.component.BottomSheetMenu
 import iad1tya.echo.music.ui.component.BottomSheetPage
-import iad1tya.echo.music.ui.component.FloatingNavigationToolbar
 import iad1tya.echo.music.ui.component.LocalBottomSheetPageState
 import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.rememberBottomSheetState
@@ -234,6 +236,7 @@ import javax.inject.Inject
 
 import androidx.compose.runtime.staticCompositionLocalOf
 val LocalShowSettingsDialog = staticCompositionLocalOf<(() -> Unit)?> { null }
+val LocalSearchFocusRequest = staticCompositionLocalOf { 0 }
 
 @Suppress("DEPRECATION", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
 @AndroidEntryPoint
@@ -563,6 +566,11 @@ class MainActivity : ComponentActivity() {
                         Screens.MainScreens
                     }
                 }
+                val swipeableItems = remember(navigationItems) {
+                    navigationItems.filter { it != Screens.Settings }
+                }
+                val pagerState = rememberPagerState(pageCount = { swipeableItems.size })
+                
                 val (useNewMiniPlayerDesign) = rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
                 val defaultOpenTab = remember {
                     dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
@@ -612,16 +620,9 @@ class MainActivity : ComponentActivity() {
                 val inSearchScreen by remember {
                     derivedStateOf { currentRoute?.startsWith("search/") == true }
                 }
-                val navigationItemRoutes = remember(navigationItems) {
-                    navigationItems.map { it.route }.toSet()
-                }
-
-                val shouldShowNavigationBar = remember(currentRoute, navigationItemRoutes) {
-                    currentRoute == null ||
-                        navigationItemRoutes.contains(currentRoute) ||
-                    currentRoute!!.startsWith("search/") ||
-                        currentRoute!!.startsWith("recognition")
-                }
+                // The floating navigation toolbar is disabled. Keeping its layout state active
+                // reserves invisible bottom space and makes the mini-player jump between routes.
+                val shouldShowNavigationBar = false
 
                 val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
                 val showRail = false
@@ -655,17 +656,6 @@ class MainActivity : ComponentActivity() {
                                 playerBottomSheetState.collapseSoft()
                             }
                             connection.player.shuffleModeEnabled = !connection.player.shuffleModeEnabled
-                        }
-                    }
-                }
-
-                val onMusicRecognitionClick: (() -> Unit) = remember(navController, playerBottomSheetState) {
-                    {
-                        if (playerBottomSheetState.isExpanded) {
-                            playerBottomSheetState.collapseSoft()
-                        }
-                        navController.navigate("recognition") {
-                            launchSingleTop = true
                         }
                     }
                 }
@@ -788,6 +778,7 @@ class MainActivity : ComponentActivity() {
                 }
                 val snackbarHostState = remember { SnackbarHostState() }
                 var showSettingDialoge by remember { mutableStateOf(false) }
+                var searchFocusRequest by remember { mutableStateOf(0) }
 
                 val (lastOpenedVersionCode, setLastOpenedVersionCode) = rememberPreference(iad1tya.echo.music.constants.LastOpenedVersionCodeKey, -1)
                 var showWelcomeDialog by remember { mutableStateOf(false) }
@@ -860,6 +851,7 @@ class MainActivity : ComponentActivity() {
                     LocalSyncUtils provides syncUtils,
                     LocalListenTogetherManager provides listenTogetherManager,
                     LocalShowSettingsDialog provides { showSettingDialoge = true },
+                    LocalSearchFocusRequest provides searchFocusRequest,
                 ) {
 
                     Scaffold(
@@ -947,7 +939,40 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         bottomBar = {
-                            val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState, currentRoute) {
+                            val onMiniPlayerSearchClick: () -> Unit = remember(
+                                navController,
+                                currentRoute,
+                                coroutineScope,
+                                pagerState,
+                                swipeableItems,
+                            ) {
+                                {
+                                    val searchPage = swipeableItems.indexOf(Screens.Search)
+                                    if (searchPage >= 0) {
+                                        if (currentRoute == "main_pager") {
+                                            coroutineScope.launch {
+                                                if (pagerState.currentPage == searchPage) {
+                                                    searchFocusRequest++
+                                                } else {
+                                                    pagerState.animateScrollToPage(searchPage)
+                                                    searchFocusRequest++
+                                                }
+                                            }
+                                        } else {
+                                            navController.navigate("main_pager") {
+                                                popUpTo(navController.graph.startDestinationId)
+                                                launchSingleTop = true
+                                            }
+                                            coroutineScope.launch {
+                                                pagerState.scrollToPage(searchPage)
+                                                searchFocusRequest++
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState, currentRoute, swipeableItems, pagerState) {
                                 { screen: Screens, isSelected: Boolean ->
                                     if (playerBottomSheetState.isExpanded) {
                                         playerBottomSheetState.collapseSoft()
@@ -959,12 +984,28 @@ class MainActivity : ComponentActivity() {
                                             topAppBarScrollBehavior.state.resetHeightOffset()
                                         }
                                     } else {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                saveState = currentRoute?.startsWith("recognition") != true
+                                        val targetPageIndex = swipeableItems.indexOf(screen)
+                                        if (targetPageIndex != -1) {
+                                            if (currentRoute == "main_pager") {
+                                                coroutineScope.launch { pagerState.animateScrollToPage(targetPageIndex) }
+                                            } else {
+                                                navController.navigate("main_pager") {
+                                                    popUpTo(navController.graph.startDestinationId) {
+                                                        saveState = currentRoute?.startsWith("recognition") != true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = currentRoute?.startsWith("recognition") != true
+                                                }
+                                                coroutineScope.launch { pagerState.scrollToPage(targetPageIndex) }
                                             }
-                                            launchSingleTop = true
-                                            restoreState = currentRoute?.startsWith("recognition") != true
+                                        } else {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = currentRoute?.startsWith("recognition") != true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = currentRoute?.startsWith("recognition") != true
+                                            }
                                         }
                                     }
                                 }
@@ -975,6 +1016,7 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
+                                        onSearchClick = onMiniPlayerSearchClick,
                                         pureBlack = pureBlack,
                                         themeColor = themeColor
                                     )
@@ -990,35 +1032,6 @@ class MainActivity : ComponentActivity() {
 
                                     navSlideDistance * (1 - navigationBarHeight.coerceAtMost(navigationChromeHeight) / navigationChromeHeight)
                                         slideOffset + hideOffset
-                                    }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .align(if (isLandscape && !showRail) Alignment.BottomEnd else Alignment.BottomCenter)
-                                            .height(navSlideDistance)
-                                            .offset(y = navOffsetY),
-                                    ) {
-                                        FloatingNavigationToolbar(
-                                            items = navigationItems,
-                                            pureBlack = pureBlack,
-                                            onShuffleClick = onShuffleClick,
-                                            shuffleIconRes = R.drawable.shuffle,
-                                            shuffleContentDescription = stringResource(R.string.shuffle),
-                                            onMusicRecognitionClick = onMusicRecognitionClick,
-                                            musicRecognitionContentDescription = stringResource(R.string.recognition),
-                                            isSelected = { screen ->
-                                                currentRoute == screen.route || currentRoute?.startsWith("${screen.route}/") == true
-                                            },
-                                            onItemClick = onNavItemClick,
-                                            modifier = Modifier
-                                                .align(Alignment.BottomCenter)
-                                                .padding(
-                                                    start = FloatingToolbarHorizontalPadding,
-                                                    end = FloatingToolbarHorizontalPadding,
-                                                    bottom = bottomInset + FloatingToolbarBottomPadding,
-                                                )
-                                                .height(navigationChromeHeight)
-                                        )
                                     }
 
                                     Box(
@@ -1039,6 +1052,7 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
+                                        onSearchClick = onMiniPlayerSearchClick,
                                         pureBlack = pureBlack,
                                         themeColor = themeColor
                                     )
@@ -1104,108 +1118,29 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             val activeNavIndex = navigationItems.indexOfFirst { it.route == currentRoute }
-                            var swipeDistance by remember { mutableFloatStateOf(0f) }
 
                             Box(
                                 Modifier
                                     .weight(1f)
-                                    .pointerInput(currentRoute) {
-                                        if (activeNavIndex != -1) {
-                                            detectHorizontalDragGestures(
-                                                onDragStart = { swipeDistance = 0f },
-                                                onHorizontalDrag = { _, dragAmount ->
-                                                    swipeDistance += dragAmount
-                                                },
-                                                onDragEnd = {
-                                                    val threshold = 150f
-                                                    val swipeableItems = navigationItems.filter { it != Screens.Settings }
-                                                    val swipeableIndex = swipeableItems.indexOfFirst { it.route == currentRoute }
-                                                    if (swipeableIndex != -1) {
-                                                        val targetIndex = when {
-                                                            swipeDistance <= -threshold -> swipeableIndex + 1
-                                                            swipeDistance >= threshold -> swipeableIndex - 1
-                                                            else -> swipeableIndex
-                                                        }
-                                                        if (targetIndex != swipeableIndex && targetIndex in swipeableItems.indices) {
-                                                            val targetScreen = swipeableItems[targetIndex]
-                                                            navController.navigate(targetScreen.route) {
-                                                                popUpTo(navController.graph.startDestinationId) {
-                                                                    saveState = true
-                                                                }
-                                                                launchSingleTop = true
-                                                                restoreState = true
-                                                            }
-                                                        }
-                                                    }
-                                                    swipeDistance = 0f
-                                                },
-                                                onDragCancel = { swipeDistance = 0f }
-                                            )
-                                        }
-                                    }
                             ) {
                                 NavHost(
                                     navController = navController,
-                                    startDestination = when (tabOpenedFromShortcut ?: defaultOpenTab) {
-                                        NavigationTab.HOME -> Screens.Home
-                                        NavigationTab.LIBRARY -> Screens.Library
-                                        else -> Screens.Home
-                                    }.route,
+                                    startDestination = "main_pager",
                                     
                                     enterTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-                                        val previousRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-
-                                        if (currentRouteIndex == -1 || currentRouteIndex > previousRouteIndex)
-                                            slideInHorizontally { it } + fadeIn(tween(200))
-                                        else
-                                            slideInHorizontally { -it } + fadeIn(tween(200))
+                                        fadeIn(tween(durationMillis = 160))
                                     },
                                     
                                     exitTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-                                        val targetRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-
-                                        if (targetRouteIndex == -1 || targetRouteIndex > currentRouteIndex)
-                                            slideOutHorizontally { -it } + fadeOut(tween(200))
-                                        else
-                                            slideOutHorizontally { it } + fadeOut(tween(200))
+                                        fadeOut(tween(durationMillis = 120))
                                     },
                                     
                                     popEnterTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-                                        val previousRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-
-                                        if (previousRouteIndex != -1 && previousRouteIndex < currentRouteIndex)
-                                            slideInHorizontally { it } + fadeIn(tween(200))
-                                        else
-                                            slideInHorizontally { -it } + fadeIn(tween(200))
+                                        fadeIn(tween(durationMillis = 160))
                                     },
                                     
                                     popExitTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-                                        val targetRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-
-                                        if (currentRouteIndex != -1 && currentRouteIndex < targetRouteIndex)
-                                            slideOutHorizontally { -it } + fadeOut(tween(200))
-                                        else
-                                            slideOutHorizontally { it } + fadeOut(tween(200))
+                                        fadeOut(tween(durationMillis = 120))
                                     },
                                     modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                                 ) {
@@ -1213,9 +1148,68 @@ class MainActivity : ComponentActivity() {
                                         navController = navController,
                                         scrollBehavior = topAppBarScrollBehavior,
                                         activity = this@MainActivity,
-                                        snackbarHostState = snackbarHostState
+                                        snackbarHostState = snackbarHostState,
+                                        pagerState = pagerState,
+                                        swipeableItems = swipeableItems
                                     )
                                 }
+
+                                // ── Global top scrim ──────────────────────────────────
+                                // Fades from status-bar area downward, dark in dark mode,
+                                // soft white in light mode. Pointer-transparent so taps pass through.
+                                // Pinned pills / nav items sit at higher zIndex inside their own screens.
+                                val topScrimColor = if (useDarkTheme)
+                                    Color.Black.copy(alpha = 0.68f)
+                                else
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.62f)
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(
+                                            WindowInsets.systemBars
+                                                .asPaddingValues()
+                                                .calculateTopPadding() + 56.dp
+                                        )
+                                        .align(Alignment.TopCenter)
+                                        .background(
+                                            Brush.verticalGradient(
+                                                listOf(
+                                                    topScrimColor,
+                                                    topScrimColor.copy(alpha = topScrimColor.alpha * 0.4f),
+                                                    Color.Transparent
+                                                )
+                                            )
+                                        )
+                                )
+
+                                // ── Global bottom scrim ───────────────────────────────
+                                // Rises from below to cover behind mini player + nav bar.
+                                // Extends MiniPlayerHeight + navPadding + some extra upward.
+                                val bottomScrimColor = if (useDarkTheme)
+                                    Color.Black.copy(alpha = 0.90f)
+                                else
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.80f)
+
+                                val bottomScrimHeight = bottomInsetDp +
+                                    (if (shouldShowNavigationBar) navPadding else 0.dp) +
+                                    MiniPlayerHeight + 60.dp   // extra 48dp to reach behind mini player
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(bottomScrimHeight)
+                                        .align(Alignment.BottomCenter)
+                                        .background(
+                                            Brush.verticalGradient(
+                                                listOf(
+                                                    Color.Transparent,
+                                                    bottomScrimColor.copy(alpha = bottomScrimColor.alpha * 0.6f),
+                                                    bottomScrimColor
+                                                )
+                                            )
+                                        )
+                                )
                             }
                         }
                     }

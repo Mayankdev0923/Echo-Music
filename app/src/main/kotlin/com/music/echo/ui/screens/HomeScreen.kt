@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -212,11 +213,7 @@ fun CommunityPlaylistCard(
     val scope = rememberCoroutineScope()
     val isDark = isSystemInDarkTheme()
 
-    val containerColor = if (isDark) {
-        MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp)
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-    }
+    val containerColor = Color.Transparent
 
     val dbPlaylist by database.playlistByBrowseId(item.playlist.id).collectAsState(initial = null)
     val isBookmarked = dbPlaylist?.playlist?.bookmarkedAt != null
@@ -231,10 +228,41 @@ fun CommunityPlaylistCard(
         shape = RoundedCornerShape(28.dp),
         onClick = onClick
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Row(
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = item.songs.getOrNull(0)?.thumbnail?.resize(128, 128),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+            if (isDark) {
+                // Dark mode: blurred art + dark scrim
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.45f))
+                )
+            } else {
+                // Light mode: lighter frosted overlay — warm cream/white gradient so art still breathes through
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color(0xFFFBF8FF).copy(alpha = 0.82f),
+                                    Color(0xFFF0EDF8).copy(alpha = 0.90f)
+                                )
+                            )
+                        )
+                )
+            }
+            
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -293,6 +321,7 @@ fun CommunityPlaylistCard(
                     Text(
                         text = item.playlist.title,
                         style = MaterialTheme.typography.titleMedium,
+                        color = Color.White,
                         maxLines = 2,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
@@ -300,7 +329,7 @@ fun CommunityPlaylistCard(
                     Text(
                         text = item.playlist.author?.name ?: "",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                        color = Color.White.copy(alpha = 0.75f),
                         maxLines = 1
                     )
                 }
@@ -334,13 +363,14 @@ fun CommunityPlaylistCard(
                             Text(
                                 text = song.title,
                                 style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
                             Text(
                                 text = song.artists.joinToString(", ") { it.name },
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                                color = Color.White.copy(alpha = 0.65f),
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
@@ -443,6 +473,7 @@ fun CommunityPlaylistCard(
                     )
                 }
             }
+        }
         }
     }
 }
@@ -925,7 +956,8 @@ fun HomeScreen(
                 isRefreshing = isRefreshing,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(LocalPlayerAwareWindowInsets.current.asPaddingValues()),
+                    .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 12.dp)
+                    .zIndex(10f),
             )
         }
     ) {
@@ -959,16 +991,21 @@ fun HomeScreen(
                 if (darkMode == DarkMode.AUTO) isSystemInDark else darkMode == DarkMode.ON
             }
 
+            val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+            val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
+
             LazyColumn(
                 state = lazylistState,
-                contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+                contentPadding = PaddingValues(
+                    top = statusBarTop + 74.dp,
+                    bottom = bottomPadding
+                )
             ) {
                 item(key = "home_heading") {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(start = 20.dp, end = 100.dp, top = 16.dp, bottom = 8.dp),
+                            .padding(start = 20.dp, end = 100.dp, top = 8.dp, bottom = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -1024,7 +1061,7 @@ fun HomeScreen(
                                 item(key = "speed_dial_title") {
                                     NavigationTitle(
                                         title = stringResource(R.string.speed_dial),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1041,8 +1078,7 @@ fun HomeScreen(
                                     Column(
                                         modifier =
                                             Modifier
-                                                .fillMaxWidth()
-                                                .animateItem(),
+                                                .fillMaxWidth(),
                                     ) {
                                         HorizontalPager(
                                             state = pagerState,
@@ -1208,7 +1244,6 @@ fun HomeScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(290.dp)
-                                            .animateItem()
                                     ) { index ->
                                         val originalSong = distinctQuickPicks[index]
                                         val song by database.song(originalSong.id)
@@ -1319,7 +1354,7 @@ fun HomeScreen(
                                 item(key = "echo_brain_playlists_title") {
                                     NavigationTitle(
                                         title = "Echo Brain Recommends",
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1327,7 +1362,7 @@ fun HomeScreen(
                                     LazyRow(
                                         contentPadding = PaddingValues(horizontal = 16.dp),
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     ) {
                                         items(playlists, key = { it.playlist.id }) { item ->
                                             CommunityPlaylistCard(
@@ -1378,7 +1413,7 @@ fun HomeScreen(
                                 item(key = "community_playlists_title") {
                                     NavigationTitle(
                                         title = stringResource(R.string.from_the_community),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1386,7 +1421,7 @@ fun HomeScreen(
                                     LazyRow(
                                         contentPadding = PaddingValues(horizontal = 16.dp),
                                         horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     ) {
                                         items(playlists, key = { it.playlist.id }) { item ->
                                             CommunityPlaylistCard(
@@ -1476,7 +1511,7 @@ fun HomeScreen(
                                 item(key = "keep_listening_title") {
                                     NavigationTitle(
                                         title = stringResource(R.string.keep_listening),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1493,7 +1528,6 @@ fun HomeScreen(
                                                 MaterialTheme.typography.bodyLarge.lineHeight.toDp() * 2 +
                                                         MaterialTheme.typography.bodyMedium.lineHeight.toDp() * 2
                                             }) * rows)
-                                            .animateItem()
                                     ) {
                                         items(keepListening, key = { it.id }) {
                                             localGridItem(it)
@@ -1536,7 +1570,7 @@ fun HomeScreen(
                                         onClick = {
                                             navController.navigate("account")
                                         },
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1545,7 +1579,7 @@ fun HomeScreen(
                                         contentPadding = WindowInsets.systemBars
                                             .only(WindowInsetsSides.Horizontal)
                                             .asPaddingValues(),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     ) {
                                         items(
                                             items = accountPlaylists.distinctBy { it.id },
@@ -1563,7 +1597,7 @@ fun HomeScreen(
                                     val forgottenFavoritesTitle = stringResource(R.string.forgotten_favorites)
                                     NavigationTitle(
                                         title = forgottenFavoritesTitle,
-                                        modifier = Modifier.animateItem(),
+                                        modifier = Modifier,
                                         onPlayAllClick = {
                                             playerConnection.playQueue(
                                                 ListQueue(
@@ -1589,7 +1623,6 @@ fun HomeScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(ListItemHeight * rows)
-                                            .animateItem()
                                     ) {
                                         itemsIndexed(
                                             items = forgottenFavorites.distinctBy { it.id },
@@ -1685,7 +1718,7 @@ fun HomeScreen(
                                                 is Playlist -> {}
                                             }
                                         },
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1694,7 +1727,7 @@ fun HomeScreen(
                                         contentPadding = WindowInsets.systemBars
                                             .only(WindowInsetsSides.Horizontal)
                                             .asPaddingValues(),
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     ) {
                                         items(recommendation.items, key = { it.id }) { item ->
                                             ytGridItem(item)
@@ -1754,7 +1787,7 @@ fun HomeScreen(
                                                 )
                                             }
                                         } else null,
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
 
@@ -1770,7 +1803,6 @@ fun HomeScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(ListItemHeight * 4)
-                                                .animateItem()
                                         ) {
                                             itemsIndexed(
                                                 items = sectionSongs.distinctBy { it.id },
@@ -1834,7 +1866,7 @@ fun HomeScreen(
                                             contentPadding = WindowInsets.systemBars
                                                 .only(WindowInsetsSides.Horizontal)
                                                 .asPaddingValues(),
-                                            modifier = Modifier.animateItem()
+                                            modifier = Modifier
                                         ) {
                                             items(sectionData.items, key = { it.id }) { item ->
                                                 ytGridItem(item)
@@ -1852,7 +1884,7 @@ fun HomeScreen(
                                         onClick = {
                                             navController.navigate("mood_and_genres")
                                         },
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
                                     )
                                 }
                                 item(key = "mood_and_genres_list") {
@@ -1861,7 +1893,6 @@ fun HomeScreen(
                                         contentPadding = PaddingValues(6.dp),
                                         modifier = Modifier
                                             .height((MoodAndGenresButtonHeight + 12.dp) * 4 + 12.dp)
-                                            .animateItem()
                                     ) {
                                         items(moodAndGenres.distinctBy { it.title }, key = { it.title }) {
                                             MoodAndGenresButton(
@@ -1885,7 +1916,7 @@ fun HomeScreen(
                 if (isLoading || homePage?.continuation != null && homePage?.sections?.isNotEmpty() == true) {
                     item(key = "loading_shimmer") {
                         ShimmerHost(
-                            modifier = Modifier.animateItem()
+                            modifier = Modifier
                         ) {
                             // 1. Quick Picks Skeleton
                             Row(

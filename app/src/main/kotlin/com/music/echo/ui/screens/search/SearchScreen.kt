@@ -62,6 +62,14 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -80,6 +88,7 @@ import iad1tya.echo.music.LocalDatabase
 import iad1tya.echo.music.LocalIsPlayerExpanded
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.LocalPlayerConnection
+import iad1tya.echo.music.LocalSearchFocusRequest
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.PauseSearchHistoryKey
 import iad1tya.echo.music.constants.SearchSource
@@ -132,6 +141,7 @@ fun SearchScreen(
     val isPlayerExpanded = LocalIsPlayerExpanded.current
     val playerConnection = LocalPlayerConnection.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val searchFocusRequest = LocalSearchFocusRequest.current
 
     var searchSource by rememberEnumPreference(SearchSourceKey, SearchSource.ONLINE)
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -144,6 +154,21 @@ fun SearchScreen(
     var searchActive by rememberSaveable { mutableStateOf(false) }
     var showSearchContent by remember { mutableStateOf(false) }
 
+    var isCollapsed by remember { mutableStateOf(false) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y < -10f) {
+                    isCollapsed = true
+                } else if (available.y > 10f && !searchActive) {
+                    isCollapsed = false
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
     LaunchedEffect(searchActive) {
         if (searchActive) {
             
@@ -152,6 +177,16 @@ fun SearchScreen(
             showSearchContent = true
         } else {
             showSearchContent = false
+        }
+    }
+
+    LaunchedEffect(searchFocusRequest) {
+        if (searchFocusRequest > 0) {
+            searchActive = true
+            isCollapsed = false
+            kotlinx.coroutines.delay(120)
+            focusRequester.requestFocus()
+            keyboardController?.show()
         }
     }
 
@@ -224,44 +259,74 @@ fun SearchScreen(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(nestedScrollConnection),
         containerColor = Color.Transparent,
         topBar = {
+            val topBarExpanded = !isCollapsed && !searchActive
+            
+            val searchBoxY by animateDpAsState(if (topBarExpanded) 116.dp else 0.dp)
+            val searchBoxStartPadding by animateDpAsState(if (searchActive) 72.dp else 16.dp)
+            val searchBoxEndPadding by animateDpAsState(if (topBarExpanded) 16.dp else 72.dp)
+            val textAlpha by animateFloatAsState(if (topBarExpanded) 1f else 0f)
+            val headerHeight by animateDpAsState(if (topBarExpanded) 180.dp else 56.dp)
+
             Column(
                 modifier = Modifier
                     .background(Color.Transparent)
+                    .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 26.dp)
             ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 32.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .height(headerHeight)
                 ) {
-                    IconButton(
-                        onClick = {
-                            if (searchActive) {
-                                searchActive = false
-                                query = TextFieldValue("")
-                            } else {
-                                navController.navigateUp()
-                            }
-                        },
-                        modifier = Modifier
-                            .appleGlass(CircleShape, elevation = 2.dp)
-                            .clip(CircleShape)
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = searchActive,
+                        enter = androidx.compose.animation.fadeIn(),
+                        exit = androidx.compose.animation.fadeOut(),
+                        modifier = Modifier.align(Alignment.TopStart)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back),
-                            contentDescription = stringResource(R.string.dismiss),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        IconButton(
+                            onClick = {
+                                if (searchActive) {
+                                    searchActive = false
+                                    query = TextFieldValue("")
+                                } else {
+                                    navController.navigateUp()
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .appleGlass(CircleShape, elevation = 2.dp)
+                                .clip(CircleShape)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.arrow_back),
+                                contentDescription = stringResource(R.string.dismiss),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
+
+                    Text(
+                        text = "Search",
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 40.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .offset(x = 24.dp, y = 56.dp)
+                            .alpha(textAlpha)
+                    )
 
                     Box(
                         modifier = Modifier
-                            .weight(1f)
-                            .height(56.dp)
+                            .fillMaxWidth()
+                            .padding(start = searchBoxStartPadding, end = searchBoxEndPadding)
+                            .offset(y = searchBoxY)
+                            .height(48.dp)
                             .appleGlass(RoundedCornerShape(percent = 50), elevation = 4.dp)
                             .clip(RoundedCornerShape(percent = 50))
                             .clickable(
@@ -320,12 +385,16 @@ fun SearchScreen(
                         )
                     }
 
+                    val toggleModifier = Modifier
+                        .padding(end = 16.dp)
+                        .align(Alignment.TopEnd)
+                        .appleGlass(CircleShape, elevation = 2.dp)
+                        .clip(CircleShape)
+                    
                     if (searchActive && query.text.isNotEmpty()) {
                         IconButton(
                             onClick = { query = TextFieldValue("") },
-                            modifier = Modifier
-                                .appleGlass(CircleShape, elevation = 2.dp)
-                                .clip(CircleShape)
+                            modifier = toggleModifier
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.close),
@@ -339,9 +408,7 @@ fun SearchScreen(
                                 searchSource = if (searchSource == SearchSource.ONLINE) 
                                     SearchSource.LOCAL else SearchSource.ONLINE
                             },
-                            modifier = Modifier
-                                .appleGlass(CircleShape, elevation = 2.dp)
-                                .clip(CircleShape)
+                            modifier = toggleModifier
                         ) {
                             Icon(
                                 painter = painterResource(
@@ -365,8 +432,8 @@ fun SearchScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
                     ) {
                         val tabs = listOf(
                             stringResource(R.string.tab_explore),
@@ -399,7 +466,7 @@ fun SearchScreen(
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(backgroundColor)
                                     .clickable { selectedTabIndex = index }
-                                    .padding(vertical = 10.dp),
+                                    .padding(vertical = 10.dp, horizontal = 16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -522,20 +589,32 @@ fun ExploreTabContent(
                         .padding(horizontal = 6.dp)
                 ) {
                     row.forEach { item ->
+                        val colorScheme = MaterialTheme.colorScheme
+                        val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
+                        val baseModifier = Modifier
+                            .weight(1f)
+                            .padding(6.dp)
+                            .height(64.dp)
+                            
+                        val finalModifier = if (isDark) {
+                            baseModifier
+                                .clip(CircleShape)
+                                .background(colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        } else {
+                            baseModifier
+                                .clip(CircleShape)
+                                .appleGlass(CircleShape, elevation = 2.dp)
+                        }
+
                         Box(
                             contentAlignment = Alignment.CenterStart,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(6.dp)
-                                .height(64.dp)
-                                .appleGlass(RoundedCornerShape(10.dp), elevation = 2.dp)
-                                .clip(RoundedCornerShape(10.dp))
+                            modifier = finalModifier
                                 .clickable {
                                     navController.navigate(
                                         "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"
                                     )
                                 }
-                                .padding(horizontal = 14.dp)
+                                .padding(start = 32.dp, end = 14.dp)
                         ) {
                             Text(
                                 text = item.title,

@@ -131,6 +131,60 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
+@Composable
+fun CoverBadges(
+    isLiked: Boolean = false,
+    inLibrary: Boolean = false,
+    downloadState: Int? = null,
+    modifier: Modifier = Modifier
+) {
+    if (isLiked || inLibrary || downloadState == Download.STATE_COMPLETED || downloadState == Download.STATE_QUEUED || downloadState == Download.STATE_DOWNLOADING) {
+        Row(
+            modifier = modifier
+                .padding(4.dp)
+                .background(Color.Black.copy(alpha = 0.5f), androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                .padding(4.dp),
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(2.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            if (isLiked) {
+                androidx.compose.material3.Icon(
+                    painter = androidx.compose.ui.res.painterResource(R.drawable.favorite),
+                    contentDescription = null,
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(12.dp)
+                )
+            }
+            if (inLibrary) {
+                androidx.compose.material3.Icon(
+                    painter = androidx.compose.ui.res.painterResource(R.drawable.library_music),
+                    contentDescription = null,
+                    tint = androidx.compose.ui.graphics.Color.White,
+                    modifier = Modifier.size(12.dp)
+                )
+            }
+            when (downloadState) {
+                Download.STATE_COMPLETED -> {
+                    androidx.compose.material3.Icon(
+                        painter = androidx.compose.ui.res.painterResource(R.drawable.offline),
+                        contentDescription = null,
+                        tint = androidx.compose.ui.graphics.Color.White,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+                Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
+                    androidx.compose.material3.Icon(
+                        painter = androidx.compose.ui.res.painterResource(R.drawable.download),
+                        contentDescription = null,
+                        tint = androidx.compose.ui.graphics.Color.White,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
 const val ActiveBoxAlpha = 0.6f
 
 @Composable
@@ -428,19 +482,8 @@ fun SongListItem(
             )
         }
 
-        if (showLikedIcon && song.song.liked) {
-            Icon.Favorite()
-        }
         if (song.song.explicit) {
             Icon.Explicit()
-        }
-        if (showInLibraryIcon && song.song.inLibrary != null) {
-            Icon.Library()
-        }
-        if (showDownloadIcon) {
-            val download by LocalDownloadUtil.current.getDownload(song.id)
-                .collectAsState(initial = null)
-            Icon.Download(download?.state)
         }
     },
     isSelected: Boolean = false,
@@ -470,19 +513,29 @@ fun SongListItem(
             ),
             badges = badges,
             thumbnailContent = {
-                ItemThumbnail(
-                    thumbnailUrl = song.song.thumbnailUrl,
-                    albumIndex = albumIndex,
-                    isSelected = isSelected,
-                    isActive = isActive,
-                    isPlaying = isPlaying,
-                    shape = if (index != -1 && count != -1) {
-                        listThumbnailShape(index, count)
-                    } else {
-                        RoundedCornerShape(ThumbnailCornerRadius)
-                    },
-                    modifier = Modifier.size(ListThumbnailSize)
-                )
+                Box {
+                    ItemThumbnail(
+                        thumbnailUrl = song.song.thumbnailUrl,
+                        albumIndex = albumIndex,
+                        isSelected = isSelected,
+                        isActive = isActive,
+                        isPlaying = isPlaying,
+                        shape = if (index != -1 && count != -1) {
+                            listThumbnailShape(index, count)
+                        } else {
+                            RoundedCornerShape(ThumbnailCornerRadius)
+                        },
+                        modifier = Modifier.size(ListThumbnailSize)
+                    )
+                    
+                    val download by LocalDownloadUtil.current.getDownload(song.id).collectAsState(initial = null)
+                    CoverBadges(
+                        isLiked = showLikedIcon && song.song.liked,
+                        inLibrary = showInLibraryIcon && song.song.inLibrary != null,
+                        downloadState = if (showDownloadIcon) download?.state else null,
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    )
+                }
             },
             trailingContent = trailingContent,
             modifier = modifier,
@@ -515,16 +568,6 @@ fun SongGridItem(
     showInLibraryIcon: Boolean = false,
     showDownloadIcon: Boolean = true,
     badges: @Composable RowScope.() -> Unit = {
-        if (showLikedIcon && song.song.liked) {
-            Icon.Favorite()
-        }
-        if (showInLibraryIcon && song.song.inLibrary != null) {
-            Icon.Library()
-        }
-        if (showDownloadIcon) {
-            val download by LocalDownloadUtil.current.getDownload(song.id).collectAsState(initial = null)
-            Icon.Download(download?.state)
-        }
     },
     isActive: Boolean = false,
     isPlaying: Boolean = false,
@@ -555,16 +598,25 @@ fun SongGridItem(
     badges = badges,
     thumbnailContent = {
         val gridHeight = currentGridThumbnailHeight()
-        ItemThumbnail(
-            thumbnailUrl = song.song.thumbnailUrl,
-            isActive = isActive,
-            isPlaying = isPlaying,
-            shape = RoundedCornerShape(ThumbnailCornerRadius),
-            modifier = Modifier.size(gridHeight)
-        )
-        if (!isActive) {
-            OverlayPlayButton(
-                visible = true
+        Box {
+            ItemThumbnail(
+                thumbnailUrl = song.song.thumbnailUrl,
+                isActive = isActive,
+                isPlaying = isPlaying,
+                shape = RoundedCornerShape(ThumbnailCornerRadius),
+                modifier = Modifier.size(gridHeight)
+            )
+            if (!isActive) {
+                OverlayPlayButton(
+                    visible = true
+                )
+            }
+            val download by LocalDownloadUtil.current.getDownload(song.id).collectAsState(initial = null)
+            CoverBadges(
+                isLiked = showLikedIcon && song.song.liked,
+                inLibrary = showInLibraryIcon && song.song.inLibrary != null,
+                downloadState = if (showDownloadIcon) download?.state else null,
+                modifier = Modifier.align(Alignment.TopEnd)
             )
         }
     },
@@ -657,38 +709,9 @@ fun AlbumListItem(
     shape: Shape = RectangleShape,
     showLikedIcon: Boolean = true,
     badges: @Composable RowScope.() -> Unit = {
-        val downloadUtil = LocalDownloadUtil.current
-        val database = LocalDatabase.current
-
-        val songs by produceState<List<Song>>(initialValue = emptyList(), album.id) {
-            withContext(Dispatchers.IO) {
-                value = database.albumSongs(album.id).first()
-            }
-        }
-
-        val allDownloads by downloadUtil.downloads.collectAsState()
-
-        val downloadState by remember(songs, allDownloads) {
-            androidx.compose.runtime.mutableIntStateOf(
-                if (songs.isEmpty()) {
-                    Download.STATE_STOPPED
-                } else {
-                    when {
-                        songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
-                        songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
-                        else -> Download.STATE_STOPPED
-                    }
-                }
-            )
-        }
-
-        if (showLikedIcon && album.album.bookmarkedAt != null) {
-            Icon.Favorite()
-        }
         if (album.album.explicit) {
             Icon.Explicit()
         }
-        Icon.Download(downloadState)
     },
     isActive: Boolean = false,
     isPlaying: Boolean = false,
@@ -702,13 +725,43 @@ fun AlbumListItem(
     ),
     badges = badges,
     thumbnailContent = {
-        ItemThumbnail(
-            thumbnailUrl = album.album.thumbnailUrl,
-            isActive = isActive,
-            isPlaying = isPlaying,
-            shape = RoundedCornerShape(ThumbnailCornerRadius),
-            modifier = Modifier.size(ListThumbnailSize)
-        )
+        Box {
+            ItemThumbnail(
+                thumbnailUrl = album.album.thumbnailUrl,
+                isActive = isActive,
+                isPlaying = isPlaying,
+                shape = RoundedCornerShape(ThumbnailCornerRadius),
+                modifier = Modifier.size(ListThumbnailSize)
+            )
+            
+            val downloadUtil = LocalDownloadUtil.current
+            val database = LocalDatabase.current
+            val songs by produceState<List<Song>>(initialValue = emptyList(), album.id) {
+                withContext(Dispatchers.IO) {
+                    value = database.albumSongs(album.id).first()
+                }
+            }
+            val allDownloads by downloadUtil.downloads.collectAsState()
+            val downloadState by remember(songs, allDownloads) {
+                androidx.compose.runtime.mutableIntStateOf(
+                    if (songs.isEmpty()) {
+                        Download.STATE_STOPPED
+                    } else {
+                        when {
+                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            else -> Download.STATE_STOPPED
+                        }
+                    }
+                )
+            }
+
+            CoverBadges(
+                isLiked = showLikedIcon && album.album.bookmarkedAt != null,
+                downloadState = downloadState,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
     },
     trailingContent = trailingContent,
     shape = shape,
@@ -722,38 +775,9 @@ fun AlbumGridItem(
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope,
     badges: @Composable RowScope.() -> Unit = {
-        val downloadUtil = LocalDownloadUtil.current
-        val database = LocalDatabase.current
-
-        val songs by produceState<List<Song>>(initialValue = emptyList(), album.id) {
-            withContext(Dispatchers.IO) {
-                value = database.albumSongs(album.id).first()
-            }
-        }
-
-        val allDownloads by downloadUtil.downloads.collectAsState()
-
-        val downloadState by remember(songs, allDownloads) {
-            androidx.compose.runtime.mutableIntStateOf(
-                if (songs.isEmpty()) {
-                    Download.STATE_STOPPED
-                } else {
-                    when {
-                        songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
-                        songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
-                        else -> Download.STATE_STOPPED
-                    }
-                }
-            )
-        }
-
-        if (album.album.bookmarkedAt != null) {
-            Icon.Favorite()
-        }
         if (album.album.explicit) {
             Icon.Explicit()
         }
-        Icon.Download(downloadState)
     },
     isActive: Boolean = false,
     isPlaying: Boolean = false,
@@ -784,26 +808,55 @@ fun AlbumGridItem(
         val playerConnection = LocalPlayerConnection.current ?: return@GridItem
         val scope = rememberCoroutineScope()
 
-        ItemThumbnail(
-            thumbnailUrl = album.album.thumbnailUrl,
-            isActive = isActive,
-            isPlaying = isPlaying,
-            shape = RoundedCornerShape(ThumbnailCornerRadius),
-        )
+        Box {
+            ItemThumbnail(
+                thumbnailUrl = album.album.thumbnailUrl,
+                isActive = isActive,
+                isPlaying = isPlaying,
+                shape = RoundedCornerShape(ThumbnailCornerRadius),
+            )
 
-        AlbumPlayButton(
-            visible = !isActive,
-            onClick = {
-                scope.launch {
-                    val albumWithSongs = withContext(Dispatchers.IO) {
-                        database.albumWithSongs(album.id).firstOrNull()
-                    }
-                    albumWithSongs?.let {
-                        playerConnection.playQueue(LocalAlbumRadio(it))
+            AlbumPlayButton(
+                visible = !isActive,
+                onClick = {
+                    scope.launch {
+                        val albumWithSongs = withContext(Dispatchers.IO) {
+                            database.albumWithSongs(album.id).firstOrNull()
+                        }
+                        albumWithSongs?.let {
+                            playerConnection.playQueue(LocalAlbumRadio(it))
+                        }
                     }
                 }
+            )
+            
+            val downloadUtil = LocalDownloadUtil.current
+            val songs by produceState<List<Song>>(initialValue = emptyList(), album.id) {
+                withContext(Dispatchers.IO) {
+                    value = database.albumSongs(album.id).first()
+                }
             }
-        )
+            val allDownloads by downloadUtil.downloads.collectAsState()
+            val downloadState by remember(songs, allDownloads) {
+                androidx.compose.runtime.mutableIntStateOf(
+                    if (songs.isEmpty()) {
+                        Download.STATE_STOPPED
+                    } else {
+                        when {
+                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            else -> Download.STATE_STOPPED
+                        }
+                    }
+                )
+            }
+
+            CoverBadges(
+                isLiked = album.album.bookmarkedAt != null,
+                downloadState = downloadState,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
     },
     fillMaxWidth = fillMaxWidth,
     modifier = modifier
@@ -816,31 +869,6 @@ fun PlaylistListItem(
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
     autoPlaylist: Boolean = false,
     badges: @Composable RowScope.() -> Unit = {
-        val downloadUtil = LocalDownloadUtil.current
-        val database = LocalDatabase.current
-
-        val songs by produceState<List<Song>>(initialValue = emptyList(), playlist.id) {
-            withContext(Dispatchers.IO) {
-                value = database.playlistSongs(playlist.id).first().map { it.song }
-            }
-        }
-
-        val allDownloads by downloadUtil.downloads.collectAsState()
-
-        val downloadState by remember(songs, allDownloads) {
-            androidx.compose.runtime.mutableIntStateOf(
-                if (songs.isEmpty()) {
-                    Download.STATE_STOPPED
-                } else {
-                    when {
-                        songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
-                        songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
-                        else -> Download.STATE_STOPPED
-                    }
-                }
-            )
-        }
-
         if (playlist.playlist.isPinned) {
             Icon(
                 painter = painterResource(R.drawable.ic_push_pin),
@@ -849,7 +877,6 @@ fun PlaylistListItem(
                 modifier = Modifier.size(16.dp).padding(end = 2.dp)
             )
         }
-        Icon.Download(downloadState)
     },
     trailingContent: @Composable RowScope.() -> Unit = {},
     shape: Shape = androidx.compose.ui.graphics.RectangleShape,
@@ -874,27 +901,56 @@ fun PlaylistListItem(
     },
     badges = badges,
     thumbnailContent = {
-        PlaylistThumbnail(
-            thumbnails = playlist.thumbnails,
-            size = ListThumbnailSize,
-            placeHolder = {
-                val painter = when (playlist.playlist.name) {
-                    stringResource(R.string.liked) -> R.drawable.favorite_border
-                    stringResource(R.string.offline) -> R.drawable.offline
-                    stringResource(R.string.cached_playlist) -> R.drawable.cached
-                    
-                    stringResource(R.string.uploaded_playlist) -> R.drawable.backup
-                    else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.ic_launcher_nobg
+        Box {
+            PlaylistThumbnail(
+                thumbnails = playlist.thumbnails,
+                size = ListThumbnailSize,
+                placeHolder = {
+                    val painter = when (playlist.playlist.name) {
+                        stringResource(R.string.liked) -> R.drawable.favorite_border
+                        stringResource(R.string.offline) -> R.drawable.offline
+                        stringResource(R.string.cached_playlist) -> R.drawable.cached
+                        
+                        stringResource(R.string.uploaded_playlist) -> R.drawable.backup
+                        else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.ic_launcher_nobg
+                    }
+                    Icon(
+                        painter = painterResource(painter),
+                        contentDescription = null,
+                        tint = LocalContentColor.current.copy(alpha = 0.8f),
+                        modifier = Modifier.size(ListThumbnailSize / 2)
+                    )
+                },
+                shape = RoundedCornerShape(ThumbnailCornerRadius)
+            )
+            
+            val downloadUtil = LocalDownloadUtil.current
+            val database = LocalDatabase.current
+            val songs by produceState<List<Song>>(initialValue = emptyList(), playlist.id) {
+                withContext(Dispatchers.IO) {
+                    value = database.playlistSongs(playlist.id).first().map { it.song }
                 }
-                Icon(
-                    painter = painterResource(painter),
-                    contentDescription = null,
-                    tint = LocalContentColor.current.copy(alpha = 0.8f),
-                    modifier = Modifier.size(ListThumbnailSize / 2)
+            }
+            val allDownloads by downloadUtil.downloads.collectAsState()
+            val downloadState by remember(songs, allDownloads) {
+                androidx.compose.runtime.mutableIntStateOf(
+                    if (songs.isEmpty()) {
+                        Download.STATE_STOPPED
+                    } else {
+                        when {
+                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            else -> Download.STATE_STOPPED
+                        }
+                    }
                 )
-            },
-            shape = RoundedCornerShape(ThumbnailCornerRadius)
-        )
+            }
+            
+            CoverBadges(
+                downloadState = downloadState,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
     },
     trailingContent = trailingContent,
     modifier = modifier,
@@ -908,31 +964,6 @@ fun PlaylistGridItem(
     modifier: Modifier = Modifier,
     autoPlaylist: Boolean = false,
     badges: @Composable RowScope.() -> Unit = {
-        val downloadUtil = LocalDownloadUtil.current
-        val database = LocalDatabase.current
-
-        val songs by produceState<List<Song>>(initialValue = emptyList(), playlist.id) {
-            withContext(Dispatchers.IO) {
-                value = database.playlistSongs(playlist.id).first().map { it.song }
-            }
-        }
-
-        val allDownloads by downloadUtil.downloads.collectAsState()
-
-        val downloadState by remember(songs, allDownloads) {
-            mutableIntStateOf(
-                if (songs.isEmpty()) {
-                    Download.STATE_STOPPED
-                } else {
-                    when {
-                        songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
-                        songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
-                        else -> Download.STATE_STOPPED
-                    }
-                }
-            )
-        }
-
         if (playlist.playlist.isPinned) {
             Icon(
                 painter = painterResource(R.drawable.ic_push_pin),
@@ -941,7 +972,6 @@ fun PlaylistGridItem(
                 modifier = Modifier.size(16.dp).padding(end = 2.dp)
             )
         }
-        Icon.Download(downloadState)
     },
     fillMaxWidth: Boolean = false,
 ) = GridItem(
@@ -984,32 +1014,61 @@ fun PlaylistGridItem(
     badges = badges,
     thumbnailContent = {
         val width = maxWidth
-        PlaylistThumbnail(
-            thumbnails = playlist.thumbnails,
-            size = width,
-            placeHolder = {
-                val painter = when (playlist.playlist.name) {
-                    stringResource(R.string.liked) -> R.drawable.favorite_border
-                    stringResource(R.string.offline) -> R.drawable.offline
-                    stringResource(R.string.cached_playlist) -> R.drawable.cached
-                    
-                    stringResource(R.string.uploaded_playlist) -> R.drawable.backup
-                    else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.ic_launcher_nobg
+        Box {
+            PlaylistThumbnail(
+                thumbnails = playlist.thumbnails,
+                size = width,
+                placeHolder = {
+                    val painter = when (playlist.playlist.name) {
+                        stringResource(R.string.liked) -> R.drawable.favorite_border
+                        stringResource(R.string.offline) -> R.drawable.offline
+                        stringResource(R.string.cached_playlist) -> R.drawable.cached
+                        
+                        stringResource(R.string.uploaded_playlist) -> R.drawable.backup
+                        else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.ic_launcher_nobg
+                    }
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = painterResource(painter),
+                            contentDescription = null,
+                            tint = LocalContentColor.current.copy(alpha = 0.8f),
+                            modifier = Modifier.size(width / 2)
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(ThumbnailCornerRadius)
+            )
+            
+            val downloadUtil = LocalDownloadUtil.current
+            val database = LocalDatabase.current
+            val songs by produceState<List<Song>>(initialValue = emptyList(), playlist.id) {
+                withContext(Dispatchers.IO) {
+                    value = database.playlistSongs(playlist.id).first().map { it.song }
                 }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Icon(
-                        painter = painterResource(painter),
-                        contentDescription = null,
-                        tint = LocalContentColor.current.copy(alpha = 0.8f),
-                        modifier = Modifier.size(width / 2)
-                    )
-                }
-            },
-            shape = RoundedCornerShape(ThumbnailCornerRadius)
-        )
+            }
+            val allDownloads by downloadUtil.downloads.collectAsState()
+            val downloadState by remember(songs, allDownloads) {
+                androidx.compose.runtime.mutableIntStateOf(
+                    if (songs.isEmpty()) {
+                        Download.STATE_STOPPED
+                    } else {
+                        when {
+                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            else -> Download.STATE_STOPPED
+                        }
+                    }
+                )
+            }
+            
+            CoverBadges(
+                downloadState = downloadState,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
     },
     fillMaxWidth = fillMaxWidth,
     modifier = modifier
@@ -1085,25 +1144,7 @@ fun YouTubeListItem(
     isSwipeable: Boolean = true,
     trailingContent: @Composable RowScope.() -> Unit = {},
     badges: @Composable RowScope.() -> Unit = {
-        val database = LocalDatabase.current
-        val song by produceState<Song?>(initialValue = null, item.id) {
-            if (item is SongItem) value = database.song(item.id).firstOrNull()
-        }
-        val album by produceState<Album?>(initialValue = null, item.id) {
-            if (item is AlbumItem) value = database.album(item.id).firstOrNull()
-        }
-
-        if ((item is SongItem && song?.song?.liked == true) ||
-            (item is AlbumItem && album?.album?.bookmarkedAt != null)
-        ) {
-            Icon.Favorite()
-        }
         if (item.explicit) Icon.Explicit()
-        
-        if (item is SongItem) {
-            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)
-            Icon.Download(download?.state)
-        }
     },
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
@@ -1123,21 +1164,40 @@ fun YouTubeListItem(
             },
             badges = badges,
             thumbnailContent = {
-                ItemThumbnail(
-                    thumbnailUrl = item.thumbnail,
-                    albumIndex = albumIndex,
-                    isSelected = isSelected,
-                    isActive = isActive,
-                    isPlaying = isPlaying,
-                    shape = if (item is ArtistItem) {
-                        CircleShape
-                    } else if (index != -1 && count != -1) {
-                        listThumbnailShape(index, count)
-                    } else {
-                        RoundedCornerShape(ThumbnailCornerRadius)
-                    },
-                    modifier = Modifier.size(ListThumbnailSize)
-                )
+                Box {
+                    ItemThumbnail(
+                        thumbnailUrl = item.thumbnail,
+                        albumIndex = albumIndex,
+                        isSelected = isSelected,
+                        isActive = isActive,
+                        isPlaying = isPlaying,
+                        shape = if (item is ArtistItem) {
+                            CircleShape
+                        } else if (index != -1 && count != -1) {
+                            listThumbnailShape(index, count)
+                        } else {
+                            RoundedCornerShape(ThumbnailCornerRadius)
+                        },
+                        modifier = Modifier.size(ListThumbnailSize)
+                    )
+                    
+                    val database = LocalDatabase.current
+                    val song by produceState<Song?>(initialValue = null, item.id) {
+                        if (item is SongItem) value = database.song(item.id).firstOrNull()
+                    }
+                    val album by produceState<Album?>(initialValue = null, item.id) {
+                        if (item is AlbumItem) value = database.album(item.id).firstOrNull()
+                    }
+                    val download = if (item is SongItem) {
+                        LocalDownloadUtil.current.getDownload(item.id).collectAsState(null).value
+                    } else null
+                    
+                    CoverBadges(
+                        isLiked = (item is SongItem && song?.song?.liked == true) || (item is AlbumItem && album?.album?.bookmarkedAt != null),
+                        downloadState = download?.state,
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    )
+                }
             },
             trailingContent = trailingContent,
             modifier = modifier,
@@ -1166,25 +1226,7 @@ fun YouTubeGridItem(
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope? = null,
     badges: @Composable RowScope.() -> Unit = {
-        val database = LocalDatabase.current
-        val song by produceState<Song?>(initialValue = null, item.id) {
-            if (item is SongItem) value = database.song(item.id).firstOrNull()
-        }
-        val album by produceState<Album?>(initialValue = null, item.id) {
-            if (item is AlbumItem) value = database.album(item.id).firstOrNull()
-        }
-
-        if (item is SongItem && song?.song?.liked == true ||
-            item is AlbumItem && album?.album?.bookmarkedAt != null
-        ) {
-            Icon.Favorite()
-        }
         if (item.explicit) Icon.Explicit()
-        
-        if (item is SongItem) {
-            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)
-            Icon.Download(download?.state)
-        }
     },
     thumbnailRatio: Float = if (item is SongItem) 16f / 9 else 1f,
     isActive: Boolean = false,
@@ -1226,38 +1268,56 @@ fun YouTubeGridItem(
         val playerConnection = LocalPlayerConnection.current ?: return@GridItem
         val scope = rememberCoroutineScope()
 
-        ItemThumbnail(
-            thumbnailUrl = item.thumbnail,
-            isActive = isActive,
-            isPlaying = isPlaying,
-            shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(ThumbnailCornerRadius),
-        )
-
-        if (item is SongItem && !isActive) {
-            OverlayPlayButton(
-                visible = true
+        Box {
+            ItemThumbnail(
+                thumbnailUrl = item.thumbnail,
+                isActive = isActive,
+                isPlaying = isPlaying,
+                shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(ThumbnailCornerRadius),
             )
-        }
 
-        AlbumPlayButton(
-            visible = item is AlbumItem && !isActive,
-            onClick = {
-                scope.launch(Dispatchers.IO) {
-                    var albumWithSongs = database.albumWithSongs(item.id).first()
-                    if (albumWithSongs?.songs.isNullOrEmpty()) {
-                        YouTube.album(item.id).onSuccess { albumPage ->
-                            database.transaction { insert(albumPage) }
-                            albumWithSongs = database.albumWithSongs(item.id).first()
-                        }.onFailure { reportException(it) }
-                    }
-                    albumWithSongs?.let {
-                        withContext(Dispatchers.Main) {
-                            playerConnection.playQueue(LocalAlbumRadio(it))
+            if (item is SongItem && !isActive) {
+                OverlayPlayButton(
+                    visible = true
+                )
+            }
+
+            AlbumPlayButton(
+                visible = item is AlbumItem && !isActive,
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        var albumWithSongs = database.albumWithSongs(item.id).first()
+                        if (albumWithSongs?.songs.isNullOrEmpty()) {
+                            YouTube.album(item.id).onSuccess { albumPage ->
+                                database.transaction { insert(albumPage) }
+                                albumWithSongs = database.albumWithSongs(item.id).first()
+                            }.onFailure { reportException(it) }
+                        }
+                        albumWithSongs?.let {
+                            withContext(Dispatchers.Main) {
+                                playerConnection.playQueue(LocalAlbumRadio(it))
+                            }
                         }
                     }
                 }
+            )
+
+            val song by produceState<Song?>(initialValue = null, item.id) {
+                if (item is SongItem) value = database.song(item.id).firstOrNull()
             }
-        )
+            val album by produceState<Album?>(initialValue = null, item.id) {
+                if (item is AlbumItem) value = database.album(item.id).firstOrNull()
+            }
+            val download = if (item is SongItem) {
+                LocalDownloadUtil.current.getDownload(item.id).collectAsState(null).value
+            } else null
+            
+            CoverBadges(
+                isLiked = (item is SongItem && song?.song?.liked == true) || (item is AlbumItem && album?.album?.bookmarkedAt != null),
+                downloadState = download?.state,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+        }
     },
     thumbnailRatio = thumbnailRatio,
     fillMaxWidth = fillMaxWidth,

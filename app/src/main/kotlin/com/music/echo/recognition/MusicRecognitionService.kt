@@ -120,11 +120,15 @@ object MusicRecognitionService {
     
     @SuppressLint("MissingPermission")
     private suspend fun recordAudio(): ByteArray = withContext(Dispatchers.IO) {
-        val bufferSize = AudioRecord.getMinBufferSize(
+        val minBufferSize = AudioRecord.getMinBufferSize(
             RECORDING_SAMPLE_RATE, 
             CHANNEL_CONFIG, 
             AUDIO_FORMAT
         )
+        if (minBufferSize <= 0) {
+            throw IllegalStateException("Microphone is unavailable or does not support this recording format")
+        }
+        val bufferSize = minBufferSize.coerceAtLeast(RECORDING_SAMPLE_RATE / 2)
         
         val audioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,
@@ -133,6 +137,10 @@ object MusicRecognitionService {
             AUDIO_FORMAT,
             bufferSize
         )
+        if (audioRecord.state != AudioRecord.STATE_INITIALIZED) {
+            audioRecord.release()
+            throw IllegalStateException("Could not initialize microphone")
+        }
         
         val outputStream = ByteArrayOutputStream()
         val buffer = ByteArray(bufferSize)
@@ -148,7 +156,9 @@ object MusicRecognitionService {
                 }
             }
         } finally {
-            audioRecord.stop()
+            if (audioRecord.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                audioRecord.stop()
+            }
             audioRecord.release()
         }
         

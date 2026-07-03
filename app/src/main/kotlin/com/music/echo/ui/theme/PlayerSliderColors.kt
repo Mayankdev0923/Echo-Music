@@ -22,13 +22,13 @@ object PlayerSliderColors {
         val inactiveTrackColor = when (playerBackground) {
             PlayerBackgroundStyle.DEFAULT -> {
                 if (useDarkTheme) {
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                    MaterialTheme.colorScheme.outline
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    MaterialTheme.colorScheme.onSurface
                 }
             }
             PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH -> {
-                Color.White.copy(alpha = 0.4f)
+                Color.White
             }
         }
         

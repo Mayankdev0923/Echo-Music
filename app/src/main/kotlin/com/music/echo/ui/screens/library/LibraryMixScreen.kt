@@ -424,7 +424,9 @@ fun LibraryMixScreen(
                 PullToRefreshDefaults.LoadingIndicator(
                     state = pullRefreshState,
                     isRefreshing = isRefreshing,
-                    modifier = Modifier.align(Alignment.TopCenter),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = statusBarTop + 12.dp),
                 )
             }
         ) {
@@ -545,9 +547,7 @@ fun LibraryMixScreen(
                                 icon = R.drawable.snippet_folder,
                                 iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                                 onClick = { navController.navigate("local_songs") },
-                                modifier = Modifier
-                                    .fillMaxWidth(0.5f)
-                                    .padding(end = 4.dp)
+                                modifier = itemModifier
                             )
                         }
                     }
@@ -831,9 +831,7 @@ fun LibraryMixScreen(
                                 icon = R.drawable.snippet_folder,
                                 iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                                 onClick = { navController.navigate("local_songs") },
-                                modifier = Modifier
-                                    .fillMaxWidth(0.5f)
-                                    .padding(end = 4.dp)
+                                modifier = itemModifier
                             )
                         }
                     }

@@ -5,21 +5,27 @@ package iad1tya.echo.music.ui.screens.recognition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -33,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,6 +59,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import iad1tya.echo.music.LocalDatabase
@@ -62,10 +68,10 @@ import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.ThumbnailCornerRadius
 import iad1tya.echo.music.db.entities.RecognitionHistory
 import iad1tya.echo.music.ui.component.DefaultDialog
-import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.LocalMenuState
 import iad1tya.echo.music.ui.component.NavigationTitle
 import iad1tya.echo.music.ui.utils.backToMain
+import com.music.echo.ui.component.appleGlass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -182,39 +188,30 @@ fun RecognitionHistoryScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.recognition_history)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.navigateUp() },
-                        onLongClick = { navController.backToMain() }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back),
-                            contentDescription = null
-                        )
-                    }
-                },
-                actions = {
-                    if (historyItems.isNotEmpty()) {
-                        IconButton(onClick = { showClearDialog = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.clear_all),
-                                contentDescription = stringResource(R.string.clear_recognition_history)
-                            )
-                        }
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
         ) {
+            val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+            Spacer(modifier = Modifier.height(statusBarTop + 74.dp))
+            
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.recognition_history),
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 40.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
             
             TextField(
                 value = query,
@@ -362,6 +359,36 @@ fun RecognitionHistoryScreen(
                             }
                         }
                     }
+                }
+            }
+        }
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars.only(WindowInsetsSides.Top))
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            iad1tya.echo.music.ui.component.IconButton(
+                onClick = { navController.navigateUp() },
+                onLongClick = { navController.backToMain() },
+                modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
+            ) {
+                Icon(painter = painterResource(R.drawable.arrow_back), contentDescription = null)
+            }
+
+            if (historyItems.isNotEmpty()) {
+                iad1tya.echo.music.ui.component.IconButton(
+                    onClick = { showClearDialog = true },
+                    onLongClick = { showClearDialog = true },
+                    modifier = Modifier.appleGlass(CircleShape, elevation = 2.dp).clip(CircleShape)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.clear_all),
+                        contentDescription = stringResource(R.string.clear_recognition_history)
+                    )
                 }
             }
         }

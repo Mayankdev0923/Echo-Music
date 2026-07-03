@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
+import com.music.echo.ui.component.appleGlass
 import com.music.innertube.utils.parseCookieString
 import iad1tya.echo.music.BuildConfig
 import iad1tya.echo.music.R
@@ -62,11 +63,13 @@ fun SettingDialoge(
 
         Card(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(28.dp),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .widthIn(max = 420.dp)
+                .appleGlass(RoundedCornerShape(24.dp), elevation = 8.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.94f)
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
@@ -74,25 +77,22 @@ fun SettingDialoge(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(vertical = 16.dp, horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Header
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 14.dp)
                 ) {
-                    Spacer(modifier = Modifier.size(24.dp))
-                    
                     Text(
                         text = "Echo Music",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        ),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = primaryColor,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
                     )
 
                     IconButton(
@@ -109,8 +109,8 @@ fun SettingDialoge(
                 }
 
                 // Account Group
+                PopupSectionTitle("Account")
                 Material3SettingsGroup(
-                    title = "Account",
                     compact = true,
                     items = listOf(
                         Material3SettingsItem(
@@ -135,8 +135,8 @@ fun SettingDialoge(
                 )
 
                 if (isLoggedIn) {
+                    PopupSectionTitle("Preferences")
                     Material3SettingsGroup(
-                        title = "Preferences",
                         compact = true,
                         items = listOf(
                             Material3SettingsItem(
@@ -174,8 +174,8 @@ fun SettingDialoge(
                     )
                 }
 
+                PopupSectionTitle("App")
                 Material3SettingsGroup(
-                    title = "App",
                     compact = true,
                     items = listOf(
                         Material3SettingsItem(
@@ -194,7 +194,7 @@ fun SettingDialoge(
 
                 // Footer Links
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -204,7 +204,7 @@ fun SettingDialoge(
                         color = onSecondaryColor,
                         modifier = Modifier.clickable { uriHandler.openUri("https://echomusic.fun/p/privacy-policy") }.padding(4.dp)
                     )
-                    Text(text = " • ", color = onSecondaryColor, style = MaterialTheme.typography.bodySmall)
+                    Text(text = " | ", color = onSecondaryColor, style = MaterialTheme.typography.bodySmall)
                     Text(
                         text = "Terms of Service",
                         style = MaterialTheme.typography.bodySmall,
@@ -215,4 +215,14 @@ fun SettingDialoge(
             }
         }
     }
+}
+
+@Composable
+private fun PopupSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 14.dp, top = 2.dp, bottom = 2.dp)
+    )
 }

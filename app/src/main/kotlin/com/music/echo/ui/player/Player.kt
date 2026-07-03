@@ -42,6 +42,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -57,6 +60,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -253,6 +257,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.geometry.Size
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.NightsStay
+import iad1tya.echo.music.LocalShowSettingsDialog
 
 private data class WavyShape(
     val sides: Int,
@@ -291,6 +300,7 @@ private data class WavyShape(
 fun BottomSheetPlayer(
     state: BottomSheetState,
     navController: NavController,
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
     themeColor: Color,
@@ -1173,7 +1183,9 @@ fun BottomSheetPlayer(
                                                 drawRect(
                                                     brush = Brush.verticalGradient(
                                                         colorStops = arrayOf(
-                                                            0.00f to Color.Black,
+                                                            0.00f to Color.Transparent,
+                                                            0.10f to Color.Black.copy(alpha = 0.5f),
+                                                            0.20f to Color.Black,
                                                             0.75f to Color.Black,
                                                             0.92f to Color.Black.copy(alpha = 0.4f),
                                                             1.00f to Color.Transparent,
@@ -1369,7 +1381,52 @@ fun BottomSheetPlayer(
         collapsedContent = {
             MiniPlayer(
                 positionState = positionState,
-                durationState = durationState
+                durationState = durationState,
+                trailingContent = {
+                    val scope = rememberCoroutineScope()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(iad1tya.echo.music.constants.MiniPlayerHeight)
+                            .aspectRatio(1f)
+                            .appleGlass(androidx.compose.foundation.shape.CircleShape, elevation = 2.dp)
+                            .pointerInput(Unit) {
+                                awaitEachGesture {
+                                    val down = awaitFirstDown(requireUnconsumed = false)
+                                    down.consume()
+                                    val job = scope.launch {
+                                        kotlinx.coroutines.delay(600)
+                                        if (state.isExpanded) {
+                                            state.collapseSoft()
+                                        }
+                                        navController.navigate("recognition?autoStart=true") {
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                    val up = waitForUpOrCancellation()
+                                    if (up != null) {
+                                        up.consume()
+                                        if (job.isActive) {
+                                            job.cancel()
+                                            if (state.isExpanded) {
+                                                state.collapseSoft()
+                                            }
+                                            onSearchClick()
+                                        }
+                                    } else {
+                                        job.cancel()
+                                    }
+                                }
+                            }
+                    ) {
+                        Icon(
+                            painter = painterResource(iad1tya.echo.music.R.drawable.search),
+                            contentDescription = "Search",
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             )
         },
     ) {
@@ -1633,7 +1690,7 @@ fun BottomSheetPlayer(
                             } else {
                                 FilledIconButton(
                                     onClick = {
-                                        mediaMetadata?.let { meta ->
+                                        mediaMetadata.let { meta ->
                                             when (download?.state) {
                                                 Download.STATE_COMPLETED, Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
                                                     DownloadService.sendRemoveDownload(
@@ -1898,7 +1955,7 @@ fun BottomSheetPlayer(
                         },
                         enabled = !isListenTogetherGuest,
                         colors = PlayerSliderColors.getSliderColors(
-                            activeColor = if (useNewPlayerDesign) textButtonColor else textButtonColor.copy(alpha = 0.7f),
+                            activeColor = textButtonColor,
                             playerBackground = playerBackground,
                             useDarkTheme = useDarkTheme
                         ),
@@ -1928,7 +1985,7 @@ fun BottomSheetPlayer(
                             },
                             modifier = Modifier.padding(horizontal = PlayerHorizontalPadding),
                             colors = PlayerSliderColors.getSliderColors(
-                                activeColor = if (useNewPlayerDesign) textButtonColor else textButtonColor.copy(alpha = 0.7f),
+                                activeColor = textButtonColor,
                                 playerBackground = playerBackground,
                                 useDarkTheme = useDarkTheme
                             ),
@@ -1954,7 +2011,7 @@ fun BottomSheetPlayer(
                                 sliderPosition = null
                             },
                             colors = PlayerSliderColors.getSliderColors(
-                                activeColor = if (useNewPlayerDesign) textButtonColor else textButtonColor.copy(alpha = 0.7f),
+                                activeColor = textButtonColor,
                                 playerBackground = playerBackground,
                                 useDarkTheme = useDarkTheme
                             ),
@@ -2009,7 +2066,7 @@ fun BottomSheetPlayer(
                                 sliderState = sliderState,
                                 trackHeight = trackHeight,
                                 colors = PlayerSliderColors.getSliderColors(
-                                    activeColor = if (useNewPlayerDesign) textButtonColor else textButtonColor.copy(alpha = 0.7f),
+                                    activeColor = textButtonColor,
                                     playerBackground = playerBackground,
                                     useDarkTheme = useDarkTheme
                                 )
@@ -2520,8 +2577,8 @@ fun BottomSheetPlayer(
                                         PlayerSliderTrack(
                                             sliderState = sliderState,
                                             colors = SliderDefaults.colors(
-                                                activeTrackColor = textButtonColor.copy(alpha = 0.7f),
-                                                inactiveTrackColor = textButtonColor.copy(alpha = 0.15f)
+                                                activeTrackColor = textButtonColor,
+                                                inactiveTrackColor = textButtonColor
                                             ),
                                             trackHeight = volumeTrackHeight
                                         )

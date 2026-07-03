@@ -56,7 +56,7 @@ val AppleDarkColorScheme = darkColorScheme(
     onPrimaryContainer = Color(0xFFFFD1D6),
     secondary = Color(0xFF8E8E93), // Neutral Apple Gray instead of blue link color
     onSecondary = Color.White,
-    background = Color(0xFF000000), // Apple Pure Black Background
+    background = Color(0xFF1C1C1E), // Apple Dark Component Background (instead of pitch black)
     onBackground = Color.White,
     surface = Color(0xFF1C1C1E), // Apple Dark Gray Surface
     onSurface = Color.White,
@@ -119,7 +119,7 @@ fun echomusicTheme(
 
 fun ColorScheme.applyAppleGlass(): ColorScheme = copy(
     surface = AppleBlurBase,
-    background = Color(0xFF0F0F11),
+    background = Color(0xFF1C1C1E),
     surfaceVariant = AppleGlassMedium,
     surfaceDim = AppleGlassDark,
     outlineVariant = AppleGlassLight

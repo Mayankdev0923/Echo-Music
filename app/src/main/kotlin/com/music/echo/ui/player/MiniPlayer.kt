@@ -143,6 +143,8 @@ import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import iad1tya.echo.music.ui.component.Icon as MIcon
+import com.music.echo.ui.component.appleGlass
+import androidx.compose.ui.graphics.luminance
 
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -197,7 +199,8 @@ class ProgressState(
 fun MiniPlayer(
     positionState: MutableLongState,
     durationState: MutableLongState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
     
@@ -207,7 +210,8 @@ fun MiniPlayer(
     if (useNewMiniPlayerDesign) {
         NewMiniPlayer(
             progressState = progressState,
-            modifier = modifier
+            modifier = modifier,
+            trailingContent = trailingContent
         )
     } else {
         Box(modifier = modifier.fillMaxWidth()) {
@@ -226,7 +230,8 @@ fun MiniPlayer(
 @Composable
 private fun NewMiniPlayer(
     progressState: ProgressState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     
@@ -263,12 +268,11 @@ private fun NewMiniPlayer(
 
     
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
-    val swipeThumbnailPref by rememberPreference(SwipeThumbnailKey, true)
     
     
     val listenTogetherManager = LocalListenTogetherManager.current
     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
-    val swipeThumbnail = swipeThumbnailPref && !isListenTogetherGuest
+    val swipeThumbnail = false
     
     val layoutDirection = LocalLayoutDirection.current
     val coroutineScope = rememberCoroutineScope()
@@ -281,11 +285,11 @@ private fun NewMiniPlayer(
 
     
     val offsetXAnimatable = remember { Animatable(0f) }
-    var dragStartTime by remember { mutableLongStateOf(0L) }
-    var totalDragDistance by remember { mutableFloatStateOf(0f) }
+    var dragStartTime = remember { 0L }
+    val totalDragDistance = remember { FloatArray(1) }
 
     val animationSpec = remember {
-        spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow)
+        spring<Float>(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium)
     }
 
     val autoSwipeThreshold = remember(swipeSensitivity) {
@@ -304,8 +308,8 @@ private fun NewMiniPlayer(
     val isDynamicBackground = miniPlayerBackground != PlayerBackgroundStyle.DEFAULT
     val backgroundColor = if (pureBlack && useDarkTheme) Color.Black else MaterialTheme.colorScheme.surfaceContainer
     
-    val primaryColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.primary
-    val onPrimaryColor = if (isDynamicBackground) Color.Black else MaterialTheme.colorScheme.onPrimary
+    val primaryColor = gradientColors.firstOrNull() ?: MaterialTheme.colorScheme.primary
+    val onPrimaryColor = if (primaryColor.luminance() > 0.5f) Color.Black else Color.White
     val outlineColor = if (isDynamicBackground) Color.White.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline
     val onSurfaceColor = if (isDynamicBackground) Color.White else MaterialTheme.colorScheme.onSurface
     val errorColor = MaterialTheme.colorScheme.error
@@ -317,14 +321,13 @@ private fun NewMiniPlayer(
             .widthIn(max = 340.dp)
             .height(MiniPlayerHeight)
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-            .padding(horizontal = 12.dp)
             .let { baseModifier ->
                 if (swipeThumbnail) {
                     baseModifier.pointerInput(Unit) {
                         detectHorizontalDragGestures(
                             onDragStart = {
                                 dragStartTime = System.currentTimeMillis()
-                                totalDragDistance = 0f
+                                totalDragDistance[0] = 0f
                             },
                             onDragCancel = {
                                 coroutineScope.launch {
@@ -346,7 +349,7 @@ private fun NewMiniPlayer(
                                             (tryingToSwipeLeft && !canSkipNext && offsetXAnimatable.value > 0)
 
                                 if (allowLeft || allowRight || canReturnToCenter) {
-                                    totalDragDistance += kotlin.math.abs(adjustedDragAmount)
+                                    totalDragDistance[0] += kotlin.math.abs(adjustedDragAmount)
                                     coroutineScope.launch {
                                         offsetXAnimatable.snapTo(offsetXAnimatable.value + adjustedDragAmount)
                                     }
@@ -354,7 +357,7 @@ private fun NewMiniPlayer(
                             },
                             onDragEnd = {
                                 val dragDuration = System.currentTimeMillis() - dragStartTime
-                                val velocity = if (dragDuration > 0) totalDragDistance / dragDuration else 0f
+                                val velocity = if (dragDuration > 0) totalDragDistance[0] / dragDuration else 0f
                                 val currentOffset = offsetXAnimatable.value
                                 val minDistanceThreshold = 50f
                                 val velocityThreshold = (swipeSensitivity * -8.25f) + 8.5f
@@ -378,21 +381,34 @@ private fun NewMiniPlayer(
                 } else baseModifier
             }
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .then(if (isTabletLandscape) Modifier.width(480.dp).align(Alignment.Center) else Modifier.fillMaxWidth())
-                .height(MiniPlayerHeight)
                 .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
-                .clip(RoundedCornerShape(32.dp))
-                .background(color = backgroundColor)
-                .border(1.dp, outlineColor.copy(alpha = 0.3f), RoundedCornerShape(32.dp))
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            
-            MiniPlayerBackgroundLayer(
-                style = miniPlayerBackground,
-                mediaMetadata = mediaMetadata,
-                gradientColors = gradientColors
-            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .then(if (isTabletLandscape) Modifier.width(480.dp) else Modifier)
+                    .height(MiniPlayerHeight)
+                    .clip(RoundedCornerShape(32.dp))
+                    .let {
+                        if (!isDynamicBackground) {
+                            it.appleGlass(RoundedCornerShape(32.dp), elevation = 2.dp)
+                        } else {
+                            it
+                        }
+                    }
+            ) {
+                if (isDynamicBackground) {
+                    MiniPlayerBackgroundLayer(
+                        style = miniPlayerBackground,
+                        mediaMetadata = mediaMetadata,
+                        gradientColors = gradientColors
+                    )
+                }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -443,6 +459,11 @@ private fun NewMiniPlayer(
                 )
             }
         }
+        
+        if (trailingContent != null) {
+            trailingContent()
+        }
+    }
     }
 
     if (showAudioDeviceBottomSheet) {
@@ -600,12 +621,11 @@ private fun LegacyMiniPlayer(
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
 
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
-    val swipeThumbnailPref by rememberPreference(SwipeThumbnailKey, true)
     
     
     val listenTogetherManager = LocalListenTogetherManager.current
     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
-    val swipeThumbnail = swipeThumbnailPref && !isListenTogetherGuest
+    val swipeThumbnail = false
 
     val layoutDirection = LocalLayoutDirection.current
     val coroutineScope = rememberCoroutineScope()
@@ -947,10 +967,11 @@ private fun MiniPlayerColorExtractor(
     val context = LocalContext.current
     val fallbackColor = MaterialTheme.colorScheme.surfaceContainer.toArgb()
 
-    LaunchedEffect(mediaMetadata?.id, miniPlayerBackground) {
-        if (miniPlayerBackground == PlayerBackgroundStyle.GRADIENT || miniPlayerBackground == PlayerBackgroundStyle.GLOW_ANIMATED) {
-            val currentMetadata = mediaMetadata
-            if (currentMetadata?.thumbnailUrl != null) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+
+    LaunchedEffect(mediaMetadata?.id, isDark) {
+        val currentMetadata = mediaMetadata
+        if (currentMetadata?.thumbnailUrl != null) {
                 withContext(Dispatchers.IO) {
                     val request = ImageRequest.Builder(context)
                         .data(currentMetadata.thumbnailUrl)
@@ -968,29 +989,39 @@ private fun MiniPlayerColorExtractor(
                                     .resizeBitmapArea(100 * 100)
                                     .generate()
                             }
-                            val extractedColors = if (miniPlayerBackground == PlayerBackgroundStyle.GLOW_ANIMATED) {
-                                listOfNotNull(
-                                    palette.getVibrantColor(fallbackColor).let { Color(it) },
-                                    palette.getLightVibrantColor(fallbackColor).let { Color(it) },
-                                    palette.getDarkVibrantColor(fallbackColor).let { Color(it) },
-                                    palette.getMutedColor(fallbackColor).let { Color(it) },
-                                    palette.getLightMutedColor(fallbackColor).let { Color(it) },
-                                    palette.getDarkMutedColor(fallbackColor).let { Color(it) }
-                                ).distinct()
+                            val extractedColors = if (miniPlayerBackground == PlayerBackgroundStyle.GLOW_ANIMATED || miniPlayerBackground == PlayerBackgroundStyle.LIVE_MESH) {
+                                if (isDark) {
+                                    listOfNotNull(
+                                        palette.getVibrantColor(fallbackColor).let { Color(it) },
+                                        palette.getLightVibrantColor(fallbackColor).let { Color(it) },
+                                        palette.getDarkVibrantColor(fallbackColor).let { Color(it) },
+                                        palette.getMutedColor(fallbackColor).let { Color(it) },
+                                        palette.getLightMutedColor(fallbackColor).let { Color(it) },
+                                        palette.getDarkMutedColor(fallbackColor).let { Color(it) }
+                                    ).distinct()
+                                } else {
+                                    listOfNotNull(
+                                        palette.getLightVibrantColor(fallbackColor).let { Color(it) },
+                                        palette.getVibrantColor(fallbackColor).let { Color(it) },
+                                        palette.getLightMutedColor(fallbackColor).let { Color(it) },
+                                        palette.getMutedColor(fallbackColor).let { Color(it) },
+                                        palette.getDominantColor(fallbackColor).let { Color(it) }
+                                    ).distinct()
+                                }
                             } else {
                                 PlayerColorExtractor.extractGradientColors(
                                     palette = palette,
-                                    fallbackColor = fallbackColor
+                                    fallbackColor = fallbackColor,
+                                    isDark = isDark
                                 )
                             }
                             withContext(Dispatchers.Main) { onGradientColorsChange(extractedColors) }
                         }
                     }
                 }
+            } else {
+                onGradientColorsChange(emptyList())
             }
-        } else {
-            onGradientColorsChange(emptyList())
-        }
     }
 }
 
@@ -1001,6 +1032,7 @@ private fun MiniPlayerBackgroundLayer(
     gradientColors: List<Color>
 ) {
     val context = LocalContext.current
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     
     when (style) {
         PlayerBackgroundStyle.BLUR -> {
@@ -1020,7 +1052,7 @@ private fun MiniPlayerBackgroundLayer(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.45f))
+                        .background(if (isDark) Color.Black.copy(alpha = 0.45f) else Color.White.copy(alpha = 0.6f))
                 )
             }
         }
@@ -1030,7 +1062,7 @@ private fun MiniPlayerBackgroundLayer(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Brush.verticalGradient(gradientColors))
-                        .background(Color.Black.copy(alpha = 0.2f))
+                        .background(if (isDark) Color.Black.copy(alpha = 0.2f) else Color.White.copy(alpha = 0.4f))
                 )
             }
         }
@@ -1089,7 +1121,8 @@ private fun MiniPlayerBackgroundLayer(
                                 radius = width * 1.0f
                             )
                             
-                            drawRect(Color(0xFF050505))
+                            val baseColor = if (isDark) Color(0xFF050505) else Color(0xFFFAFAFA)
+                            drawRect(baseColor)
                             drawRect(b1)
                             drawRect(b2)
                         }

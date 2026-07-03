@@ -232,6 +232,7 @@ fun Lyrics(
     val lyricsTextSize by rememberPreference(LyricsTextSizeKey, defaultValue = 32f)
     val lyricsLineSpacing by rememberPreference(LyricsLineSpacingKey, defaultValue = 1.6f)
     val lyricsStandardBlur by rememberPreference(LyricsStandardBlurKey, defaultValue = true)
+    val heavyVisuals by rememberPreference(iad1tya.echo.music.constants.HeavyVisualsKey, defaultValue = true)
     
     val openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
     val deeplApiKey by rememberPreference(DeeplApiKey, "")
@@ -1223,7 +1224,7 @@ fun Lyrics(
                             this.alpha = if (item.isBackground) alpha * 0.8f else alpha
                             this.scaleX = scale * bgScale
                             this.scaleY = scale * bgScale
-                            if (blurRadius > 0f) {
+                            if (blurRadius > 0f && heavyVisuals) {
                                 this.renderEffect = android.graphics.RenderEffect.createBlurEffect(
                                     blurRadius * density.density,
                                     blurRadius * density.density,

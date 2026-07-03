@@ -13,13 +13,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.activity.compose.BackHandler
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 
 import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.PureBlackKey
@@ -69,10 +78,61 @@ fun NavGraphBuilder.navigationBuilder(
     navController: NavHostController,
     scrollBehavior: TopAppBarScrollBehavior,
     activity: Activity,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    pagerState: PagerState,
+    swipeableItems: List<Screens>
 ) {
-    composable(Screens.Home.route) {
-        HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+    composable("main_pager") {
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
+        var backPressedTime by remember { mutableStateOf(0L) }
+
+        BackHandler(enabled = true) {
+            if (pagerState.currentPage != 0) {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(0)
+                }
+            } else {
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - backPressedTime < 2000) {
+                    activity.finish()
+                } else {
+                    backPressedTime = currentTime
+                    Toast.makeText(context, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = 1
+        ) { page ->
+            when (swipeableItems.getOrNull(page)) {
+                Screens.Home -> HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+                Screens.Search -> {
+                    val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
+                    val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+                    val isSystemInDarkTheme = isSystemInDarkTheme()
+                    val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
+                        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+                    }
+                    val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
+                        pureBlackEnabled && useDarkTheme
+                    }
+                    SearchScreen(
+                        navController = navController,
+                        pureBlack = pureBlack
+                    )
+                }
+                Screens.Library -> LibraryScreen(navController)
+                Screens.ListenTogether -> ListenTogetherScreen(navController, showTopBar = false)
+                else -> HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+            }
+        }
+    }
+
+    composable(Screens.ListenTogether.route) {
+        ListenTogetherScreen(navController, showTopBar = false)
     }
 
     composable(Screens.Search.route) {
@@ -89,14 +149,6 @@ fun NavGraphBuilder.navigationBuilder(
             navController = navController,
             pureBlack = pureBlack
         )
-    }
-
-    composable(Screens.Library.route) {
-        LibraryScreen(navController)
-    }
-
-    composable(Screens.ListenTogether.route) {
-        ListenTogetherScreen(navController, showTopBar = false)
     }
 
     composable(
@@ -468,8 +520,19 @@ fun NavGraphBuilder.navigationBuilder(
         EqScreen(navController = navController)
     }
 
-    composable("recognition") {
-        RecognitionScreen(navController)
+    composable(
+        route = "recognition?autoStart={autoStart}",
+        arguments = listOf(
+            navArgument("autoStart") {
+                type = NavType.BoolType
+                defaultValue = false
+            }
+        )
+    ) { backStackEntry ->
+        RecognitionScreen(
+            navController = navController,
+            autoStart = backStackEntry.arguments?.getBoolean("autoStart") == true
+        )
     }
 
     composable("recognition_history") {

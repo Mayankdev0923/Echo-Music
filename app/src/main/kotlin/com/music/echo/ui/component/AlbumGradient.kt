@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -39,8 +40,9 @@ fun AlbumGradient(
     val fallbackColorInt = MaterialTheme.colorScheme.primaryContainer.toArgb()
 
     var extractedColors by remember { mutableStateOf<List<Color>>(emptyList()) }
+    val isDark = isSystemInDarkTheme()
 
-    LaunchedEffect(thumbnailUrl) {
+    LaunchedEffect(thumbnailUrl, isDark) {
         if (thumbnailUrl != null) {
             withContext(Dispatchers.IO) {
                 try {
@@ -61,7 +63,8 @@ fun AlbumGradient(
                         }
                         val colors = PlayerColorExtractor.extractGradientColors(
                             palette = palette,
-                            fallbackColor = fallbackColorInt
+                            fallbackColor = fallbackColorInt,
+                            isDark = isDark
                         )
                         extractedColors = colors
                     }

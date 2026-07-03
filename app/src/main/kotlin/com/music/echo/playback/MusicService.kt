@@ -2888,6 +2888,7 @@ class MusicService :
             !dataStore.get(PauseListenHistoryKey, false)
         ) {
             database.query {
+                mediaItem.metadata?.let { insert(it) }
                 incrementTotalPlayTime(mediaItem.mediaId, playbackStats.totalPlayTimeMs)
                 try {
                     insert(

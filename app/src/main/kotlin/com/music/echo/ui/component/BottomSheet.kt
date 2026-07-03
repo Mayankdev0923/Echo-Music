@@ -341,7 +341,8 @@ fun rememberBottomSheetState(
         BottomSheetState(
             draggableState = DraggableState { delta ->
                 coroutineScope.launch {
-                    animatable.snapTo(animatable.value - with(density) { delta.toDp() })
+                    val newValue = (animatable.value - with(density) { delta.toDp() }).coerceAtLeast(collapsedBound)
+                    animatable.snapTo(newValue)
                 }
             },
             onAnchorChanged = { previousAnchor = it },

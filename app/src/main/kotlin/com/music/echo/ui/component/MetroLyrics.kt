@@ -130,6 +130,7 @@ fun MetroLyricsLine(
     modifier: Modifier = Modifier
 ) {
     val (appleMusicLyricsBlur) = rememberPreference(AppleMusicLyricsBlurKey, true)
+    val heavyVisuals by rememberPreference(iad1tya.echo.music.constants.HeavyVisualsKey, defaultValue = true)
     val (romanizeAsMain) = rememberPreference(LyricsRomanizeAsMainKey, false)
     
     val romanizedTextState by entry.romanizedTextFlow.collectAsState()
@@ -141,7 +142,7 @@ fun MetroLyricsLine(
     val mainText = if (entry.isBackground) mainTextRaw?.removePrefix("(")?.removeSuffix(")") ?: "" else mainTextRaw ?: ""
     val subText = if (entry.isBackground) subTextRaw?.removePrefix("(")?.removeSuffix(")") else subTextRaw
     
-    val targetBlur = if (!appleMusicLyricsBlur || !isAutoScrollActive || isActive || !isSynced || isSelectionModeActive) {
+    val targetBlur = if (!heavyVisuals || !appleMusicLyricsBlur || !isAutoScrollActive || isActive || !isSynced || isSelectionModeActive) {
         0f
     } else {
         when (distanceFromCurrent) {

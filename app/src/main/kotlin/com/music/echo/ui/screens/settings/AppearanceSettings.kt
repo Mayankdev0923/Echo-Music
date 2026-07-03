@@ -146,6 +146,10 @@ highlightKey: String? = null) {
     val scrollState = androidx.compose.foundation.rememberScrollState()
 
     val (dynamicTheme, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
+    val (heavyVisuals, onHeavyVisualsChange) = rememberPreference(
+        iad1tya.echo.music.constants.HeavyVisualsKey,
+        defaultValue = true
+    )
     val (enableLegacyIcon, onEnableLegacyIconChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableLegacyIconKey,
         defaultValue = false
@@ -1054,6 +1058,30 @@ highlightKey: String? = null) {
                             )
                         },
                         onClick = { onEnableHighRefreshRateChange(!enableHighRefreshRate) }
+                    )
+                )
+                add(
+                    Material3SettingsItem(
+                        isHighlighted = (highlightKey == "High Quality Visuals"),
+                        icon = painterResource(R.drawable.palette),
+                        title = { Text("High Quality Visuals") },
+                        description = { Text("Enable heavy animations and 3D blurs (disable for better performance)") },
+                        trailingContent = {
+                            Switch(
+                                checked = heavyVisuals,
+                                onCheckedChange = onHeavyVisualsChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (heavyVisuals) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onHeavyVisualsChange(!heavyVisuals) }
                     )
                 )
                 

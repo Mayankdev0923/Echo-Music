@@ -71,8 +71,9 @@ fun echomusicLyricsLine(
     modifier: Modifier = Modifier
 ) {
     val (appleMusicLyricsBlur) = rememberPreference(AppleMusicLyricsBlurKey, true)
+    val heavyVisuals by rememberPreference(iad1tya.echo.music.constants.HeavyVisualsKey, defaultValue = true)
 
-    val targetBlur = if (!appleMusicLyricsBlur || !isAutoScrollActive || isActive || !isSynced || isSelectionModeActive) {
+    val targetBlur = if (!heavyVisuals || !appleMusicLyricsBlur || !isAutoScrollActive || isActive || !isSynced || isSelectionModeActive) {
         0f
     } else {
         
