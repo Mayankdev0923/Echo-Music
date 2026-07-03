@@ -1128,19 +1128,23 @@ class MainActivity : ComponentActivity() {
                                     startDestination = "main_pager",
                                     
                                     enterTransition = {
-                                        fadeIn(tween(durationMillis = 160))
+                                        slideInHorizontally(tween(durationMillis = 160)) { it / 4 } +
+                                                fadeIn(tween(durationMillis = 120))
                                     },
                                     
                                     exitTransition = {
-                                        fadeOut(tween(durationMillis = 120))
+                                        slideOutHorizontally(tween(durationMillis = 120)) { -it / 8 } +
+                                                fadeOut(tween(durationMillis = 100))
                                     },
                                     
                                     popEnterTransition = {
-                                        fadeIn(tween(durationMillis = 160))
+                                        slideInHorizontally(tween(durationMillis = 140)) { -it / 8 } +
+                                                fadeIn(tween(durationMillis = 120))
                                     },
                                     
                                     popExitTransition = {
-                                        fadeOut(tween(durationMillis = 120))
+                                        slideOutHorizontally(tween(durationMillis = 150)) { it } +
+                                                fadeOut(tween(durationMillis = 120))
                                     },
                                     modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                                 ) {

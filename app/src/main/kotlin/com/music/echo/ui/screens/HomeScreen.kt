@@ -852,7 +852,8 @@ fun HomeScreen(
         communityPlaylists,
         similarRecommendations,
         homePage?.sections,
-        explorePage?.moodAndGenres
+        explorePage?.moodAndGenres,
+        selectedChip
     ) {
         val list = mutableListOf<HomeSection>()
 
@@ -874,7 +875,23 @@ fun HomeScreen(
 
         if (explorePage?.moodAndGenres != null) list.add(HomeSection.MoodAndGenres)
 
-        if (randomizeHomeOrder) {
+        if (selectedChip != null) {
+            list.sortedByDescending { section ->
+                when (section) {
+                    HomeSection.QuickPicks -> 1000
+                    is HomeSection.SimilarRecommendation -> 950 - section.index
+                    is HomeSection.HomePageSection -> 900 - section.index
+                    HomeSection.SpeedDial -> 100
+                    HomeSection.DailyDiscover -> 90
+                    HomeSection.FromTheCommunity -> 80
+                    HomeSection.KeepListening -> 70
+                    HomeSection.AccountPlaylists -> 60
+                    HomeSection.ForgottenFavorites -> 50
+                    HomeSection.EchoBrainPlaylists -> 40
+                    HomeSection.MoodAndGenres -> 10
+                }
+            }
+        } else if (randomizeHomeOrder) {
             list.sortedByDescending { section ->
                 
                 

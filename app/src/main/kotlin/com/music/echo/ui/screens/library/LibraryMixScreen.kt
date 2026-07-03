@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -122,6 +123,7 @@ import java.time.LocalDateTime
 import java.util.Locale
 import java.util.UUID
 import iad1tya.echo.music.ui.component.AutoPlaylistButton
+import iad1tya.echo.music.ui.component.CreatePlaylistDialog
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.material3.MaterialTheme
@@ -275,6 +277,18 @@ fun LibraryMixScreen(
     val (showExported) = rememberPreference(ShowExportedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
+    var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showCreatePlaylistDialog) {
+        CreatePlaylistDialog(
+            onDismiss = { showCreatePlaylistDialog = false },
+            allowSyncing = ytmSync,
+            onPlaylistCreated = { playlistId ->
+                showCreatePlaylistDialog = false
+                navController.navigate("local_playlist/$playlistId")
+            },
+        )
+    }
 
 
     val albums = viewModel.albums.collectAsState()
@@ -542,6 +556,20 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.create_playlist),
+                                icon = R.drawable.playlist_add,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { showCreatePlaylistDialog = true },
+                                modifier = itemModifier
+                            )
+                            AutoPlaylistButton(
+                                title = "Spotify",
+                                icon = R.drawable.link,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("settings/spotify_import") },
+                                modifier = itemModifier
+                            )
                             AutoPlaylistButton(
                                 title = stringResource(R.string.filter_local),
                                 icon = R.drawable.snippet_folder,
@@ -826,6 +854,20 @@ fun LibraryMixScreen(
                                     modifier = itemModifier
                                 )
                             }
+                            AutoPlaylistButton(
+                                title = stringResource(R.string.create_playlist),
+                                icon = R.drawable.playlist_add,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { showCreatePlaylistDialog = true },
+                                modifier = itemModifier
+                            )
+                            AutoPlaylistButton(
+                                title = "Spotify",
+                                icon = R.drawable.link,
+                                iconTint = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                                onClick = { navController.navigate("settings/spotify_import") },
+                                modifier = itemModifier
+                            )
                             AutoPlaylistButton(
                                 title = stringResource(R.string.filter_local),
                                 icon = R.drawable.snippet_folder,

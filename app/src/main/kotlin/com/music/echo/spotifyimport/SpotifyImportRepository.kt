@@ -8,8 +8,12 @@
 package iad1tya.echo.music.spotifyimport
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -40,12 +44,17 @@ import iad1tya.echo.music.spotify.SpotifyAuth
 import iad1tya.echo.music.spotify.SpotifyMapper
 import iad1tya.echo.music.spotify.models.SpotifyPlaylist
 import iad1tya.echo.music.spotify.models.SpotifyPlaylistTracksRef
+import iad1tya.echo.music.spotify.models.SpotifyImage
+import iad1tya.echo.music.spotify.models.SpotifySimpleAlbum
+import iad1tya.echo.music.spotify.models.SpotifySimpleArtist
 import iad1tya.echo.music.spotify.models.SpotifyTrack
+import iad1tya.echo.music.utils.AppleMusicTokenProvider
 import iad1tya.echo.music.utils.clearWebAuthSession
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.reportException
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
@@ -56,6 +65,12 @@ class SpotifyImportRepository @Inject constructor(
     private val database: MusicDatabase,
 ) {
     private val mapperMutex = Mutex()
+    private val appleClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
 
     suspend fun restoreSession(): SpotifyImportSession =
         withContext(Dispatchers.IO) {
@@ -232,6 +247,58 @@ class SpotifyImportRepository @Inject constructor(
             SpotifyImportSummaryUi(summaries)
         }
 
+    suspend fun importPlaylistUrl(
+        rawUrl: String,
+        onProgress: (SpotifyImportProgressUi) -> Unit,
+    ): SpotifyImportSummaryUi =
+        withContext(Dispatchers.IO) {
+            val source = resolvePlaylistUrl(rawUrl.trim())
+            onProgress(
+                SpotifyImportProgressUi(
+                    sourceTitle = source.title,
+                    completedSources = 0,
+                    totalSources = 1,
+                    matchedTracks = 0,
+                    totalTracks = source.tracks.size,
+                    percent = 0,
+                ),
+            )
+
+            val matched = matchTracks(
+                sourceIndex = 0,
+                sourceCount = 1,
+                sourceTitle = source.title,
+                tracks = source.tracks,
+                onProgress = onProgress,
+            )
+            mirrorPlaylist(
+                localPlaylistId = source.localPlaylistId,
+                title = source.title,
+                thumbnailUrl = source.thumbnailUrl,
+                tracks = matched.map { it.metadata },
+            )
+            onProgress(
+                SpotifyImportProgressUi(
+                    sourceTitle = source.title,
+                    completedSources = 1,
+                    totalSources = 1,
+                    matchedTracks = matched.size,
+                    totalTracks = source.tracks.size,
+                    percent = 100,
+                ),
+            )
+            SpotifyImportSummaryUi(
+                sources = listOf(
+                    SpotifyImportSourceSummaryUi(
+                        title = source.title,
+                        totalTracks = source.tracks.size,
+                        importedTracks = matched.size,
+                        failedTracks = source.tracks.size - matched.size,
+                    ),
+                ),
+            )
+        }
+
     private suspend fun ensureAuthenticated() {
         val prefs = context.dataStore.data.first()
         val token = prefs[SpotifyAccessTokenKey].orEmpty()
@@ -371,6 +438,175 @@ class SpotifyImportRepository @Inject constructor(
         return tracks
     }
 
+    private suspend fun resolvePlaylistUrl(rawUrl: String): ExternalPlaylistSource {
+        val spotifyId = parseSpotifyPlaylistId(rawUrl)
+        if (spotifyId != null) {
+            ensureAuthenticated()
+            val playlist = spotifyCallWithTokenRetry {
+                Spotify.playlist(spotifyId).getOrThrow()
+            }
+            val tracks = fetchSpotifyPlaylistTracks(spotifyId)
+            return ExternalPlaylistSource(
+                title = playlist.name.ifBlank { "Spotify Playlist" },
+                thumbnailUrl = SpotifyMapper.getPlaylistThumbnail(playlist),
+                localPlaylistId = "SPOTIFY_PLAYLIST_$spotifyId",
+                tracks = tracks,
+            )
+        }
+
+        val appleRef = parseAppleMusicPlaylistUrl(rawUrl)
+        if (appleRef != null) {
+            return fetchAppleMusicPlaylist(appleRef)
+        }
+
+        throw IllegalArgumentException("Paste a Spotify or Apple Music playlist URL")
+    }
+
+    private suspend fun fetchSpotifyPlaylistTracks(playlistId: String): List<SpotifyTrack> {
+        val tracks = ArrayList<SpotifyTrack>()
+        var offset = 0
+        val limit = 100
+        while (true) {
+            val page = spotifyCallWithTokenRetry {
+                Spotify.playlistTracks(
+                    playlistId = playlistId,
+                    limit = limit,
+                    offset = offset,
+                ).getOrThrow()
+            }
+            val items = page.items.mapNotNull { it.track }.filter { it.name.isNotBlank() }
+            if (items.isEmpty()) break
+            tracks += items
+            offset += page.items.size
+            if (offset >= page.total || page.items.size < limit) break
+        }
+        return tracks
+    }
+
+    private suspend fun fetchAppleMusicPlaylist(ref: ApplePlaylistRef): ExternalPlaylistSource {
+        val token = AppleMusicTokenProvider.getToken()
+        val root = fetchAppleJson(
+            pathOrUrl = "/v1/catalog/${ref.storefront}/playlists/${ref.playlistId}",
+            token = token,
+        )
+        val playlist = root.getJSONArray("data").getJSONObject(0)
+        val attributes = playlist.getJSONObject("attributes")
+        val title = attributes.optString("name").ifBlank { "Apple Music Playlist" }
+        val artwork = attributes.optJSONObject("artwork")
+            ?.optString("url")
+            ?.replace("{w}", "1200")
+            ?.replace("{h}", "1200")
+        val tracks = mutableListOf<SpotifyTrack>()
+        val relationships = playlist.optJSONObject("relationships")
+        val trackRelationship = relationships?.optJSONObject("tracks")
+        trackRelationship?.optJSONArray("data")?.let { array ->
+            for (index in 0 until array.length()) {
+                array.optJSONObject(index)?.toAppleTrack()?.let(tracks::add)
+            }
+        }
+        var next = trackRelationship?.optString("next")?.takeIf { it.isNotBlank() }
+        if (next == null && tracks.isEmpty()) {
+            next = trackRelationship?.optString("href")?.takeIf { it.isNotBlank() }
+                ?: "/v1/catalog/${ref.storefront}/playlists/${ref.playlistId}/tracks?limit=100"
+        }
+        while (next != null) {
+            val page = fetchAppleJson(pathOrUrl = next, token = token)
+            page.optJSONArray("data")?.let { array ->
+                for (index in 0 until array.length()) {
+                    array.optJSONObject(index)?.toAppleTrack()?.let(tracks::add)
+                }
+            }
+            next = page.optString("next").takeIf { it.isNotBlank() }
+        }
+        return ExternalPlaylistSource(
+            title = title,
+            thumbnailUrl = artwork,
+            localPlaylistId = "APPLE_MUSIC_PLAYLIST_${ref.playlistId}",
+            tracks = tracks,
+        )
+    }
+
+    private fun fetchAppleJson(
+        pathOrUrl: String,
+        token: String,
+    ): JSONObject {
+        val url = if (pathOrUrl.startsWith("http")) {
+            pathOrUrl
+        } else {
+            "https://amp-api.music.apple.com${pathOrUrl}"
+        }
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer $token")
+            .header("Accept", "application/json")
+            .header("Origin", "https://music.apple.com")
+            .header("Referer", "https://music.apple.com")
+            .header("User-Agent", "Mozilla/5.0")
+            .build()
+        appleClient.newCall(request).execute().use { response ->
+            val body = response.body.string()
+            if (!response.isSuccessful) {
+                throw IllegalStateException("Apple Music import failed: HTTP ${response.code}${body.takeIf { it.isNotBlank() }?.let { ": ${it.take(180)}" }.orEmpty()}")
+            }
+            return JSONObject(body)
+        }
+    }
+
+    private fun JSONObject.toAppleTrack(): SpotifyTrack? {
+        val attributes = optJSONObject("attributes") ?: return null
+        val name = attributes.optString("name")
+        if (name.isBlank()) return null
+        val artistName = attributes.optString("artistName")
+        val albumName = attributes.optString("albumName")
+        val artwork = attributes.optJSONObject("artwork")
+            ?.optString("url")
+            ?.replace("{w}", "1200")
+            ?.replace("{h}", "1200")
+        return SpotifyTrack(
+            id = optString("id"),
+            name = name,
+            artists = artistName
+                .split(",", "&")
+                .map(String::trim)
+                .filter(String::isNotBlank)
+                .map { SpotifySimpleArtist(name = it) }
+                .ifEmpty { listOf(SpotifySimpleArtist(name = artistName)) },
+            album = SpotifySimpleAlbum(
+                name = albumName,
+                images = artwork?.let { listOf(SpotifyImage(url = it)) }.orEmpty(),
+            ),
+            durationMs = attributes.optInt("durationInMillis", 0),
+        )
+    }
+
+    private fun parseSpotifyPlaylistId(rawUrl: String): String? {
+        if (rawUrl.startsWith("spotify:playlist:", ignoreCase = true)) {
+            return rawUrl.substringAfterLast(":").takeIf { it.isNotBlank() }
+        }
+        val uri = runCatching { Uri.parse(rawUrl) }.getOrNull() ?: return null
+        val host = uri.host?.lowercase().orEmpty()
+        if (host != "open.spotify.com" && host != "spotify.com" && !host.endsWith(".spotify.com")) return null
+        val segments = uri.pathSegments
+        val playlistIndex = segments.indexOf("playlist")
+        return segments.getOrNull(playlistIndex + 1)?.takeIf { it.isNotBlank() }
+    }
+
+    private fun parseAppleMusicPlaylistUrl(rawUrl: String): ApplePlaylistRef? {
+        val uri = runCatching { Uri.parse(rawUrl) }.getOrNull() ?: return null
+        val host = uri.host?.lowercase().orEmpty()
+        if (host != "music.apple.com" && !host.endsWith(".music.apple.com")) return null
+        val segments = uri.pathSegments
+        val playlistIndex = segments.indexOf("playlist")
+        if (playlistIndex < 0) return null
+        val storefront = segments.firstOrNull()?.takeIf { it.length == 2 } ?: "us"
+        val playlistId = segments.drop(playlistIndex + 1)
+            .lastOrNull { it.startsWith("pl.", ignoreCase = true) || it.startsWith("ra.", ignoreCase = true) }
+            ?: segments.getOrNull(playlistIndex + 2)
+        return playlistId?.takeIf { it.isNotBlank() }?.let {
+            ApplePlaylistRef(storefront = storefront, playlistId = it)
+        }
+    }
+
     private suspend fun <T> spotifyCallWithTokenRetry(block: suspend () -> T): T =
         runCatching { block() }
             .getOrElse { error ->
@@ -464,23 +700,35 @@ class SpotifyImportRepository @Inject constructor(
     private suspend fun mirrorPlaylist(
         source: SpotifyImportSource,
         tracks: List<MediaMetadata>,
+    ) = mirrorPlaylist(
+        localPlaylistId = source.localPlaylistId,
+        title = source.title,
+        thumbnailUrl = source.thumbnailUrl,
+        tracks = tracks,
+    )
+
+    private suspend fun mirrorPlaylist(
+        localPlaylistId: String,
+        title: String,
+        thumbnailUrl: String?,
+        tracks: List<MediaMetadata>,
     ) {
         database.withTransaction {
-            val existing = getPlaylistById(source.localPlaylistId)
+            val existing = getPlaylistById(localPlaylistId)
             val now = LocalDateTime.now()
             val entity =
                 existing?.playlist?.copy(
-                    name = source.title,
+                    name = title,
                     bookmarkedAt = existing.playlist.bookmarkedAt ?: now,
                     lastUpdateTime = now,
-                    thumbnailUrl = source.thumbnailUrl,
+                    thumbnailUrl = thumbnailUrl,
                     isEditable = true,
                 ) ?: PlaylistEntity(
-                    id = source.localPlaylistId,
-                    name = source.title,
+                    id = localPlaylistId,
+                    name = title,
                     bookmarkedAt = now,
                     lastUpdateTime = now,
-                    thumbnailUrl = source.thumbnailUrl,
+                    thumbnailUrl = thumbnailUrl,
                     isEditable = true,
                 )
 
@@ -494,11 +742,11 @@ class SpotifyImportRepository @Inject constructor(
                 insert(metadata)
             }
 
-            clearPlaylist(source.localPlaylistId)
+            clearPlaylist(localPlaylistId)
             tracks.forEachIndexed { index, metadata ->
                 insert(
                     PlaylistSongMap(
-                        playlistId = source.localPlaylistId,
+                        playlistId = localPlaylistId,
                         songId = metadata.id,
                         position = index,
                         setVideoId = metadata.setVideoId,
@@ -535,6 +783,18 @@ class SpotifyImportRepository @Inject constructor(
     private data class MatchedTrack(
         val index: Int,
         val metadata: MediaMetadata,
+    )
+
+    private data class ExternalPlaylistSource(
+        val title: String,
+        val thumbnailUrl: String?,
+        val localPlaylistId: String,
+        val tracks: List<SpotifyTrack>,
+    )
+
+    private data class ApplePlaylistRef(
+        val storefront: String,
+        val playlistId: String,
     )
 
     companion object {

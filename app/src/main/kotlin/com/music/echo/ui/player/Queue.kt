@@ -1340,19 +1340,6 @@ fun Queue(
                                         if (!isListenTogetherGuest) {
                                             IconButton(
                                                 onClick = {
-                                                    playerConnection.service.playNextAutomix(
-                                                        item,
-                                                        index,
-                                                    )
-                                                },
-                                            ) {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.playlist_play),
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                            IconButton(
-                                                onClick = {
                                                     playerConnection.service.addToQueueAutomix(
                                                         item,
                                                         index,
@@ -1361,7 +1348,7 @@ fun Queue(
                                             ) {
                                                 Icon(
                                                     painter = painterResource(R.drawable.queue_music),
-                                                    contentDescription = null,
+                                                    contentDescription = stringResource(R.string.add_to_queue),
                                                 )
                                             }
                                         }

@@ -216,24 +216,24 @@ fun NavGraphBuilder.navigationBuilder(
             },
         ),
         enterTransition = {
-            fadeIn(tween(250))
+            slideInHorizontally(tween(160)) { it / 4 } + fadeIn(tween(120))
         },
         exitTransition = {
             if (targetState.destination.route?.startsWith("search/") == true) {
-                fadeOut(tween(200))
+                slideOutHorizontally(tween(120)) { -it / 8 } + fadeOut(tween(100))
             } else {
-                fadeOut(tween(200)) + slideOutHorizontally { -it / 2 }
+                slideOutHorizontally(tween(120)) { -it / 8 } + fadeOut(tween(100))
             }
         },
         popEnterTransition = {
             if (initialState.destination.route?.startsWith("search/") == true) {
-                fadeIn(tween(250))
+                slideInHorizontally(tween(140)) { -it / 8 } + fadeIn(tween(120))
             } else {
-                fadeIn(tween(250)) + slideInHorizontally { -it / 2 }
+                slideInHorizontally(tween(140)) { -it / 8 } + fadeIn(tween(120))
             }
         },
         popExitTransition = {
-            fadeOut(tween(200))
+            slideOutHorizontally(tween(150)) { it } + fadeOut(tween(120))
         },
     ) {
         OnlineSearchResult(navController)

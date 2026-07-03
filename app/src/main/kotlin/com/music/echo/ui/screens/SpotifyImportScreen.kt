@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -45,6 +46,7 @@ import iad1tya.echo.music.ui.component.DefaultDialog
 import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.Material3SettingsGroup
 import iad1tya.echo.music.ui.component.Material3SettingsItem
+import iad1tya.echo.music.ui.component.TextFieldDialog
 import iad1tya.echo.music.ui.utils.backToMain
 import iad1tya.echo.music.spotify.SpotifyAuth
 import android.net.Uri
@@ -60,6 +62,7 @@ fun SpotifyImportScreen(
 
     var showSpotifyLogin by remember { mutableStateOf(false) }
     var showSpotifySources by remember { mutableStateOf(false) }
+    var showPlaylistUrlImport by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -101,6 +104,13 @@ fun SpotifyImportScreen(
                             icon = painterResource(R.drawable.ic_spotify),
                             enabled = state.progress == null && !state.isLoading,
                             onClick = { showSpotifyLogin = true }
+                        ),
+                        Material3SettingsItem(
+                            title = { Text(stringResource(R.string.playlist_url_import_title)) },
+                            description = { Text(stringResource(R.string.playlist_url_import_desc)) },
+                            icon = painterResource(R.drawable.link),
+                            enabled = state.progress == null && !state.isLoading,
+                            onClick = { showPlaylistUrlImport = true }
                         )
                     )
                 } else {
@@ -139,6 +149,13 @@ fun SpotifyImportScreen(
                             onClick = { spotifyImportViewModel.importSelectedSources() }
                         ),
                         Material3SettingsItem(
+                            title = { Text(stringResource(R.string.playlist_url_import_title)) },
+                            description = { Text(stringResource(R.string.playlist_url_import_desc)) },
+                            icon = painterResource(R.drawable.link),
+                            enabled = state.progress == null && !state.isLoading,
+                            onClick = { showPlaylistUrlImport = true }
+                        ),
+                        Material3SettingsItem(
                             title = { Text(stringResource(R.string.spotify_refresh)) },
                             description = { Text(stringResource(R.string.spotify_import_desc)) },
                             icon = painterResource(R.drawable.sync),
@@ -169,6 +186,25 @@ fun SpotifyImportScreen(
                 showSpotifyLogin = false
                 spotifyImportViewModel.connectWithCookies(spDc = spDc, spKey = spKey)
             },
+        )
+    }
+
+    if (showPlaylistUrlImport) {
+        TextFieldDialog(
+            icon = { Icon(painterResource(R.drawable.link), contentDescription = null) },
+            title = { Text(stringResource(R.string.playlist_url_import_title)) },
+            initialTextFieldValue = TextFieldValue(""),
+            placeholder = { Text(stringResource(R.string.playlist_url_import_placeholder)) },
+            autoFocus = true,
+            isInputValid = { text ->
+                text.contains("open.spotify.com", ignoreCase = true) ||
+                    text.contains("spotify:playlist:", ignoreCase = true) ||
+                    text.contains("music.apple.com", ignoreCase = true)
+            },
+            onDismiss = { showPlaylistUrlImport = false },
+            onDone = { url ->
+                spotifyImportViewModel.importPlaylistUrl(url)
+            }
         )
     }
 

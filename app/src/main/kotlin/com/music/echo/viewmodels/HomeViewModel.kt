@@ -42,6 +42,7 @@ import iad1tya.echo.music.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -95,6 +96,7 @@ class HomeViewModel @Inject constructor(
     val echoBrainPlaylists = MutableStateFlow<List<CommunityPlaylistItem>?>(null)
     val selectedChip = MutableStateFlow<HomePage.Chip?>(null)
     private val previousHomePage = MutableStateFlow<HomePage?>(null)
+    private var chipLoadJob: Job? = null
 
     val allLocalItems = MutableStateFlow<List<LocalItem>>(emptyList())
     val allYtItems = MutableStateFlow<List<YTItem>>(emptyList())
@@ -631,6 +633,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleChip(chip: HomePage.Chip?) {
+        chipLoadJob?.cancel()
+
         if (chip == null || chip == selectedChip.value && previousHomePage.value != null) {
             homePage.value = previousHomePage.value
             previousHomePage.value = null
@@ -642,19 +646,30 @@ class HomeViewModel @Inject constructor(
             previousHomePage.value = homePage.value
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        val baseHomePage = previousHomePage.value ?: homePage.value
+        selectedChip.value = chip
+        homePage.value = baseHomePage?.copy(
+            chips = baseHomePage.chips,
+            sections = emptyList(),
+            continuation = null,
+        )
+
+        chipLoadJob = viewModelScope.launch(Dispatchers.IO) {
             val hideExplicit = context.dataStore.get(HideExplicitKey, false)
             val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
             val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
             val nextSections = YouTube.home(params = chip.endpoint?.params).getOrNull() ?: return@launch
 
             homePage.value = nextSections.copy(
-                chips = homePage.value?.chips,
-                sections = nextSections.sections.map { section ->
-                    section.copy(items = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts))
-                }
+                chips = baseHomePage?.chips ?: homePage.value?.chips,
+                sections = nextSections.sections.mapNotNull { section ->
+                    val filteredItems = section.items
+                        .filterExplicit(hideExplicit)
+                        .filterVideoSongs(hideVideoSongs)
+                        .filterYoutubeShorts(hideYoutubeShorts)
+                    if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
+                },
             )
-            selectedChip.value = chip
         }
     }
 
