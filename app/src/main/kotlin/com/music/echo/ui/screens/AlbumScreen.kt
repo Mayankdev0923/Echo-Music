@@ -46,8 +46,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -841,12 +841,10 @@ fun AlbumScreen(
         }
     }
 
-    TopAppBar(
-        title = {
-            if (inSelectMode) {
-                Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
-            }
-        },
+    val titleText = if (inSelectMode) pluralStringResource(R.plurals.n_selected, selection.size, selection.size) else ""
+
+    LiquidTopAppBar(
+        title = titleText,
         navigationIcon = {
             if (inSelectMode) {
                 IconButton(onClick = onExitSelectionMode) {
@@ -979,6 +977,5 @@ fun AlbumScreen(
                 }
             }
         },
-        colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
     )
 }

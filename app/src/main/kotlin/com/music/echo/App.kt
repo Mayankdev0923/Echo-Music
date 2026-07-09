@@ -47,6 +47,7 @@ import java.net.Authenticator
 import java.net.PasswordAuthentication
 import java.net.Proxy
 import java.util.Locale
+import iad1tya.echo.music.playback.PlayerPreWarm
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -56,8 +57,12 @@ class App : Application(), SingletonImageLoader.Factory {
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
 
+    @Inject
+    lateinit var playerPreWarm: PlayerPreWarm
+
     override fun onCreate() {
         super.onCreate()
+        playerPreWarm.warmUp()
 
         com.music.jiosaavn.DeviceRouter.init(this)
         timber.log.Timber.d("Device ID: ${com.music.jiosaavn.DeviceRouter.getDeviceId()} | Assigned JioSaavn Server: ${com.music.jiosaavn.DeviceRouter.getCurrentServer()}")

@@ -625,8 +625,13 @@ class MusicService :
 
                     Timber.tag("MusicService").i("QUALITY CHANGED: $oldQuality -> $newQuality. Will take effect starting from the next song.")
 
-                    // Clear cache for upcoming songs so they fetch the new quality, keeping the currently playing track's URL cache entry intact.
+                    // Mark current song and upcoming songs to bypass cache on next fetch
                     val currentMediaId = player.currentMediaItem?.mediaId
+                    if (currentMediaId != null) {
+                        bypassCacheForQualityChange.add(currentMediaId)
+                    }
+
+                    // Clear cache for upcoming songs so they fetch the new quality, keeping the currently playing track's URL cache entry intact.
                     val currentCachedEntry = currentMediaId?.let { mediaId ->
                         songUrlCache.filter { it.key.startsWith("${mediaId}_") }
                     }
@@ -2669,10 +2674,15 @@ class MusicService :
             val isFullyDownloaded = cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
             
             val lockedQuality = if (isCurrentlyPlaying && dbFormat != null) {
-                when {
-                    dbFormat.mimeType.contains("flac", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.LOSSLESS
-                    dbFormat.mimeType.contains("mp4", ignoreCase = true) || dbFormat.mimeType.contains("m4a", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.SAAVN
-                    else -> iad1tya.echo.music.constants.AudioQuality.OPUS
+                val isReFetch = songUrlCache.containsKey("${mediaId}_${dbFormat.codecs}")
+                if (isReFetch) {
+                    when {
+                        dbFormat.mimeType.contains("flac", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.LOSSLESS
+                        dbFormat.mimeType.contains("mp4", ignoreCase = true) || dbFormat.mimeType.contains("m4a", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.SAAVN
+                        else -> iad1tya.echo.music.constants.AudioQuality.OPUS
+                    }
+                } else {
+                    audioQuality
                 }
             } else {
                 audioQuality
@@ -2784,23 +2794,13 @@ class MusicService :
                 val isFinalLossless = format.mimeType.contains("flac", ignoreCase = true)
                 val isFinalSaavn = format.mimeType.contains("mp4", ignoreCase = true) || format.mimeType.contains("m4a", ignoreCase = true)
                 
-                if (dbFormat != null && !shouldBypassCache) {
+                if (dbFormat != null && !shouldBypassCache && !isCurrentlyPlaying) {
                     val cacheIsLossless = dbFormat.codecs == "flac"
                     val cacheIsSaavn = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
-                    
+
                     if (isFinalLossless != cacheIsLossless || isFinalSaavn != cacheIsSaavn) {
-                        Timber.tag(TAG).w("Format fallback detected AFTER fetch. Clearing playerCache to prevent mismatch crash.")
+                        Timber.tag(TAG).w("Format fallback detected AFTER fetch for next track. Clearing playerCache.")
                         playerCache.removeResource(mediaId)
-                        
-                        if (isCurrentlyPlaying) {
-                            Timber.tag(TAG).e("Format changed mid-stream for $mediaId. Throwing to force player restart.")
-                            runBlocking(Dispatchers.IO) { database.query { deleteFormat(mediaId) } }
-                            throw PlaybackException(
-                                "Container format changed mid-stream due to fallback",
-                                null,
-                                PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED
-                            )
-                        }
                     }
                 }
 
@@ -2813,12 +2813,26 @@ class MusicService :
                 }
 
                 database.query {
+                    val mimeTypeBase = format.mimeType.split(";")[0].trim()
+                    val codecValue = try {
+                        format.mimeType.split("codecs=")[1]
+                            .trim()
+                            .removeSurrounding("\"")
+                            .removeSurrounding("'")
+                    } catch (_: Exception) {
+                        when {
+                            mimeTypeBase.contains("flac") -> "flac"
+                            mimeTypeBase.contains("opus") -> "opus"
+                            mimeTypeBase.contains("mp4") || mimeTypeBase.contains("m4a") -> "mp4a.40.2"
+                            else -> mimeTypeBase
+                        }
+                    }
                     upsert(
                         FormatEntity(
                             id = mediaId,
                             itag = format.itag,
-                            mimeType = format.mimeType.split(";")[0],
-                            codecs = format.mimeType.split("codecs=")[1].removeSurrounding("\""),
+                            mimeType = mimeTypeBase,
+                            codecs = codecValue,
                             bitrate = format.bitrate,
                             sampleRate = format.audioSampleRate,
                             contentLength = format.contentLength ?: 0L,

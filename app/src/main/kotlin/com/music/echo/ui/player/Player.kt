@@ -301,6 +301,7 @@ fun BottomSheetPlayer(
     state: BottomSheetState,
     navController: NavController,
     onSearchClick: () -> Unit,
+    onHomeClick: () -> Unit,
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
     themeColor: Color,
@@ -1378,6 +1379,34 @@ fun BottomSheetPlayer(
             MiniPlayer(
                 positionState = positionState,
                 durationState = durationState,
+                leadingContent = {
+                    val scope = rememberCoroutineScope()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .height(iad1tya.echo.music.constants.MiniPlayerHeight)
+                            .aspectRatio(1f)
+                            .appleGlass(androidx.compose.foundation.shape.CircleShape, elevation = 2.dp)
+                            .pointerInput(Unit) {
+                                awaitEachGesture {
+                                    val down = awaitFirstDown(requireUnconsumed = false)
+                                    down.consume()
+                                    waitForUpOrCancellation()
+                                    if (state.isExpanded) {
+                                        state.collapseSoft()
+                                    }
+                                    onHomeClick()
+                                }
+                            }
+                    ) {
+                        Icon(
+                            painter = painterResource(iad1tya.echo.music.R.drawable.home_filled),
+                            contentDescription = "Home",
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
                 trailingContent = {
                     val scope = rememberCoroutineScope()
                     Box(

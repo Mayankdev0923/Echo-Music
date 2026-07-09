@@ -2,6 +2,7 @@
 
 package iad1tya.echo.music.ui.screens.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -131,7 +132,6 @@ import androidx.compose.ui.graphics.RectangleShape
 @Composable
 fun SearchScreen(
     navController: NavController,
-    pureBlack: Boolean
 ) {
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
@@ -190,7 +190,11 @@ fun SearchScreen(
         }
     }
 
-
+    BackHandler(enabled = searchActive) {
+        searchActive = false
+        query = TextFieldValue("")
+        focusManager.clearFocus()
+    }
 
     val onSearch: (String) -> Unit = remember {
         { searchQuery ->
@@ -258,6 +262,7 @@ fun SearchScreen(
         }
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
         modifier = Modifier.nestedScroll(nestedScrollConnection),
         containerColor = Color.Transparent,
@@ -498,7 +503,6 @@ fun SearchScreen(
                         query = query.text,
                         navController = navController,
                         onDismiss = { searchActive = false },
-                        pureBlack = pureBlack
                     )
                     SearchSource.ONLINE -> OnlineSearchScreen(
                         query = query.text,
@@ -509,7 +513,6 @@ fun SearchScreen(
                             searchActive = false
                         },
                         onDismiss = { searchActive = false },
-                        pureBlack = pureBlack
                     )
                 }
             }
@@ -527,6 +530,7 @@ fun SearchScreen(
                 }
             }
         }
+    }
     }
 
     

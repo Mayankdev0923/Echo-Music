@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.R
 import iad1tya.echo.music.spotifyimport.SpotifyImportViewModel
 import iad1tya.echo.music.spotifyimport.SpotifyImportUiState
@@ -67,8 +68,8 @@ fun SpotifyImportScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
-                title = { Text(stringResource(R.string.spotify_import_title)) },
+            LiquidTopAppBar(
+                title = stringResource(R.string.spotify_import_title),
                 navigationIcon = {
                     IconButton(
                         onClick = navController::navigateUp,
@@ -77,7 +78,6 @@ fun SpotifyImportScreen(
                         Icon(painterResource(R.drawable.arrow_back), null)
                     }
                 },
-                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->

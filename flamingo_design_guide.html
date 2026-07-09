@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlamingoSank — Design Principle Guide</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-2: #3d3d3a;
+    --ink-3: #7a7a75;
+    --surface: #ffffff;
+    --surface-1: #f6f5f2;
+    --surface-2: #eeecea;
+    --accent: #e8472a;
+    --accent-soft: #fde8e4;
+    --accent-mid: #f5a090;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --green: #16a34a;
+    --green-soft: #f0fdf4;
+    --amber: #d97706;
+    --amber-soft: #fffbeb;
+    --purple: #7c3aed;
+    --purple-soft: #f5f3ff;
+    --border: #e2e0dc;
+    --radius: 10px;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ---- HEADER ---- */
+  .doc-header {
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .doc-title {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .doc-subtitle {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .meta-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    color: var(--ink-2);
+    background: var(--surface-1);
+  }
+  .pill.accent { background: var(--accent-soft); border-color: var(--accent-mid); color: var(--accent); }
+
+  /* ---- TOC ---- */
+  .toc {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 56px;
+  }
+  .toc-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 32px;
+  }
+  .toc-list li a {
+    color: var(--ink-2);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-list li a:hover { color: var(--accent); }
+  .toc-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-3);
+    min-width: 20px;
+  }
+
+  /* ---- SECTIONS ---- */
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+    min-width: 24px;
+  }
+  .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 28px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  p { color: var(--ink-2); margin-bottom: 14px; }
+
+  /* ---- CARDS ---- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .card-body {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  /* ---- COMPONENT BREAKDOWNS ---- */
+  .component-block {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .component-header {
+    background: var(--surface-1);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .component-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .component-tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-weight: 500;
+  }
+  .tag-ui { background: var(--blue-soft); color: var(--blue); }
+  .tag-motion { background: var(--purple-soft); color: var(--purple); }
+  .tag-perf { background: var(--green-soft); color: var(--green); }
+  .tag-data { background: var(--amber-soft); color: var(--amber); }
+  .component-body {
+    padding: 18px 20px;
+  }
+  .component-body p {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  /* ---- CODE BLOCKS ---- */
+  .code-block {
+    background: #1e1e2e;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .code-block code {
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 12.5px;
+    color: #cdd6f4;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .kw { color: #cba6f7; }
+  .fn { color: #89b4fa; }
+  .str { color: #a6e3a1; }
+  .cm { color: #6c7086; }
+  .cls { color: #f38ba8; }
+  .num { color: #fab387; }
+
+  /* ---- PRINCIPLE ROWS ---- */
+  .principle-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  .principle-label {
+    background: var(--surface-1);
+    padding: 16px 18px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .principle-label-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .principle-label-tag {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .principle-content {
+    padding: 16px 18px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .principle-content strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- DO/DON'T ---- */
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .do-block, .dont-block {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .do-block {
+    background: var(--green-soft);
+    border: 1px solid #bbf7d0;
+  }
+  .dont-block {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .do-label { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.08em; margin-bottom: 8px; }
+  .dont-label { font-size: 11px; font-weight: 700; color: #dc2626; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .do-block p, .dont-block p { color: var(--ink-2); margin-bottom: 0; }
+
+  /* ---- STACK DIAGRAM ---- */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .stack-layer {
+    display: flex;
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .stack-layer:last-child { border-bottom: none; }
+  .stack-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stack-layer-name { font-size: 13px; font-weight: 600; color: var(--ink); min-width: 180px; }
+  .stack-layer-desc { font-size: 13px; color: var(--ink-3); }
+  .stack-layer-tag { margin-left: auto; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; flex-shrink: 0; }
+
+  /* ---- CHECKLIST ---- */
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .check-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    border: 1.5px solid #86efac;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 10px;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  /* ---- CALLOUT ---- */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* ---- FOOTER ---- */
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    margin-top: 64px;
+    font-size: 13px;
+    color: var(--ink-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 24px 18px 60px; }
+    .toc-list { grid-template-columns: 1fr; }
+    .do-dont { grid-template-columns: 1fr; }
+    .principle-row { grid-template-columns: 1fr; }
+    .principle-label { border-right: none; border-bottom: 1px solid var(--border); }
+    .doc-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="doc-header">
+  <p class="eyebrow">Yos-X / FlamingoSank · Design Reference</p>
+  <h1 class="doc-title">Flamingo Design<br>Principle Guide</h1>
+  <p class="doc-subtitle">A complete engineering and UX playbook derived from Yos-X's FlamingoSank and FlamingoHere projects — Android-native music apps built to replicate and exceed Apple Music's feel on Android, using Kotlin, Jetpack Compose, and a custom overscroll engine.</p>
+  <div class="meta-pills">
+    <span class="pill accent">Kotlin · Jetpack Compose</span>
+    <span class="pill">Apple Music–style UI</span>
+    <span class="pill">Custom Overscroll Engine</span>
+    <span class="pill">GPL-3.0 · Android</span>
+    <span class="pill">72 ⭐ · 22 Forks</span>
+  </div>
+</header>
+
+<!-- TOC -->
+<nav class="toc" aria-label="Table of Contents">
+  <p class="toc-label">Contents</p>
+  <ol class="toc-list">
+    <li><a href="#project"><span class="toc-num">01</span> Project Context</a></li>
+    <li><a href="#architecture"><span class="toc-num">02</span> Architecture</a></li>
+    <li><a href="#overscroll"><span class="toc-num">03</span> Custom Overscroll</a></li>
+    <li><a href="#motion"><span class="toc-num">04</span> Motion & Animation</a></li>
+    <li><a href="#ui"><span class="toc-num">05</span> UI Components</a></li>
+    <li><a href="#data"><span class="toc-num">06</span> Data Layer</a></li>
+    <li><a href="#perf"><span class="toc-num">07</span> Performance</a></li>
+    <li><a href="#checklist"><span class="toc-num">08</span> Optimisation Checklist</a></li>
+  </ol>
+</nav>
+
+<!-- SECTION 1: PROJECT CONTEXT -->
+<section class="section" id="project">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div>
+      <h2 class="section-title">Project Context</h2>
+      <p class="section-desc">What FlamingoSank is and how the two Flamingo repos relate</p>
+    </div>
+  </div>
+
+  <p>Yos-X (枫灵剑影) maintains two connected repositories under the Flamingo brand. <strong>FlamingoSank</strong> (少女投江, literally "girl sinking") is the core shared library — its name is a poetic reference to the idea of diving deep into a problem. <strong>FlamingoHere</strong> is the user-facing Android music player application that consumes it, described as "a local music player for Android, styled after Apple Music."</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <div class="card-title">FlamingoSank (this repo)</div>
+      <div class="card-body">Core library: custom overscroll engine (<code>overscroll_core</code>), shared data models, stability config. Written entirely in Kotlin. Used as a module dependency.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎵</div>
+      <div class="card-title">FlamingoHere</div>
+      <div class="card-body">The full music player app. Apple Music–inspired UI, local audio playback, album art, playlists, and library navigation — built on top of FlamingoSank's engine.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛠</div>
+      <div class="card-title">Tech Stack</div>
+      <div class="card-body">Kotlin 2.0, Jetpack Compose (Kotlin Compose plugin), AGP 8.4, JitPack for custom deps, Sonatype snapshots for cutting-edge libraries.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Key insight:</strong> The decision to extract the overscroll engine into its own module (<code>overscroll_core</code>) is itself a design principle — physics-based scroll behaviour is a first-class concern, not a CSS afterthought. Apple Music's signature feel lives almost entirely in how content responds to gesture momentum.
+  </div>
+</section>
+
+<!-- SECTION 2: ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div>
+      <h2 class="section-title">Architecture Principles</h2>
+      <p class="section-desc">How the project is structured and why it matters for smooth apps</p>
+    </div>
+  </div>
+
+  <h3>Module Separation</h3>
+  <p>The project splits into at least three Gradle modules: the application (<code>app</code>), the physics/scroll engine (<code>overscroll_core</code>), and an implied shared data module. This follows the Android Single Responsibility principle at the module level — each boundary is independently compilable, testable, and replaceable.</p>
+
+  <div class="stack">
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#e8472a"></div>
+      <span class="stack-layer-name">app</span>
+      <span class="stack-layer-desc">UI screens, navigation, ViewModels, media playback</span>
+      <span class="stack-layer-tag tag-ui">UI Layer</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#7c3aed"></div>
+      <span class="stack-layer-name">overscroll_core</span>
+      <span class="stack-layer-desc">Custom physics engine: spring damping, edge stretch, momentum curves</span>
+      <span class="stack-layer-tag tag-motion">Motion Layer</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#d97706"></div>
+      <span class="stack-layer-name">yos.music.player.data.*</span>
+      <span class="stack-layer-desc">YosMediaItem, PlayList, MusicLibrary, FolderIndex, PlayStatus</span>
+      <span class="stack-layer-tag tag-data">Data Layer</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#16a34a"></div>
+      <span class="stack-layer-name">stability_config.conf</span>
+      <span class="stack-layer-desc">Explicit keep-rules for ProGuard/R8 — every data class serialised at runtime is named here</span>
+      <span class="stack-layer-tag tag-perf">Build Layer</span>
+    </div>
+  </div>
+
+  <h3>Data Model Design</h3>
+  <p>The <code>stability_config.conf</code> reveals the full domain model. Each entity has a clear single responsibility:</p>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Core Domain Entities (from stability_config.conf)</span>
+      <span class="component-tag tag-data">Data</span>
+    </div>
+    <div class="component-body">
+      <div class="principle-row" style="margin:0 0 10px; border-radius:6px;">
+        <div class="principle-label"><div class="principle-label-name">YosMediaItem</div><div class="principle-label-tag">Media wrapper</div></div>
+        <div class="principle-content">A single playable track: file path, metadata (title, artist, album, duration), artwork reference. Wraps Android's <code>MediaItem</code> with app-specific extensions like play count and last-played timestamp.</div>
+      </div>
+      <div class="principle-row" style="margin:0 0 10px; border-radius:6px;">
+        <div class="principle-label"><div class="principle-label-name">PlayList / PlayListV1</div><div class="principle-label-tag">Ordered collection</div></div>
+        <div class="principle-content">An ordered list of <code>YosMediaItem</code> references with metadata (name, cover art, creation date). V1 suffix suggests versioned serialisation — the old format is kept for migration compatibility.</div>
+      </div>
+      <div class="principle-row" style="margin:0 0 10px; border-radius:6px;">
+        <div class="principle-label"><div class="principle-label-name">FavPlayListLibrary</div><div class="principle-label-tag">Special playlist</div></div>
+        <div class="principle-content">Dedicated type for the "Favourites" collection — separated from generic playlists so the UI can treat it specially (always-visible, heart icon shortcut), mirroring Apple Music's "Loved" distinction.</div>
+      </div>
+      <div class="principle-row" style="margin:0 0 10px; border-radius:6px;">
+        <div class="principle-label"><div class="principle-label-name">MusicLibrary</div><div class="principle-label-tag">Root index</div></div>
+        <div class="principle-content">Aggregates all scanned <code>Folder</code> objects and their tracks. Acts as a single source of truth for what's on the device, rebuilt when MediaStore changes.</div>
+      </div>
+      <div class="principle-row" style="margin:0; border-radius:6px;">
+        <div class="principle-label"><div class="principle-label-name">PlayStatus</div><div class="principle-label-tag">Playback state</div></div>
+        <div class="principle-content">Current playback state snapshot: playing/paused, current position, shuffle and repeat modes. Separated from <code>YosMediaItem</code> so UI can observe state changes without re-rendering track metadata.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Kotlin 2.0 + Compose Compiler Plugin</h3>
+  <p>Using Kotlin 2.0 with the standalone Compose compiler plugin (<code>org.jetbrains.kotlin.plugin.compose</code>) rather than the bundled Compose Kotlin extension is a deliberate performance choice. The new compiler produces smaller, faster-skipping composables and enables Strong Skip Mode — meaning unchanged composables are completely skipped during recomposition, not just read-checked.</p>
+</section>
+
+<!-- SECTION 3: OVERSCROLL -->
+<section class="section" id="overscroll">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div>
+      <h2 class="section-title">The Custom Overscroll Engine</h2>
+      <p class="section-desc">The most distinctive technical decision in the project — why and how</p>
+    </div>
+  </div>
+
+  <p>The existence of a standalone <code>overscroll_core</code> module is the single most revealing architectural choice in FlamingoSank. It tells you exactly what the developer considered non-negotiable: the physics of how lists feel when you reach the end.</p>
+
+  <div class="callout">
+    <strong>Why Android needs this:</strong> Android 12 introduced a "stretch" overscroll (EdgeEffect). But it doesn't match iOS's rubber-band feel — iOS uses a spring with variable resistance, while Android's default is a one-size-fits-all stretch. FlamingoSank replaces Android's EdgeEffect entirely with a custom spring simulation.
+  </div>
+
+  <h3>Principles of a Physics-Correct Overscroll</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🌊</div>
+      <div class="card-title">Variable Resistance</div>
+      <div class="card-body">The further the content is pulled past the edge, the more resistance is applied. This is a non-linear curve — small pulls feel almost free; large pulls feel increasingly sticky, preventing users from "launching" content off-screen.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔁</div>
+      <div class="card-title">Spring Return</div>
+      <div class="card-body">On release, content snaps back with damping — it overshoots slightly and settles, rather than teleporting back. Damping ratio controls whether the bounce feels firm (high damping) or bouncy (low damping).</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Velocity Inheritance</div>
+      <div class="card-body">The spring initial velocity is set to the gesture's fling velocity at the moment of edge contact. Fast flings produce energetic bounces; slow pushes produce gentle snaps. This is what makes it feel "alive."</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📐</div>
+      <div class="card-title">Content Transformation</div>
+      <div class="card-body">Rather than moving a glow or edge decoration, the actual list content translates and optionally scales slightly. This is the iOS approach — the content itself appears to stretch, not a separate effect layer.</div>
+    </div>
+  </div>
+
+  <h3>Implementation Pattern in Jetpack Compose</h3>
+
+  <div class="code-block"><code><span class="cm">// overscroll_core module — core principle</span>
+<span class="kw">class</span> <span class="cls">SpringOverscrollEffect</span>(
+    <span class="kw">private val</span> coroutineScope: CoroutineScope
+) : OverscrollEffect {
+
+    <span class="kw">private val</span> springSpec = <span class="fn">SpringSpec</span>(
+        dampingRatio = <span class="num">0.65f</span>,   <span class="cm">// ~Apple Music feel</span>
+        stiffness    = <span class="num">200f</span>
+    )
+    <span class="kw">private val</span> offset = Animatable(<span class="num">0f</span>)
+
+    <span class="kw">override fun</span> <span class="fn">applyToScroll</span>(
+        delta: Offset,
+        source: NestedScrollSource,
+        performScroll: (Offset) -> Offset
+    ): Offset {
+        <span class="kw">val</span> consumed = <span class="fn">performScroll</span>(delta)
+        <span class="kw">val</span> leftover = delta - consumed
+        <span class="cm">// Apply rubber-band resistance to leftover</span>
+        <span class="kw">val</span> resistance = <span class="fn">rubberBand</span>(leftover.y, maxPull = <span class="num">200f</span>)
+        coroutineScope.<span class="fn">launch</span> {
+            offset.<span class="fn">snapTo</span>(offset.value + resistance)
+        }
+        <span class="kw">return</span> delta <span class="cm">// consume all so host doesn't also move</span>
+    }
+
+    <span class="kw">private fun</span> <span class="fn">rubberBand</span>(delta: Float, maxPull: Float): Float {
+        <span class="cm">// Non-linear decay: feels free at start, heavy at end</span>
+        <span class="kw">return</span> delta * (<span class="num">1f</span> - (kotlin.math.<span class="fn">abs</span>(offset.value) / maxPull).<span class="fn">coerceIn</span>(<span class="num">0f</span>, <span class="num">1f</span>))
+    }
+}</code></div>
+
+  <h3>Do and Don't</h3>
+  <div class="do-dont">
+    <div class="do-block">
+      <div class="do-label">✓ DO</div>
+      <p>Move the actual content using <code>graphicsLayer { translationY = overscrollOffset }</code> on your list container. Tie spring stiffness and damping to your visual density — denser lists need stiffer springs.</p>
+    </div>
+    <div class="dont-block">
+      <div class="dont-label">✗ DON'T</div>
+      <p>Override <code>EdgeEffect</code> via reflection or try to intercept Android's built-in overscroll glow. Disable it completely with <code>overScrollMode = OVER_SCROLL_NEVER</code> and replace it entirely.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: MOTION -->
+<section class="section" id="motion">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div>
+      <h2 class="section-title">Motion & Animation</h2>
+      <p class="section-desc">How Flamingo achieves Apple-quality transitions on Android</p>
+    </div>
+  </div>
+
+  <p>Apple Music's UI is defined by its transitions as much as its layouts. Every screen change, mini-player expansion, and track switch has a coherent choreography. Flamingo achieves this through three motion categories:</p>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Category 1 — Shared Element Transitions</span>
+      <span class="component-tag tag-motion">Motion</span>
+    </div>
+    <div class="component-body">
+      <p>Album artwork morphs from a thumbnail in the list to a full-screen hero when the player expands. In Compose, this is achieved with <code>SharedTransitionLayout</code> (Compose 1.7+) combined with <code>sharedElement()</code> modifier. The key principle: <strong>the element never disappears — it moves</strong>. No fade-in/out, no cross-dissolve. The artwork rect animates directly from origin to destination using a spring.</p>
+      <div class="code-block"><code><span class="cm">// In the track list item</span>
+<span class="cls">AsyncImage</span>(
+    modifier = Modifier
+        .<span class="fn">sharedElement</span>(
+            state = <span class="fn">rememberSharedContentState</span>(<span class="str">"artwork-${track.id}"</span>),
+            animatedVisibilityScope = animatedScope
+        )
+        .<span class="fn">clip</span>(<span class="cls">RoundedCornerShape</span>(<span class="num">8.dp</span>))
+)</code></div>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Category 2 — Mini-Player Expansion</span>
+      <span class="component-tag tag-motion">Motion</span>
+    </div>
+    <div class="component-body">
+      <p>The persistent mini-player at the bottom expands to a full player screen. This is not a navigation transition — it's a <strong>layout animation</strong>. The mini-player's height animates from ~60dp to full screen. Content fades in as the card expands. Use <code>animateDpAsState</code> with a spring for height, and <code>AnimatedVisibility</code> for the detailed controls that appear only in expanded state.</p>
+      <p>Principle: the two states share a single composable with animated properties, not two separate composables with a navigation transition between them. This preserves the visual continuity that makes it feel like one thing transforming, not two screens replacing each other.</p>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Category 3 — List & Scroll Choreography</span>
+      <span class="component-tag tag-motion">Motion</span>
+    </div>
+    <div class="component-body">
+      <p>Album grid items scale slightly on press (<code>scale(0.97f)</code>), header art blurs and fades as it scrolls behind the collapsed toolbar (using <code>graphicsLayer</code> tied to scroll position), and the Now Playing bar fades in with a gentle spring when playback starts.</p>
+      <div class="code-block"><code><span class="cm">// Header parallax + blur on scroll</span>
+<span class="cls">Box</span>(
+    modifier = Modifier.<span class="fn">graphicsLayer</span> {
+        <span class="kw">val</span> scrollFraction = (scrollOffset / maxHeaderHeight).<span class="fn">coerceIn</span>(<span class="num">0f</span>, <span class="num">1f</span>)
+        alpha = <span class="num">1f</span> - scrollFraction
+        translationY = scrollOffset * <span class="num">0.4f</span>  <span class="cm">// parallax</span>
+        renderEffect = <span class="fn">BlurEffect</span>(
+            radiusX = scrollFraction * <span class="num">12f</span>,
+            radiusY = scrollFraction * <span class="num">12f</span>
+        )
+    }
+)</code></div>
+    </div>
+  </div>
+
+  <h3>Spring Configuration Reference</h3>
+  <div class="stack">
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#e8472a"></div>
+      <span class="stack-layer-name">Overscroll bounce</span>
+      <span class="stack-layer-desc">dampingRatio=0.65, stiffness=200 — bouncy but controlled</span>
+      <span class="stack-layer-tag tag-motion">High energy</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#7c3aed"></div>
+      <span class="stack-layer-name">Player expand/collapse</span>
+      <span class="stack-layer-desc">dampingRatio=0.80, stiffness=300 — firm, confident</span>
+      <span class="stack-layer-tag tag-motion">Structural</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#2563eb"></div>
+      <span class="stack-layer-name">Shared element (artwork)</span>
+      <span class="stack-layer-desc">dampingRatio=0.9, stiffness=400 — fast, no bounce</span>
+      <span class="stack-layer-tag tag-motion">Precise</span>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-dot" style="background:#16a34a"></div>
+      <span class="stack-layer-name">Item press feedback</span>
+      <span class="stack-layer-desc">tween(80ms) down, spring(stiffness=500) up — snappy</span>
+      <span class="stack-layer-tag tag-motion">Micro</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: UI COMPONENTS -->
+<section class="section" id="ui">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <div>
+      <h2 class="section-title">UI Component Patterns</h2>
+      <p class="section-desc">The specific components Apple Music uses and how to build them faithfully</p>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Album Art with Dynamic Colour Extraction</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>Apple Music's player background adapts to the album art's dominant colour. This is achieved with Android's <strong>Palette API</strong>. Load the bitmap, extract the dominant swatch, then animate the background colour using <code>animateColorAsState</code> with a tween when the track changes.</p>
+      <div class="code-block"><code><span class="kw">val</span> dominantColor <span class="kw">by</span> <span class="fn">produceState</span>&lt;<span class="cls">Color</span>&gt;(initialValue = <span class="cls">Color</span>.DarkGray) {
+    <span class="kw">val</span> bitmap = <span class="fn">loadBitmap</span>(track.artworkUri)
+    <span class="kw">val</span> swatch = <span class="cls">Palette</span>.<span class="fn">from</span>(bitmap).<span class="fn">generate</span>()
+        ?.dominantSwatch
+    value = swatch?.<span class="fn">let</span> { <span class="cls">Color</span>(it.rgb) } ?: <span class="cls">Color</span>.DarkGray
+}
+
+<span class="kw">val</span> animatedBg <span class="kw">by</span> <span class="fn">animateColorAsState</span>(
+    targetValue = dominantColor,
+    animationSpec = <span class="fn">tween</span>(durationMillis = <span class="num">600</span>)
+)</code></div>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Blurred Background (Frosted Glass)</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>The Apple Music mini-player and some overlays use a frosted/blurred glass effect behind them. On Android, this is done with <code>RenderEffect.createBlurEffect()</code> (API 31+) applied via <code>graphicsLayer</code>. For older APIs, pre-blur a scaled-down copy of the background bitmap. The Flamingo approach: maintain a <code>BlurTransformation</code> in Coil's image pipeline to produce a blurred artwork version for the player background.</p>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Track List Item</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>Each track row contains: 44dp square artwork thumbnail (8dp rounded corners), title in 15sp/500 weight, artist in 13sp/400 weight muted, duration right-aligned, and a "more" button. Key principle: <strong>no dividers between rows</strong> — breathing room comes from padding (14dp vertical), not lines. The currently playing track shows an animated waveform indicator instead of the artwork.</p>
+      <div class="do-dont" style="margin-top:14px;">
+        <div class="do-block">
+          <div class="do-label">✓ DO</div>
+          <p>Use <code>LazyColumn</code> with <code>key = { track.id }</code> so Compose animates insertions/removals automatically. Let Coil handle artwork caching — it handles memory pressure gracefully.</p>
+        </div>
+        <div class="dont-block">
+          <div class="dont-label">✗ DON'T</div>
+          <p>Load full-resolution artwork into list thumbnails. Use a 64px Coil target size. The full image is only needed in the player view.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Persistent Mini-Player Bar</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>Positioned above the bottom navigation bar using a <code>Scaffold</code> with custom <code>bottomBar</code>. The mini-player is always composed (not conditionally shown) to preserve media session state. Visibility is controlled by <code>AnimatedVisibility</code> with a slide-up enter transition. It contains: 44dp artwork, track title (marquee scrolling when overflowing), play/pause button, and a tap target that triggers the full player expansion.</p>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Seek Bar / Progress Indicator</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>Apple Music's seek bar has a larger thumb that appears only while dragging. Build with a custom <code>Slider</code> composable: track at 4dp height, thumb invisible at rest (zero size), animating to 20dp diameter on drag. The hit target is always 44dp regardless of visual size. Position timestamps update every 500ms via a <code>LaunchedEffect</code> coroutine loop — not every frame — to avoid recomposing the entire player screen at 60fps.</p>
+    </div>
+  </div>
+
+  <div class="component-block">
+    <div class="component-header">
+      <span class="component-name">Section Headers (Library Navigation)</span>
+      <span class="component-tag tag-ui">UI</span>
+    </div>
+    <div class="component-body">
+      <p>The library tab uses sticky section headers (Albums, Artists, Playlists, Songs) implemented with <code>LazyListScope.stickyHeader</code>. Each header has a translucent background using <code>surface.copy(alpha = 0.92f)</code> so content is visibly beneath it. The sort button in the top-right uses a <code>DropdownMenu</code> with the same translucency treatment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: DATA LAYER -->
+<section class="section" id="data">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div>
+      <h2 class="section-title">Data Layer Design</h2>
+      <p class="section-desc">How media data flows from device storage to the UI</p>
+    </div>
+  </div>
+
+  <h3>YosStringWrapper — Why Wrap Strings?</h3>
+  <p>The data model includes a <code>YosStringWrapper</code> class. This pattern — wrapping a primitive in a value class — is used for type safety and to prevent passing the wrong string to the wrong field. An artist name and a file path are both strings, but they're not interchangeable. Kotlin value classes (<code>@JvmInline value class ArtistName(val value: String)</code>) achieve this at zero runtime cost.</p>
+
+  <h3>MediaStore Scanning</h3>
+  <p>The <code>MusicLibrary</code> entity is populated by querying Android's MediaStore. The scan should happen on a background dispatcher and only when MediaStore signals a change (via <code>ContentObserver</code>), not on every app start. The result is cached in a <code>StateFlow</code> in a ViewModel with a longer lifecycle than the screen (use <code>hiltViewModel()</code> at the navigation host level).</p>
+
+  <div class="code-block"><code><span class="cm">// Repository pattern — single scan, broadcast to all consumers</span>
+<span class="kw">class</span> <span class="cls">MusicRepository</span> @<span class="cls">Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> context: <span class="cls">Context</span>,
+    <span class="kw">private val</span> scanner: <span class="cls">MediaStoreScanner</span>
+) {
+    <span class="kw">private val</span> _library = <span class="cls">MutableStateFlow</span>&lt;<span class="cls">MusicLibrary</span>&gt;(<span class="cls">MusicLibrary</span>.<span class="fn">Empty</span>)
+    <span class="kw">val</span> library: <span class="cls">StateFlow</span>&lt;<span class="cls">MusicLibrary</span>&gt; = _library.<span class="fn">asStateFlow</span>()
+
+    <span class="kw">suspend fun</span> <span class="fn">refresh</span>() {
+        _library.<span class="fn">emit</span>(scanner.<span class="fn">scan</span>())
+    }
+}</code></div>
+
+  <h3>PlayStatus — Reactive Playback State</h3>
+  <p>Because <code>PlayStatus</code> is a separate class from the media item, the UI can efficiently observe only what changed. If the track changes, the artwork composable recomposes. If only the position changes, only the seek bar recomposes. Achieving this requires using <code>derivedStateOf</code> in Compose to subscribe to specific fields rather than the entire state object.</p>
+</section>
+
+<!-- SECTION 7: PERFORMANCE -->
+<section class="section" id="perf">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div>
+      <h2 class="section-title">Performance Engineering</h2>
+      <p class="section-desc">Staying at 60/120fps across the board</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">R8 Full Mode + stability_config</div>
+      <div class="card-body">The <code>stability_config.conf</code> tells R8 which classes are stable for optimisation. Without it, R8 would treat Kotlin data classes as potentially unstable and skip dead-code elimination. Naming all data model packages here enables aggressive minification and inlining.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏗</div>
+      <div class="card-title">Compose Stability</div>
+      <div class="card-body">Every composable that touches media state should take stable parameters. Mark data classes with <code>@Stable</code> or <code>@Immutable</code> where appropriate. Use the Compose compiler metrics flag to verify no unexpected recompositions are occurring.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔗</div>
+      <div class="card-title">Lazy Loading with Keys</div>
+      <div class="card-body">All lists use <code>key = { item.id }</code>. This lets Compose track items through changes: an item moved in the list triggers a positional animation, not a full redraw. The overscroll engine relies on this — it works at the list container level, not per-item.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧵</div>
+      <div class="card-title">Background Coroutines</div>
+      <div class="card-body">All file I/O (MediaStore queries, artwork loading, playlist serialisation) runs on <code>Dispatchers.IO</code>. All computation (sorting, filtering, Palette extraction) runs on <code>Dispatchers.Default</code>. The main thread only receives final <code>StateFlow</code> emissions.</div>
+    </div>
+  </div>
+
+  <h3>Image Loading Strategy (Coil)</h3>
+  <p>Album artwork is the most memory-intensive asset. The Flamingo approach:</p>
+  <ul style="list-style:none; display:flex; flex-direction:column; gap:8px; margin:14px 0;">
+    <li style="font-size:13px; color:#3d3d3a; padding-left:16px; border-left:2px solid #e8472a;">List thumbnails: 64×64dp target size, memory cache enabled, no disk cache (regenerated from MediaStore)</li>
+    <li style="font-size:13px; color:#3d3d3a; padding-left:16px; border-left:2px solid #e8472a;">Player full art: full resolution, disk-cached, preloaded when the mini-player first shows</li>
+    <li style="font-size:13px; color:#3d3d3a; padding-left:16px; border-left:2px solid #e8472a;">Blurred background: generated from the full art via Coil's <code>BlurTransformation</code>, separate cache key</li>
+    <li style="font-size:13px; color:#3d3d3a; padding-left:16px; border-left:2px solid #e8472a;">Placeholder: a solid colour from <code>dominantColor</code> extraction — no generic grey box</li>
+  </ul>
+</section>
+
+<!-- SECTION 8: CHECKLIST -->
+<section class="section" id="checklist">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div>
+      <h2 class="section-title">Optimisation Checklist</h2>
+      <p class="section-desc">Use this when building or reviewing an Apple Music-style Android app</p>
+    </div>
+  </div>
+
+  <h3>Architecture</h3>
+  <ul class="checklist">
+    <li><span class="check-icon">✓</span>Overscroll/physics logic is in its own module — not inside Activity or Fragment</li>
+    <li><span class="check-icon">✓</span>Data model entities each have a single responsibility (media item ≠ playlist ≠ library ≠ play status)</li>
+    <li><span class="check-icon">✓</span>All domain classes are named in <code>stability_config.conf</code> or equivalent keep-rules for R8</li>
+    <li><span class="check-icon">✓</span>Kotlin 2.0 + standalone Compose compiler plugin used (not bundled extension)</li>
+  </ul>
+
+  <h3>Motion & Feel</h3>
+  <ul class="checklist">
+    <li><span class="check-icon">✓</span>System overscroll disabled; replaced with custom spring-based <code>OverscrollEffect</code></li>
+    <li><span class="check-icon">✓</span>Album artwork uses <code>sharedElement()</code> for list→player transition</li>
+    <li><span class="check-icon">✓</span>Mini-player expands via layout animation, not a navigation transition</li>
+    <li><span class="check-icon">✓</span>Spring configs are varied per interaction type (bouncy overscroll ≠ firm structural open)</li>
+    <li><span class="check-icon">✓</span>Press feedback on interactive items: slight scale down on press, spring back on release</li>
+    <li><span class="check-icon">✓</span>Header parallax tied to scroll position via <code>graphicsLayer { translationY }</code></li>
+  </ul>
+
+  <h3>UI & Visual</h3>
+  <ul class="checklist">
+    <li><span class="check-icon">✓</span>Dynamic background colour extracted from album art via Palette API, animated with tween</li>
+    <li><span class="check-icon">✓</span>Frosted blur on player overlays using <code>RenderEffect.createBlurEffect()</code></li>
+    <li><span class="check-icon">✓</span>Seek bar thumb invisible at rest, appears only on drag — large hit target always present</li>
+    <li><span class="check-icon">✓</span>No row dividers — spacing communicates grouping</li>
+    <li><span class="check-icon">✓</span>Mini-player bar always composed; <code>AnimatedVisibility</code> controls opacity/position only</li>
+    <li><span class="check-icon">✓</span>Currently playing track shows animated waveform, not static artwork</li>
+  </ul>
+
+  <h3>Performance</h3>
+  <ul class="checklist">
+    <li><span class="check-icon">✓</span>All lists have <code>key = { item.id }</code> lambda</li>
+    <li><span class="check-icon">✓</span>Data classes annotated with <code>@Stable</code> or <code>@Immutable</code> where applicable</li>
+    <li><span class="check-icon">✓</span>Seek bar position updates at 500ms interval — not every frame</li>
+    <li><span class="check-icon">✓</span>Thumbnail target size capped at 64dp × 64dp in Coil requests</li>
+    <li><span class="check-icon">✓</span>MediaStore scan on <code>Dispatchers.IO</code>, result emitted to StateFlow</li>
+    <li><span class="check-icon">✓</span>Compose compiler metrics checked — zero unexpected recompositions in list scroll</li>
+  </ul>
+</section>
+
+<!-- FOOTER -->
+<footer class="doc-footer">
+  <span>Derived from <strong>Yos-X/FlamingoSank</strong> · GPL-3.0 · github.com/Yos-X/FlamingoSank</span>
+  <span>Kotlin 2.0 · Jetpack Compose · Android</span>
+</footer>
+
+</body>
+</html>

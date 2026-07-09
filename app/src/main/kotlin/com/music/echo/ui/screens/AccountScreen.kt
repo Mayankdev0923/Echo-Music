@@ -12,8 +12,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.GridItemSize
 import iad1tya.echo.music.constants.GridItemsSizeKey
@@ -49,7 +49,6 @@ import iad1tya.echo.music.viewmodels.AccountViewModel
 @Composable
 fun AccountScreen(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     viewModel: AccountViewModel = hiltViewModel(),
 ) {
     val menuState = LocalMenuState.current
@@ -189,8 +188,8 @@ fun AccountScreen(
         }
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.account)) },
+    LiquidTopAppBar(
+        title = stringResource(R.string.account),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

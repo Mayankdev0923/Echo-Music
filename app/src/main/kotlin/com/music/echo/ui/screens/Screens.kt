@@ -5,8 +5,10 @@ package iad1tya.echo.music.ui.screens
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import iad1tya.echo.music.R
 
+@Stable
 @Immutable
 sealed class Screens(
     @StringRes val titleId: Int,

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import iad1tya.echo.music.LocalListenTogetherManager
@@ -68,32 +69,13 @@ fun CommentTogetherScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.comments),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        roomState?.roomCode?.let { code ->
-                            Text(
-                                text = "Room: $code",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                },
+            LiquidTopAppBar(
+                title = stringResource(R.string.comments),
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
             )
         },
         bottomBar = {

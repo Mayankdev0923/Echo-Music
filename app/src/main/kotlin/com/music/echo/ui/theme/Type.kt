@@ -13,31 +13,32 @@ val AppleFontFamily = FontFamily(
     Font(R.font.sans_flex, FontWeight.Normal),
     Font(R.font.sans_flex, FontWeight.Medium),
     Font(R.font.sans_flex, FontWeight.SemiBold),
-    Font(R.font.sans_flex, FontWeight.Bold)
+    Font(R.font.sans_flex, FontWeight.Bold),
+    Font(R.font.sans_flex, FontWeight.ExtraBold)
 )
 
-// Apple SF Pro-like typography (softer, premium feel)
+// Flamingo/Apple SF Pro-like typography (softer, premium feel with bold emphasis)
 val AppTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = AppleFontFamily,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.ExtraBold,
         fontSize = 57.sp,
         lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
+        letterSpacing = (-0.03).sp
     ),
     displayMedium = TextStyle(
         fontFamily = AppleFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
-        letterSpacing = 0.sp
+        letterSpacing = (-0.02).sp
     ),
     displaySmall = TextStyle(
         fontFamily = AppleFontFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
-        letterSpacing = 0.sp
+        letterSpacing = (-0.02).sp
     ),
     headlineLarge = TextStyle(
         fontFamily = AppleFontFamily,
@@ -69,15 +70,15 @@ val AppTypography = Typography(
     ),
     titleMedium = TextStyle(
         fontFamily = AppleFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 17.sp, // Guided by flamingo subtitle size
         lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.1.sp
     ),
     titleSmall = TextStyle(
         fontFamily = AppleFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
@@ -86,7 +87,7 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.25.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = AppleFontFamily,
@@ -104,10 +105,10 @@ val AppTypography = Typography(
     ),
     labelLarge = TextStyle(
         fontFamily = AppleFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 11.sp, // Flamingo Eyebrow style
+        lineHeight = 16.sp,
+        letterSpacing = 0.12.sp
     ),
     labelMedium = TextStyle(
         fontFamily = AppleFontFamily,

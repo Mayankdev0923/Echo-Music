@@ -57,7 +57,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -434,8 +434,8 @@ fun ListenTogetherScreen(
     }
 
     if (shouldShowTopBar) {
-        TopAppBar(
-            title = { Text(stringResource(R.string.listen_together)) },
+        LiquidTopAppBar(
+            title = stringResource(R.string.listen_together),
             navigationIcon = {
                 IconButton(
                     onClick = navController::navigateUp,

@@ -36,8 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -341,48 +341,14 @@ fun CachePlaylistScreen(
             headerItems = 2
         )
 
-        TopAppBar(
-            title = {
-                when {
-                    inSelectMode -> {
-                        Text(
-                            text = pluralStringResource(R.plurals.n_song, selection.size, selection.size),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                    isSearching -> {
-                        TextField(
-                            value = query,
-                            onValueChange = { query = it },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.search),
-                                    style = MaterialTheme.typography.titleLarge
-                                )
-                            },
-                            singleLine = true,
-                            textStyle = MaterialTheme.typography.titleLarge,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester)
-                        )
-                    }
-                    else -> {
-                        Text(
-                            stringResource(R.string.cached_playlist),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                }
-            },
+        val appBarTitle = when {
+            inSelectMode -> pluralStringResource(R.plurals.n_song, selection.size, selection.size)
+            isSearching -> ""
+            else -> stringResource(R.string.cached_playlist)
+        }
+
+        LiquidTopAppBar(
+            title = appBarTitle,
             navigationIcon = {
                 IconButton(onClick = {
                     when {

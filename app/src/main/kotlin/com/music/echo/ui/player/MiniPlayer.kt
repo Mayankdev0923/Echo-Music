@@ -55,6 +55,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -200,6 +201,7 @@ fun MiniPlayer(
     positionState: MutableLongState,
     durationState: MutableLongState,
     modifier: Modifier = Modifier,
+    leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
     val useNewMiniPlayerDesign by rememberPreference(UseNewMiniPlayerDesignKey, true)
@@ -211,6 +213,7 @@ fun MiniPlayer(
         NewMiniPlayer(
             progressState = progressState,
             modifier = modifier,
+            leadingContent = leadingContent,
             trailingContent = trailingContent
         )
     } else {
@@ -231,6 +234,7 @@ fun MiniPlayer(
 private fun NewMiniPlayer(
     progressState: ProgressState,
     modifier: Modifier = Modifier,
+    leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -250,8 +254,7 @@ private fun NewMiniPlayer(
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
-    
-    
+
     val castHandler = remember(playerConnection) {
         try {
             playerConnection.service.castConnectionHandler
@@ -261,15 +264,12 @@ private fun NewMiniPlayer(
     }
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
 
-    
     val context = LocalContext.current
     val isBluetoothConnected = isBluetoothHeadphoneConnected(context)
     var showAudioDeviceBottomSheet by remember { mutableStateOf(false) }
 
-    
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
-    
-    
+
     val listenTogetherManager = LocalListenTogetherManager.current
     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
     val swipeThumbnail = false
@@ -384,10 +384,14 @@ private fun NewMiniPlayer(
         Row(
             modifier = Modifier
                 .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (leadingContent != null) {
+                leadingContent()
+            }
+
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -621,8 +625,7 @@ private fun LegacyMiniPlayer(
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
 
     val swipeSensitivity by rememberPreference(SwipeSensitivityKey, 0.73f)
-    
-    
+
     val listenTogetherManager = LocalListenTogetherManager.current
     val isListenTogetherGuest = listenTogetherManager?.let { it.isInRoom && !it.isHost } ?: false
     val swipeThumbnail = false

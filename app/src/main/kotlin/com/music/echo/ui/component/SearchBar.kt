@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -31,7 +32,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -85,33 +86,8 @@ fun TopSearch(
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     Box(modifier = modifier) {
-        TopAppBar(
-            title = {
-                SearchBarInputField(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                    onSearch = onSearch,
-                    active = active,
-                    onActiveChange = onActiveChange,
-                    enabled = enabled,
-                    placeholder = placeholder,
-                    
-                    leadingIcon = null,
-                    trailingIcon = null,
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    interactionSource = interactionSource,
-                    focusRequester = focusRequester,
-                )
-            },
+        LiquidTopAppBar(
+            title = "",
             navigationIcon = {
                 if (leadingIcon != null) {
                     leadingIcon()
@@ -122,11 +98,49 @@ fun TopSearch(
                     trailingIcon()
                 }
             },
-            colors = colors,
-            scrollBehavior = scrollBehavior,
             windowInsets = windowInsets
         )
-        
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(windowInsets)
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .height(56.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (leadingIcon != null) {
+                Spacer(Modifier.width(48.dp))
+            }
+            SearchBarInputField(
+                query = query,
+                onQueryChange = onQueryChange,
+                onSearch = onSearch,
+                active = active,
+                onActiveChange = onActiveChange,
+                enabled = enabled,
+                placeholder = placeholder,
+                leadingIcon = null,
+                trailingIcon = null,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                interactionSource = interactionSource,
+                focusRequester = focusRequester,
+            )
+            if (trailingIcon != null) {
+                Spacer(Modifier.width(48.dp))
+            }
+        }
+
         if (active) {
             Box(
                 modifier = Modifier

@@ -3,7 +3,6 @@
 package iad1tya.echo.music.ui.screens.search
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -73,7 +71,6 @@ fun LocalSearchScreen(
     navController: NavController,
     onDismiss: () -> Unit,
     isFromCache: Boolean = false,
-    pureBlack: Boolean,
     viewModel: LocalSearchViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -111,7 +108,6 @@ fun LocalSearchScreen(
             .asPaddingValues(),
         modifier = Modifier
             .fillMaxSize()
-            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
             .let { base ->
                 if (isLandscape) {
                     base.windowInsetsPadding(
@@ -124,7 +120,7 @@ fun LocalSearchScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+
             ) {
                 ChipsRow(
                     chips = listOf(

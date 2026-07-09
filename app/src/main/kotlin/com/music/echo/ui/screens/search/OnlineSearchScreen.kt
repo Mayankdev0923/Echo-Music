@@ -3,9 +3,9 @@
 package iad1tya.echo.music.ui.screens.search
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -75,6 +74,11 @@ import iad1tya.echo.music.ui.menu.YouTubeArtistMenu
 import iad1tya.echo.music.ui.menu.YouTubePlaylistMenu
 import iad1tya.echo.music.ui.menu.YouTubeSongMenu
 import iad1tya.echo.music.viewmodels.OnlineSearchSuggestionViewModel
+import iad1tya.echo.music.constants.HeavyVisualsKey
+import iad1tya.echo.music.ui.glass.GlassTokens
+import iad1tya.echo.music.ui.glass.LocalBackdrop
+import iad1tya.echo.music.ui.glass.liquidGlass
+import iad1tya.echo.music.utils.rememberPreference
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -88,7 +92,6 @@ fun OnlineSearchScreen(
     navController: NavController,
     onSearch: (String) -> Unit,
     onDismiss: () -> Unit,
-    pureBlack: Boolean,
     viewModel: OnlineSearchSuggestionViewModel = hiltViewModel(),
 ) {
     val database = LocalDatabase.current
@@ -131,7 +134,7 @@ fun OnlineSearchScreen(
         contentPadding = LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom).asPaddingValues(),
         modifier = Modifier
             .fillMaxSize()
-            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+
     ) {
         if (viewState.history.isNotEmpty()) {
             item(key = "history_header") {
@@ -163,7 +166,6 @@ fun OnlineSearchScreen(
                     onQueryChange(TextFieldValue(history.query, TextRange(history.query.length)))
                 },
                 modifier = Modifier.animateItem(),
-                pureBlack = pureBlack
             )
         }
 
@@ -198,7 +200,6 @@ fun OnlineSearchScreen(
                     onQueryChange(TextFieldValue(query, TextRange(query.length)))
                 },
                 modifier = Modifier.animateItem(),
-                pureBlack = pureBlack
             )
         }
 
@@ -346,7 +347,6 @@ fun OnlineSearchScreen(
                             }
                         }
                     )
-                    .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
                     .animateItem()
             )
         }
@@ -362,8 +362,11 @@ fun SuggestionItem(
     onClick: () -> Unit,
     onDelete: () -> Unit = {},
     onFillTextField: () -> Unit,
-    pureBlack: Boolean
 ) {
+    val isDark = isSystemInDarkTheme()
+    val heavyVisuals by rememberPreference(HeavyVisualsKey, defaultValue = true)
+    val backdrop = LocalBackdrop.current
+    val surfaceColor = if (isDark) GlassTokens.SurfaceDarkDefault else GlassTokens.SurfaceWhiteSubtle
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -371,8 +374,16 @@ fun SuggestionItem(
             .fillMaxWidth()
             .height(SuggestionItemHeight)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
+            .liquidGlass(
+                backdrop = backdrop,
+                shape = shape,
+                blurRadius = GlassTokens.BlurRadiusSubtle,
+                lensInner = GlassTokens.LensRadiusSmall.first,
+                lensOuter = GlassTokens.LensRadiusSmall.second,
+                surfaceColor = surfaceColor,
+                heavyVisuals = heavyVisuals,
+            )
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)),
     ) {
         Icon(

@@ -11,8 +11,7 @@ package iad1tya.echo.music.ui.screens
  import androidx.compose.material3.ExperimentalMaterial3Api
  import androidx.compose.material3.Icon
  import androidx.compose.material3.Text
- import androidx.compose.material3.TopAppBar
- import androidx.compose.material3.TopAppBarScrollBehavior
+ 
  import androidx.compose.runtime.Composable
  import androidx.compose.runtime.collectAsState
  import androidx.compose.runtime.getValue
@@ -26,6 +25,7 @@ package iad1tya.echo.music.ui.screens
  import com.music.innertube.models.ArtistItem
  import com.music.innertube.models.PlaylistItem
  import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+ import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
  import iad1tya.echo.music.LocalPlayerConnection
  import iad1tya.echo.music.R
  import iad1tya.echo.music.constants.GridItemSize
@@ -47,7 +47,6 @@ package iad1tya.echo.music.ui.screens
  @Composable
  fun BrowseScreen(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     browseId: String?,
     viewModel: BrowseViewModel = hiltViewModel(),
 ) {
@@ -133,8 +132,8 @@ package iad1tya.echo.music.ui.screens
          }
      }
  
-     TopAppBar(
-         title = { Text(title ?: "") },
+     LiquidTopAppBar(
+         title = title ?: "",
          navigationIcon = {
              IconButton(
                  onClick = navController::navigateUp,

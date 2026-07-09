@@ -38,7 +38,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -80,6 +79,7 @@ import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.component.IntegrationCard
 import iad1tya.echo.music.ui.component.IntegrationCardItem
 import iad1tya.echo.music.ui.utils.backToMain
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.viewmodels.ListenTogetherViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -472,8 +472,8 @@ highlightKey: String? = null) {
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.listen_together)) },
+    LiquidTopAppBar(
+        title = stringResource(R.string.listen_together),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

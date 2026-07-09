@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -30,8 +29,6 @@ import androidx.navigation.navArgument
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 
-import iad1tya.echo.music.constants.DarkModeKey
-import iad1tya.echo.music.constants.PureBlackKey
 import iad1tya.echo.music.ui.screens.artist.ArtistAlbumsScreen
 import iad1tya.echo.music.ui.screens.artist.ArtistItemsScreen
 import iad1tya.echo.music.ui.screens.artist.ArtistScreen
@@ -66,7 +63,6 @@ import iad1tya.echo.music.ui.screens.recognition.RecognitionScreen
 import iad1tya.echo.music.ui.screens.recognition.RecognitionHistoryScreen
 import iad1tya.echo.music.ui.screens.settings.UpdateSettings
 import iad1tya.echo.music.echomusic.updater.UpdateScreen
-import iad1tya.echo.music.utils.rememberEnumPreference
 import iad1tya.echo.music.utils.rememberPreference
 import iad1tya.echo.music.echomusic.changelog.ChangelogScreen
 import iad1tya.echo.music.echomusic.commitscreen.CommitScreen
@@ -82,7 +78,21 @@ fun NavGraphBuilder.navigationBuilder(
     pagerState: PagerState,
     swipeableItems: List<Screens>
 ) {
-    composable("main_pager") {
+    composable(
+        "main_pager",
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
+    ) {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
         var backPressedTime by remember { mutableStateOf(0L) }
@@ -110,18 +120,8 @@ fun NavGraphBuilder.navigationBuilder(
             when (swipeableItems.getOrNull(page)) {
                 Screens.Home -> HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
                 Screens.Search -> {
-                    val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-                    val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
-                    val isSystemInDarkTheme = isSystemInDarkTheme()
-                    val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
-                        if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
-                    }
-                    val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
-                        pureBlackEnabled && useDarkTheme
-                    }
                     SearchScreen(
                         navController = navController,
-                        pureBlack = pureBlack
                     )
                 }
                 Screens.Library -> LibraryScreen(navController)
@@ -131,23 +131,27 @@ fun NavGraphBuilder.navigationBuilder(
         }
     }
 
-    composable(Screens.ListenTogether.route) {
+    composable(
+        route = Screens.ListenTogether.route,
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
+    ) {
         ListenTogetherScreen(navController, showTopBar = false)
     }
 
     composable(Screens.Search.route) {
-        val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-        val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
-        val isSystemInDarkTheme = isSystemInDarkTheme()
-        val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
-            if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
-        }
-        val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
-            pureBlackEnabled && useDarkTheme
-        }
         SearchScreen(
             navController = navController,
-            pureBlack = pureBlack
         )
     }
 
@@ -182,11 +186,11 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable("account") {
-        AccountScreen(navController, scrollBehavior)
+        AccountScreen(navController)
     }
 
     composable("new_release") {
-        NewReleaseScreen(navController, scrollBehavior)
+        NewReleaseScreen(navController)
     }
 
     composable("charts_screen") {
@@ -202,9 +206,8 @@ fun NavGraphBuilder.navigationBuilder(
         )
     ) {
         BrowseScreen(
-            navController,
-            scrollBehavior,
-            it.arguments?.getString("browseId")
+            navController = navController,
+            browseId = it.arguments?.getString("browseId")
         )
     }
 
@@ -246,6 +249,18 @@ fun NavGraphBuilder.navigationBuilder(
                 type = NavType.StringType
             },
         ),
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
     ) {
         AlbumScreen(navController, scrollBehavior)
     }
@@ -257,6 +272,18 @@ fun NavGraphBuilder.navigationBuilder(
                 type = NavType.StringType
             },
         ),
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
     ) {
         ArtistScreen(navController, scrollBehavior)
     }
@@ -309,6 +336,18 @@ fun NavGraphBuilder.navigationBuilder(
                 type = NavType.StringType
             },
         ),
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
     ) {
         OnlinePlaylistScreen(navController, scrollBehavior)
     }
@@ -373,7 +412,21 @@ fun NavGraphBuilder.navigationBuilder(
         YouTubeBrowseScreen(navController)
     }
 
-    composable("settings") {
+    composable(
+        route = "settings",
+        enterTransition = {
+            slideInHorizontally(tween(200)) { it / 3 } + fadeIn(tween(150))
+        },
+        exitTransition = {
+            slideOutHorizontally(tween(180)) { -it / 6 } + fadeOut(tween(120))
+        },
+        popEnterTransition = {
+            slideInHorizontally(tween(180)) { -it / 6 } + fadeIn(tween(150))
+        },
+        popExitTransition = {
+            slideOutHorizontally(tween(200)) { it / 3 } + fadeOut(tween(150))
+        },
+    ) {
         SettingsScreen(navController, scrollBehavior)
     }
 

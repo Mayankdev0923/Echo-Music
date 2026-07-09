@@ -19,7 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +38,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.music.innertube.models.WatchEndpoint
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.StatPeriod
@@ -416,8 +417,8 @@ fun StatsScreen(
             )
         }
 
-        TopAppBar(
-            title = { Text(stringResource(R.string.stats)) },
+        LiquidTopAppBar(
+            title = stringResource(R.string.stats),
             navigationIcon = {
                 IconButton(
                     onClick = navController::navigateUp,

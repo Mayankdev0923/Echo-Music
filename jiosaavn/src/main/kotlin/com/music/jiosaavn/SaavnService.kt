@@ -101,8 +101,6 @@ object SaavnService {
         HttpClient(CIO) {
             install(ContentNegotiation) { json(json) }
             install(HttpTimeout) {
-                // Keep timeouts short so that a slow/unavailable Saavn response
-                // falls back to YouTube quickly without the user noticing a stall.
                 requestTimeoutMillis = 4_000
                 connectTimeoutMillis = 3_000
                 socketTimeoutMillis  = 4_000
@@ -119,9 +117,10 @@ object SaavnService {
         endpoint: String,
         block: io.ktor.client.request.HttpRequestBuilder.() -> Unit = {}
     ): io.ktor.client.statement.HttpResponse {
+        val startServerIndex = DeviceRouter.getCurrentServerIndex()
         var attempt = 0
         var lastException: Exception? = null
-        
+
         while (attempt < 3) {
             try {
                 val url = "${DeviceRouter.getCurrentServer()}/api/$endpoint"
@@ -136,9 +135,11 @@ object SaavnService {
                 lastException = e
                 DeviceRouter.fallbackToNextServer()
                 attempt++
+                // If we've wrapped all the way around back to the start, give up
+                if (attempt > 0 && DeviceRouter.getCurrentServerIndex() == startServerIndex) break
             }
         }
-        throw lastException ?: IllegalStateException("All Saavn servers failed")
+        throw lastException ?: IllegalStateException("All Saavn servers failed for: $endpoint")
     }
 
     /**
@@ -189,11 +190,15 @@ object SaavnService {
 
             if (urls.isEmpty()) return@runCatching null
 
+            fun qualityToInt(q: String): Int = q.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
+
             // 1. Try the exact requested quality
             urls.firstOrNull { it.quality.equals(quality, ignoreCase = true) }?.url
-                // 2. Fall back to 320kbps if available
-                ?: urls.firstOrNull { it.quality.equals("320kbps", ignoreCase = true) }?.url
-                // 3. Fall back to highest bitrate (last entry tends to be highest)
+                // 2. Try matching by numeric value
+                ?: urls.firstOrNull { qualityToInt(it.quality) == qualityToInt(quality) && qualityToInt(it.quality) > 0 }?.url
+                // 3. Fall back to highest numeric bitrate
+                ?: urls.maxByOrNull { qualityToInt(it.quality) }?.url
+                // 4. Fall back to last entry
                 ?: urls.lastOrNull()?.url
         }.getOrNull()
 }

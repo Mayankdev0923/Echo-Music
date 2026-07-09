@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import iad1tya.echo.music.R
 import iad1tya.echo.music.eq.data.SavedEQProfile
@@ -49,8 +50,8 @@ fun AxionEqScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.echo_equalizer)) },
+            LiquidTopAppBar(
+                title = stringResource(R.string.echo_equalizer),
                 navigationIcon = {
                     iad1tya.echo.music.ui.component.IconButton(
                         onClick = onBackClick,
@@ -61,7 +62,7 @@ fun AxionEqScreen(
                             contentDescription = null
                         )
                     }
-                }
+                },
             )
         }
     ) { innerPadding ->

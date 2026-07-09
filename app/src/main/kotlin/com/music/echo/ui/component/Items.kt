@@ -1,5 +1,4 @@
 
-
 package iad1tya.echo.music.ui.component
 
 import android.widget.Toast
@@ -16,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -79,8 +79,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.isSystemInDarkTheme
-import com.music.echo.ui.component.appleGlassRow
 import com.music.echo.ui.component.AppleRadius
+import com.music.echo.ui.component.ApplePadding
+import com.music.echo.ui.component.appleGlassLight
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.offline.Download
@@ -138,45 +139,45 @@ fun CoverBadges(
     downloadState: Int? = null,
     modifier: Modifier = Modifier
 ) {
-    if (isLiked || inLibrary || downloadState == Download.STATE_COMPLETED || downloadState == Download.STATE_QUEUED || downloadState == Download.STATE_DOWNLOADING) {
+    if (isLiked || inLibrary || downloadState == STATE_COMPLETED || downloadState == STATE_QUEUED || downloadState == STATE_DOWNLOADING) {
         Row(
             modifier = modifier
                 .padding(4.dp)
-                .background(Color.Black.copy(alpha = 0.5f), androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
                 .padding(4.dp),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(2.dp),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (isLiked) {
-                androidx.compose.material3.Icon(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.favorite),
+                Icon(
+                    painter = painterResource(R.drawable.favorite),
                     contentDescription = null,
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(12.dp)
                 )
             }
             if (inLibrary) {
-                androidx.compose.material3.Icon(
-                    painter = androidx.compose.ui.res.painterResource(R.drawable.library_music),
+                Icon(
+                    painter = painterResource(R.drawable.library_music),
                     contentDescription = null,
-                    tint = androidx.compose.ui.graphics.Color.White,
+                    tint = Color.White,
                     modifier = Modifier.size(12.dp)
                 )
             }
             when (downloadState) {
-                Download.STATE_COMPLETED -> {
-                    androidx.compose.material3.Icon(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.offline),
+                STATE_COMPLETED -> {
+                    Icon(
+                        painter = painterResource(R.drawable.offline),
                         contentDescription = null,
-                        tint = androidx.compose.ui.graphics.Color.White,
+                        tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )
                 }
-                Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
-                    androidx.compose.material3.Icon(
-                        painter = androidx.compose.ui.res.painterResource(R.drawable.download),
+                STATE_QUEUED, STATE_DOWNLOADING -> {
+                    Icon(
+                        painter = painterResource(R.drawable.download),
                         contentDescription = null,
-                        tint = androidx.compose.ui.graphics.Color.White,
+                        tint = Color.White,
                         modifier = Modifier.size(12.dp)
                     )
                 }
@@ -206,25 +207,24 @@ inline fun ListItem(
     isAvailable: Boolean = true,
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
-    horizontalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = ApplePadding.md,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(vertical = 2.dp)
+            .padding(vertical = 1.dp) // Tight vertical spacing per Flamingo
             .height(ListItemHeight)
             .padding(horizontal = horizontalPadding)
             .clip(shape)
-            .appleGlassRow(
-                shape = shape,
-                isActive = isActive,
-                isSelected = isSelected == true,
-                drawHighlight = drawHighlight
+            .then(
+                if (isActive || isSelected == true) {
+                    Modifier.appleGlassLight(shape = shape)
+                } else Modifier
             )
     ) {
         Box(
-            modifier = Modifier.padding(start = 12.dp, top = 6.dp, end = 6.dp, bottom = 6.dp),
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 12.dp, bottom = 4.dp),
             contentAlignment = Alignment.Center
         ) {
             thumbnailContent()
@@ -253,18 +253,21 @@ inline fun ListItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 6.dp)
+                .padding(vertical = 4.dp)
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 
             if (subtitle != null) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.alpha(0.7f)
+                ) {
                     subtitle()
                 }
             }
@@ -286,7 +289,7 @@ fun ListItem(
     isActive: Boolean = false,
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
-    horizontalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = ApplePadding.md,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) = ListItem(
     title = title,
@@ -326,7 +329,7 @@ fun ListItem(
     isActive: Boolean = false,
     shape: Shape = RectangleShape,
     drawHighlight: Boolean = true,
-    horizontalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = ApplePadding.md,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) = ListItem(
     title = title,
@@ -369,11 +372,11 @@ fun GridItem(
     Column(
         modifier = if (fillMaxWidth) {
             modifier
-                .padding(12.dp)
+                .padding(horizontal = ApplePadding.sm, vertical = ApplePadding.sm)
                 .fillMaxWidth()
         } else {
             modifier
-                .padding(12.dp)
+                .padding(horizontal = ApplePadding.sm, vertical = ApplePadding.sm)
                 .width(gridHeight * thumbnailRatio)
         }
     ) {
@@ -389,7 +392,7 @@ fun GridItem(
             thumbnailContent()
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(ApplePadding.xs))
 
         title()
 
@@ -463,7 +466,7 @@ fun SongListItem(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(end = 4.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                    .border(0.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
                     .padding(horizontal = 2.dp)
             )
         } else if (is320) {
@@ -477,7 +480,7 @@ fun SongListItem(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(end = 4.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                    .border(0.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
                     .padding(horizontal = 2.dp)
             )
         }
@@ -495,7 +498,7 @@ fun SongListItem(
     drawHighlight: Boolean = true,
     shape: Shape = RectangleShape,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
-    horizontalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = ApplePadding.md,
     index: Int = -1,
     count: Int = -1,
 ) {
@@ -743,13 +746,13 @@ fun AlbumListItem(
             }
             val allDownloads by downloadUtil.downloads.collectAsState()
             val downloadState by remember(songs, allDownloads) {
-                androidx.compose.runtime.mutableIntStateOf(
+                mutableIntStateOf(
                     if (songs.isEmpty()) {
                         Download.STATE_STOPPED
                     } else {
                         when {
-                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
-                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
                             else -> Download.STATE_STOPPED
                         }
                     }
@@ -838,13 +841,13 @@ fun AlbumGridItem(
             }
             val allDownloads by downloadUtil.downloads.collectAsState()
             val downloadState by remember(songs, allDownloads) {
-                androidx.compose.runtime.mutableIntStateOf(
+                mutableIntStateOf(
                     if (songs.isEmpty()) {
                         Download.STATE_STOPPED
                     } else {
                         when {
-                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
-                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
                             else -> Download.STATE_STOPPED
                         }
                     }
@@ -879,7 +882,7 @@ fun PlaylistListItem(
         }
     },
     trailingContent: @Composable RowScope.() -> Unit = {},
-    shape: Shape = androidx.compose.ui.graphics.RectangleShape,
+    shape: Shape = RectangleShape,
 ) = ListItem(
     title = playlist.playlist.name,
     subtitle = if (autoPlaylist) {
@@ -933,13 +936,13 @@ fun PlaylistListItem(
             }
             val allDownloads by downloadUtil.downloads.collectAsState()
             val downloadState by remember(songs, allDownloads) {
-                androidx.compose.runtime.mutableIntStateOf(
+                mutableIntStateOf(
                     if (songs.isEmpty()) {
                         Download.STATE_STOPPED
                     } else {
                         when {
-                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
-                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
                             else -> Download.STATE_STOPPED
                         }
                     }
@@ -1051,13 +1054,13 @@ fun PlaylistGridItem(
             }
             val allDownloads by downloadUtil.downloads.collectAsState()
             val downloadState by remember(songs, allDownloads) {
-                androidx.compose.runtime.mutableIntStateOf(
+                mutableIntStateOf(
                     if (songs.isEmpty()) {
                         Download.STATE_STOPPED
                     } else {
                         when {
-                            songs.all { allDownloads[it.id]?.state == Download.STATE_COMPLETED } -> Download.STATE_COMPLETED
-                            songs.any { allDownloads[it.id]?.state in listOf(Download.STATE_QUEUED, Download.STATE_DOWNLOADING) } -> Download.STATE_DOWNLOADING
+                            songs.all { allDownloads[it.id]?.state == STATE_COMPLETED } -> STATE_COMPLETED
+                            songs.any { allDownloads[it.id]?.state in listOf(STATE_QUEUED, STATE_DOWNLOADING) } -> STATE_DOWNLOADING
                             else -> Download.STATE_STOPPED
                         }
                     }
@@ -1372,7 +1375,7 @@ fun LocalArtistsGrid(
         LocalThumbnail(
             thumbnailUrl = thumbnailUrl,
             isActive = false,
-            isPlaying = false,
+            isPlaying = isPlaying,
             shape = CircleShape,
             modifier = if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier,
             showCenterPlay = false,
@@ -1433,11 +1436,11 @@ fun ItemThumbnail(
             .fillMaxSize()
             .aspectRatio(thumbnailRatio)
             .shadow(
-                elevation = 4.dp,
+                elevation = 2.dp, // Reduced shadow for optimized lists
                 shape = shape,
                 clip = false,
-                ambientColor = Color.Black.copy(alpha = if (isDark) 0.4f else 0.05f),
-                spotColor = Color.Black.copy(alpha = if (isDark) 0.6f else 0.1f)
+                ambientColor = Color.Black.copy(alpha = if (isDark) 0.3f else 0.05f),
+                spotColor = Color.Black.copy(alpha = if (isDark) 0.5f else 0.08f)
             )
             .border(
                 width = 0.5.dp,
@@ -1958,7 +1961,7 @@ fun rememberQobuzMatch(
     audioQuality: iad1tya.echo.music.constants.AudioQuality,
     cachedFlac: Boolean
 ): androidx.compose.runtime.State<Boolean?> {
-    return androidx.compose.runtime.produceState<Boolean?>(initialValue = if (cachedFlac) true else null, id) {
+    return produceState<Boolean?>(initialValue = if (cachedFlac) true else null, id) {
         if (cachedFlac) {
             value = true
             return@produceState
@@ -1980,5 +1983,3 @@ fun rememberQobuzMatch(
         value = found
     }
 }
-
-

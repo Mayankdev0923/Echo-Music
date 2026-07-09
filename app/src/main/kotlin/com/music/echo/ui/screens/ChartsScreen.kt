@@ -40,7 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,6 +60,7 @@ import androidx.navigation.NavController
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.LocalPlayerConnection
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.ListItemHeight
@@ -105,8 +106,8 @@ fun ChartsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.charts)) },
+            LiquidTopAppBar(
+                title = stringResource(R.string.charts),
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.navigateUp() },

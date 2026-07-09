@@ -199,6 +199,7 @@ import iad1tya.echo.music.ui.component.rememberBottomSheetState
 import iad1tya.echo.music.ui.component.shimmer.getShimmerTheme
 import iad1tya.echo.music.ui.menu.YouTubeSongMenu
 import iad1tya.echo.music.ui.player.BottomSheetPlayer
+import com.music.echo.ui.component.meshGradientBackground
 import iad1tya.echo.music.ui.screens.Screens
 import iad1tya.echo.music.ui.screens.SettingDialoge
 import iad1tya.echo.music.ui.screens.WelcomeDialog
@@ -1011,12 +1012,40 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
+                            val onMiniPlayerHomeClick: () -> Unit = remember(
+                                navController,
+                                coroutineScope,
+                                swipeableItems,
+                                pagerState,
+                            ) {
+                                {
+                                    val homePageIndex = swipeableItems.indexOf(Screens.Home)
+                                    if (homePageIndex != -1) {
+                                        if (currentRoute == "main_pager") {
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(homePageIndex)
+                                            }
+                                        } else {
+                                            navController.navigate("main_pager") {
+                                                popUpTo(navController.graph.startDestinationId)
+                                                launchSingleTop = true
+                                            }
+                                            coroutineScope.launch {
+                                                delay(100)
+                                                pagerState.scrollToPage(homePageIndex)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             if (!showRail && currentRoute != "update" && currentRoute != "listen_together/chat" && currentRoute != "ambient_mode" && currentRoute != "uptime" && currentRoute?.startsWith("settings") != true) {
                                 Box {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
                                         onSearchClick = onMiniPlayerSearchClick,
+                                        onHomeClick = onMiniPlayerHomeClick,
                                         pureBlack = pureBlack,
                                         themeColor = themeColor
                                     )
@@ -1053,6 +1082,7 @@ class MainActivity : ComponentActivity() {
                                         state = playerBottomSheetState,
                                         navController = navController,
                                         onSearchClick = onMiniPlayerSearchClick,
+                                        onHomeClick = onMiniPlayerHomeClick,
                                         pureBlack = pureBlack,
                                         themeColor = themeColor
                                     )
@@ -1122,6 +1152,7 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 Modifier
                                     .weight(1f)
+                                    .meshGradientBackground(),
                             ) {
                                 NavHost(
                                     navController = navController,

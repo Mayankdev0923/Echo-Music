@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +29,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.music.innertube.YouTube
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.R
 import iad1tya.echo.music.constants.AccountChannelHandleKey
 import iad1tya.echo.music.constants.AccountEmailKey
@@ -144,8 +145,8 @@ fun LoginScreen(
         }
     )
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.login)) },
+    LiquidTopAppBar(
+        title = stringResource(R.string.login),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

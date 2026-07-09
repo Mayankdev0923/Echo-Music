@@ -17,7 +17,6 @@ import iad1tya.echo.music.constants.LibraryFilter
 import iad1tya.echo.music.ui.component.ChipsRow
 import iad1tya.echo.music.utils.rememberEnumPreference
 import androidx.activity.compose.BackHandler
-
 @Composable
 fun LibraryScreen(navController: NavController) {
     var filterType by rememberEnumPreference(ChipSortTypeKey, LibraryFilter.LIBRARY)

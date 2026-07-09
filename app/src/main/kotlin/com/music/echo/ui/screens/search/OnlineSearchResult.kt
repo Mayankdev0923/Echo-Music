@@ -117,7 +117,6 @@ import com.music.echo.ui.component.appleGlass
 fun OnlineSearchResult(
     navController: NavController,
     viewModel: OnlineSearchViewModel = hiltViewModel(),
-    pureBlack: Boolean = false
 ) {
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
@@ -290,7 +289,7 @@ fun OnlineSearchResult(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
     ) {
         Row(
@@ -478,7 +477,6 @@ fun OnlineSearchResult(
                         isSearchFocused = false
                         focusManager.clearFocus()
                     },
-                    pureBlack = pureBlack
                 )
             }
         }

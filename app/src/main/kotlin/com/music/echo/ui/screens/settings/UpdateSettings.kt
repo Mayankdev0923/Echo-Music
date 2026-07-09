@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +34,7 @@ import androidx.navigation.NavController
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.R
 import iad1tya.echo.music.ui.component.IconButton
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.ui.component.Material3SettingsGroup
 import iad1tya.echo.music.ui.component.Material3SettingsItem
 import iad1tya.echo.music.echomusic.component.UpdateInfoDialog
@@ -266,8 +266,8 @@ fun UpdateSettings(
         Spacer(Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Bottom)))
     }
 
-    TopAppBar(
-        title = { Text(stringResource(R.string.update_settings_title)) },
+    LiquidTopAppBar(
+        title = stringResource(R.string.update_settings_title),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

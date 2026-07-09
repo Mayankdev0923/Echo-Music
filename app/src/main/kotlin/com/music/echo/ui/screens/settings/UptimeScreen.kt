@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import iad1tya.echo.music.R
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
-import androidx.compose.material3.TopAppBar
+import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -146,8 +146,8 @@ highlightKey: String? = null) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.service_uptime)) },
+            LiquidTopAppBar(
+                title = stringResource(R.string.service_uptime),
                 navigationIcon = {
                     IconButton(onClick = navController::navigateUp) {
                         Icon(
@@ -155,8 +155,7 @@ highlightKey: String? = null) {
                             contentDescription = null
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
