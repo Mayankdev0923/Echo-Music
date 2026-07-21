@@ -29,10 +29,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,7 +83,10 @@ import iad1tya.echo.music.constants.DarkModeKey
 import iad1tya.echo.music.constants.DynamicThemeKey
 import iad1tya.echo.music.constants.PureBlackKey
 import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
+import iad1tya.echo.music.constants.PureBlackMiniPlayerKey
 import iad1tya.echo.music.constants.SelectedThemeColorKey
+import iad1tya.echo.music.constants.MeshThemeKey
+import iad1tya.echo.music.constants.MeshTheme
 import iad1tya.echo.music.ui.theme.DefaultThemeColor
 import iad1tya.echo.music.LocalPlayerAwareWindowInsets
 import iad1tya.echo.music.utils.rememberEnumPreference
@@ -138,6 +143,7 @@ highlightKey: String? = null) {
     val (_, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
 
     val selectedThemeColor = Color(selectedThemeColorInt)
+    val (meshTheme, onMeshThemeChange) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
 
     val handleColorSelection: (Color) -> Unit = { color ->
         onSelectedThemeColorChange(color.toArgb())
@@ -235,46 +241,57 @@ highlightKey: String? = null) {
             }
 
             item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                )
+            }
+            
+            item {
                 Text(
-                    text = stringResource(R.string.color_palette),
+                    text = "Mesh Background Theme",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp, start = 4.dp)
+                    modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
                 )
                 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(32.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
-                    ),
-                    elevation = CardDefaults.cardElevation(0.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
-                ) {
-                    FlowRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        PaletteColors.forEach { palette ->
-                            val isDynamicPalette = palette.seedColor == Color.Transparent
-                            val isSelected = if (isDynamicPalette) {
-                                selectedThemeColor == DefaultThemeColor
-                            } else {
-                                selectedThemeColor == palette.seedColor
-                            }
-                            
-                            PaletteItem(
-                                palette = palette,
-                                isSelected = isSelected,
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    val entries = MeshTheme.entries
+                    for (i in entries.indices step 2) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            val theme1 = entries[i]
+                            val isSelected1 = meshTheme == theme1
+                            ThemeModeCard(
+                                modifier = Modifier.weight(1f),
+                                title = theme1.name.lowercase().replaceFirstChar { it.uppercase() },
+                                icon = if (theme1 == MeshTheme.NONE) Icons.Rounded.Block else Icons.Rounded.Palette,
+                                isSelected = isSelected1,
                                 onClick = { 
-                                    val colorToSave = if (isDynamicPalette) DefaultThemeColor else palette.seedColor
-                                    handleColorSelection(colorToSave)
+                                    onMeshThemeChange(theme1)
+                                    onDarkModeChange(DarkMode.AUTO) 
                                 }
                             )
+                            
+                            if (i + 1 < entries.size) {
+                                val theme2 = entries[i + 1]
+                                val isSelected2 = meshTheme == theme2
+                                ThemeModeCard(
+                                    modifier = Modifier.weight(1f),
+                                    title = theme2.name.lowercase().replaceFirstChar { it.uppercase() },
+                                    icon = if (theme2 == MeshTheme.NONE) Icons.Rounded.Block else Icons.Rounded.Palette,
+                                    isSelected = isSelected2,
+                                    onClick = { 
+                                        onMeshThemeChange(theme2)
+                                        onDarkModeChange(DarkMode.AUTO)
+                                    }
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }

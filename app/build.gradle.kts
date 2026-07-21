@@ -250,6 +250,7 @@ dependencies {
     }
 
     
+    implementation(libs.compose.mesh.gradient)
     implementation(libs.haze)
     implementation(libs.guava)
     implementation(libs.coroutines.guava)

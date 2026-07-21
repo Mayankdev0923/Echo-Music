@@ -103,10 +103,11 @@ fun echomusicTheme(
         scheme
     } else {
         if (darkTheme) {
-            if (pureBlack) AppleDarkColorScheme.copy(background = Color.Black, surface = Color.Black)
+            val scheme = if (pureBlack) AppleDarkColorScheme.copy(background = Color.Black, surface = Color.Black)
             else AppleDarkColorScheme
+            scheme.copy(primary = themeColor)
         } else {
-            AppleLightColorScheme
+            AppleLightColorScheme.copy(primary = themeColor)
         }
     }
 

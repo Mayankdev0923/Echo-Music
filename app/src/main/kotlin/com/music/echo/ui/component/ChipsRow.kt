@@ -72,8 +72,10 @@ fun ChipItem(
     val colorScheme = MaterialTheme.colorScheme
     val isDark = (colorScheme.background.red + colorScheme.background.green + colorScheme.background.blue) < 1.5f
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     val backgroundColor = if (isSelected) {
-        Color(0xFFFF2D55).copy(alpha = if (isDark) 0.35f else 0.25f)
+        primaryColor.copy(alpha = if (isDark) 0.35f else 0.25f)
     } else {
         if (isDark) {
             Color(0xFF1C1C1E).copy(alpha = 0.75f)
@@ -83,7 +85,7 @@ fun ChipItem(
     }
 
     val borderColor = if (isSelected) {
-        Color(0xFFFF2D55).copy(alpha = 0.5f)
+        primaryColor.copy(alpha = 0.5f)
     } else {
         if (isDark) {
             Color(0xFFFFFFFF).copy(alpha = 0.16f)
@@ -93,7 +95,7 @@ fun ChipItem(
     }
 
     val textColor = if (isSelected) {
-        if (isDark) Color(0xFFFF85A1) else Color(0xFFD81B60)
+        primaryColor
     } else {
         MaterialTheme.colorScheme.onSurface
     }

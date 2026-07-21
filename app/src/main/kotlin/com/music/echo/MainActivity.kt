@@ -179,6 +179,8 @@ import iad1tya.echo.music.constants.PauseSearchHistoryKey
 import iad1tya.echo.music.constants.PureBlackKey
 import iad1tya.echo.music.constants.SYSTEM_DEFAULT
 import iad1tya.echo.music.constants.SelectedThemeColorKey
+import iad1tya.echo.music.constants.MeshThemeKey
+import iad1tya.echo.music.constants.MeshTheme
 import iad1tya.echo.music.constants.StopMusicOnTaskClearKey
 import iad1tya.echo.music.constants.UseNewMiniPlayerDesignKey
 import iad1tya.echo.music.db.MusicDatabase
@@ -199,7 +201,7 @@ import iad1tya.echo.music.ui.component.rememberBottomSheetState
 import iad1tya.echo.music.ui.component.shimmer.getShimmerTheme
 import iad1tya.echo.music.ui.menu.YouTubeSongMenu
 import iad1tya.echo.music.ui.player.BottomSheetPlayer
-import com.music.echo.ui.component.meshGradientBackground
+import com.music.echo.ui.component.AnimatedMeshBackground
 import iad1tya.echo.music.ui.screens.Screens
 import iad1tya.echo.music.ui.screens.SettingDialoge
 import iad1tya.echo.music.ui.screens.WelcomeDialog
@@ -475,8 +477,20 @@ class MainActivity : ComponentActivity() {
 
         val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
         val isSystemInDarkTheme = isSystemInDarkTheme()
-        val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
+        val baseDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
             if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+        }
+        val meshTheme by rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
+        val useDarkTheme = remember(meshTheme, baseDarkTheme, darkTheme) {
+            if (darkTheme != DarkMode.AUTO) {
+                darkTheme == DarkMode.ON
+            } else {
+                when (meshTheme) {
+                    MeshTheme.KNIGHT, MeshTheme.COFFEE, MeshTheme.HAKI -> true
+                    MeshTheme.BLUSH, MeshTheme.SUNFLOWER, MeshTheme.MINT -> false
+                    else -> baseDarkTheme
+                }
+            }
         }
 
         LaunchedEffect(useDarkTheme) {
@@ -534,10 +548,22 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val finalThemeColor = remember(meshTheme, themeColor, useDarkTheme) {
+            when (meshTheme) {
+                MeshTheme.KNIGHT -> if (useDarkTheme) Color(0xFFB388FF) else Color(0xFF6200EA) // Purple
+                MeshTheme.COFFEE -> if (useDarkTheme) Color(0xFFFFD54F) else Color(0xFF5D4037) // Brown
+                MeshTheme.BLUSH -> if (useDarkTheme) Color(0xFFF48FB1) else Color(0xFFC2185B) // Pink
+                MeshTheme.SUNFLOWER -> if (useDarkTheme) Color(0xFFFFE082) else Color(0xFFF57F17) // Yellow
+                MeshTheme.MINT -> if (useDarkTheme) Color(0xFF81C784) else Color(0xFF2E7D32) // Green
+                MeshTheme.HAKI -> if (useDarkTheme) Color(0xFFEF5350) else Color(0xFFC62828) // Red
+                else -> themeColor
+            }
+        }
+
         echomusicTheme(
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
-            themeColor = themeColor,
+            themeColor = finalThemeColor,
             dynamicColor = false,
         ) {
             BoxWithConstraints(
@@ -1150,10 +1176,14 @@ class MainActivity : ComponentActivity() {
                             val activeNavIndex = navigationItems.indexOfFirst { it.route == currentRoute }
 
                             Box(
-                                Modifier
-                                    .weight(1f)
-                                    .meshGradientBackground(),
+                                Modifier.weight(1f)
                             ) {
+                                AnimatedMeshBackground(
+                                    meshTheme = meshTheme,
+                                    isDarkTheme = useDarkTheme,
+                                    pureBlack = pureBlack,
+                                    modifier = Modifier.fillMaxSize()
+                                )
                                 NavHost(
                                     navController = navController,
                                     startDestination = "main_pager",

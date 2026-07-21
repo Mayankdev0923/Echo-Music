@@ -177,6 +177,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import iad1tya.echo.music.viewmodels.DailyDiscoverItem
 import iad1tya.echo.music.constants.DarkModeKey
+import iad1tya.echo.music.constants.MeshTheme
+import iad1tya.echo.music.constants.MeshThemeKey
 import iad1tya.echo.music.ui.screens.settings.DarkMode
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
@@ -790,6 +792,7 @@ fun HomeScreen(
             isPlaying = isPlaying,
             coroutineScope = scope,
             thumbnailRatio = 1f,
+            sizeMultiplier = 1.3f,
             modifier = Modifier
                 .combinedClickable(
                     onClick = {
@@ -1004,8 +1007,20 @@ fun HomeScreen(
             // Sticky pill state
             val (darkMode, onDarkModeChange) = rememberEnumPreference(DarkModeKey, DarkMode.AUTO)
             val isSystemInDark = isSystemInDarkTheme()
-            val useDarkTheme = remember(darkMode, isSystemInDark) {
+            val baseDarkTheme = remember(darkMode, isSystemInDark) {
                 if (darkMode == DarkMode.AUTO) isSystemInDark else darkMode == DarkMode.ON
+            }
+            val (meshTheme) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
+            val useDarkTheme = remember(meshTheme, baseDarkTheme, darkMode) {
+                if (darkMode != DarkMode.AUTO) {
+                    darkMode == DarkMode.ON
+                } else {
+                    when (meshTheme) {
+                        MeshTheme.KNIGHT, MeshTheme.COFFEE, MeshTheme.HAKI -> true
+                        MeshTheme.BLUSH, MeshTheme.SUNFLOWER, MeshTheme.MINT -> false
+                        else -> baseDarkTheme
+                    }
+                }
             }
 
             val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
