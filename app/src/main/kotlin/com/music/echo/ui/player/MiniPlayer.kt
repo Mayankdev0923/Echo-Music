@@ -1266,15 +1266,5 @@ private fun MiniPlayerControls(
                 modifier = Modifier.size(24.dp)
             )
         }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        IconButton(
-            enabled = canSkipNext && !isListenTogetherGuest,
-            onClick = if (isListenTogetherGuest) ({}) else ({ playerConnection.player.seekToNext() }),
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(painter = painterResource(R.drawable.skip_next), contentDescription = null, tint = onSurfaceColor, modifier = Modifier.size(20.dp))
-        }
     }
 }
