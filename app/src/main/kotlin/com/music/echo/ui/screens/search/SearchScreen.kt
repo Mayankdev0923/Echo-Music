@@ -150,7 +150,7 @@ fun SearchScreen(
     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
     var isFirstLaunch by rememberSaveable { mutableStateOf(true) }
     
-    var selectedTabIndex by rememberSaveable { mutableStateOf(2) }
+    var selectedTabIndex by rememberSaveable { mutableStateOf(1) }
     var searchActive by rememberSaveable { mutableStateOf(false) }
     var showSearchContent by remember { mutableStateOf(false) }
 
@@ -437,7 +437,7 @@ fun SearchScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                            .padding(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
                     ) {
                         val tabs = listOf(
