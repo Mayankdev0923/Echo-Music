@@ -75,6 +75,7 @@ import iad1tya.echo.music.ui.screens.search.suggestions.SuggestionRegionSheet
 import iad1tya.echo.music.constants.CountryCodeToName
 import iad1tya.echo.music.constants.EnableBetterLyricsKey
 import iad1tya.echo.music.constants.EnableKugouKey
+import iad1tya.echo.music.constants.ParallelDownloadsCountKey
 import iad1tya.echo.music.constants.EnableLrcLibKey
 import iad1tya.echo.music.constants.EnableSimpMusicKey
 import iad1tya.echo.music.constants.EnableYouLyPlusKey
@@ -163,6 +164,7 @@ highlightKey: String? = null) {
         key = LyricsProviderOrderKey,
         defaultValue = "",
     )
+    val (parallelDownloads, onParallelDownloadsChange) = rememberPreference(key = ParallelDownloadsCountKey, defaultValue = 5)
     val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
     val (quickPicks, onQuickPicksChange) = rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
     val (showSpeedDial, onShowSpeedDialChange) = rememberPreference(key = ShowSpeedDialKey, defaultValue = true)
@@ -560,6 +562,44 @@ highlightKey: String? = null) {
                     onClick = {
                         onLengthTopChange(tempLength.toInt().toString())
                         showTopLengthDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.save))
+                }
+            }
+        )
+    }
+
+    var showParallelDownloadsDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showParallelDownloadsDialog) {
+        var tempParallelDownloads by rememberSaveable { mutableFloatStateOf(parallelDownloads.toFloat()) }
+
+        AlertDialog(
+            onDismissRequest = { showParallelDownloadsDialog = false },
+            title = { Text("Parallel Downloads") },
+            text = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(tempParallelDownloads.toInt().toString())
+                    Slider(
+                        value = tempParallelDownloads,
+                        onValueChange = { tempParallelDownloads = it },
+                        valueRange = 1f..10f,
+                        steps = 8
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onParallelDownloadsChange(tempParallelDownloads.toInt())
+                        showParallelDownloadsDialog = false
                     }
                 ) {
                     Text(stringResource(R.string.save))
@@ -1171,6 +1211,13 @@ highlightKey: String? = null) {
                     title = { Text(stringResource(R.string.top_length)) },
                     description = { Text(lengthTop) },
                     onClick = { showTopLengthDialog = true }
+                ),
+                Material3SettingsItem(
+    isHighlighted = (highlightKey == "Parallel Downloads"),
+                    icon = painterResource(R.drawable.download),
+                    title = { Text("Parallel Downloads") },
+                    description = { Text(parallelDownloads.toString()) },
+                    onClick = { showParallelDownloadsDialog = true }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.set_quick_picks)),

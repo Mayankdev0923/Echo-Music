@@ -54,6 +54,15 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import iad1tya.echo.music.lyrics.LyricsHelper
+import iad1tya.echo.music.constants.ParallelDownloadsCountKey
+import iad1tya.echo.music.db.entities.LyricsEntity
+import iad1tya.echo.music.models.toMediaMetadata
+import kotlinx.coroutines.flow.firstOrNull
+
+import kotlinx.coroutines.flow.map
+import iad1tya.echo.music.utils.dataStore
+
 @Singleton
 class DownloadUtil
 @Inject
@@ -61,6 +70,7 @@ constructor(
     @ApplicationContext context: Context,
     val database: MusicDatabase,
     val databaseProvider: DatabaseProvider,
+    val lyricsHelper: LyricsHelper,
     @DownloadCache val downloadCache: SimpleCache,
     @PlayerCache val playerCache: SimpleCache,
 ) {
@@ -136,12 +146,12 @@ constructor(
                 )
 
                 val now = LocalDateTime.now()
-                val existing = getSongByIdBlocking(mediaId)?.song
+                val existing = getSongByIdBlocking(mediaId)
 
                 val updatedSong = if (existing != null) {
-                    existing.copy(
-                        dateDownload = existing.dateDownload ?: now,
-                        thumbnailUrl = existing.thumbnailUrl ?: playbackData.videoDetails?.thumbnail?.thumbnails?.lastOrNull()?.url?.resize(1200, 1200)
+                    existing.song.copy(
+                        dateDownload = existing.song.dateDownload ?: now,
+                        thumbnailUrl = existing.song.thumbnailUrl ?: playbackData.videoDetails?.thumbnail?.thumbnails?.lastOrNull()?.url?.resize(1200, 1200)
                     )
                 } else {
                     SongEntity(
@@ -156,7 +166,6 @@ constructor(
 
                 upsert(updatedSong)
 
-                
                 updatedSong.thumbnailUrl?.let { url ->
                     val request = ImageRequest.Builder(context)
                         .data(url)
@@ -164,6 +173,45 @@ constructor(
                         .diskCachePolicy(CachePolicy.ENABLED)
                         .build()
                     SingletonImageLoader.get(context).enqueue(request)
+                }
+
+                scope.launch {
+                    val mediaMetadata = existing?.toMediaMetadata()
+                    if (mediaMetadata != null) {
+                        try {
+                            val lyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
+                            if (lyricsWithProvider.lyrics.isNotBlank()) {
+                                database.query {
+                                    upsert(LyricsEntity(id = mediaId, lyrics = lyricsWithProvider.lyrics, provider = lyricsWithProvider.provider))
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    val album = updatedSong.albumId?.let { database.album(it).firstOrNull() }
+                    album?.album?.thumbnailUrl?.resize(1200, 1200)?.let { url ->
+                        val request = ImageRequest.Builder(context)
+                            .data(url)
+                            .memoryCachePolicy(CachePolicy.ENABLED)
+                            .diskCachePolicy(CachePolicy.ENABLED)
+                            .build()
+                        SingletonImageLoader.get(context).enqueue(request)
+                    }
+
+                    val playlists = database.playlistSongMaps(mediaId)
+                    playlists.forEach { playlistMap ->
+                        val playlist = database.getPlaylistByIdBlocking(playlistMap.playlistId)
+                        playlist?.playlist?.thumbnailUrl?.resize(1200, 1200)?.let { url ->
+                            val request = ImageRequest.Builder(context)
+                                .data(url)
+                                .memoryCachePolicy(CachePolicy.ENABLED)
+                                .diskCachePolicy(CachePolicy.ENABLED)
+                                .build()
+                            SingletonImageLoader.get(context).enqueue(request)
+                        }
+                    }
                 }
             }
 
@@ -176,14 +224,20 @@ constructor(
     val downloadNotificationHelper =
         DownloadNotificationHelper(context, ExoDownloadService.CHANNEL_ID)
 
+    private val cacheDataSourceFactory = androidx.media3.datasource.cache.CacheDataSource.Factory()
+        .setCache(downloadCache)
+        .setUpstreamDataSourceFactory(dataSourceFactory)
+
     @OptIn(DelicateCoroutinesApi::class)
     val downloadManager: DownloadManager =
         DownloadManager(
             context,
-            databaseProvider,
-            downloadCache,
-            dataSourceFactory,
-            Executors.newFixedThreadPool(3)
+            androidx.media3.exoplayer.offline.DefaultDownloadIndex(databaseProvider),
+            SegmentedDownloaderFactory(cacheDataSourceFactory) {
+                runBlocking(Dispatchers.IO) {
+                    context.dataStore.data.map { it[iad1tya.echo.music.constants.ParallelDownloadsCountKey] ?: 5 }.firstOrNull() ?: 5
+                }
+            }
         ).apply {
             maxParallelDownloads = 3
             addListener(

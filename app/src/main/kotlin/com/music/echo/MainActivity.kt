@@ -596,19 +596,34 @@ class MainActivity : ComponentActivity() {
                 val swipeableItems = remember(navigationItems) {
                     navigationItems.filter { it != Screens.Settings }
                 }
-                val pagerState = rememberPagerState(pageCount = { swipeableItems.size })
-                
                 val (useNewMiniPlayerDesign) = rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
                 val defaultOpenTab = remember {
                     dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
                 }
                 val tabOpenedFromShortcut = remember {
                     when (intent?.action) {
-                        ACTION_SEARCH -> NavigationTab.LIBRARY
-                        ACTION_LIBRARY -> NavigationTab.SEARCH
+                        ACTION_SEARCH -> NavigationTab.SEARCH
+                        ACTION_LIBRARY -> NavigationTab.LIBRARY
                         else -> null
                     }
                 }
+
+                val isOffline = remember { !iad1tya.echo.music.utils.isInternetAvailable(context) }
+                val initialPage = remember(isOffline, tabOpenedFromShortcut, defaultOpenTab, swipeableItems) {
+                    val targetTab = when {
+                        isOffline -> NavigationTab.LIBRARY
+                        tabOpenedFromShortcut != null -> tabOpenedFromShortcut
+                        else -> defaultOpenTab
+                    }
+                    val targetScreen = when (targetTab) {
+                        NavigationTab.HOME -> Screens.Home
+                        NavigationTab.SEARCH -> Screens.Search
+                        NavigationTab.LIBRARY -> Screens.Library
+                    }
+                    swipeableItems.indexOf(targetScreen).takeIf { it >= 0 } ?: 0
+                }
+
+                val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { swipeableItems.size })
 
                 val topLevelScreens = remember {
                     listOf(
