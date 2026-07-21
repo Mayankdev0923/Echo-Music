@@ -261,7 +261,9 @@ fun AlbumScreen(
                             }
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .fadingEdge(bottom = 200.dp)
                         ) {
                             AsyncImage(
                                 model = albumWithSongs.album.thumbnailUrl,
@@ -278,21 +280,6 @@ fun AlbumScreen(
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                MaterialTheme.colorScheme.background
-                                            )
-                                        )
-                                    )
-                            )
                         }
                     }
 

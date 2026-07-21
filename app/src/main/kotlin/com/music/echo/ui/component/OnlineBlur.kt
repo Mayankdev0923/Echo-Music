@@ -35,19 +35,5 @@ fun OnlineBlur(
                     .fadingEdge(bottom = height)
             )
         }
-        
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            baseColor.copy(alpha = 0.3f),
-                            baseColor
-                        )
-                    )
-                )
-        )
     }
 }
