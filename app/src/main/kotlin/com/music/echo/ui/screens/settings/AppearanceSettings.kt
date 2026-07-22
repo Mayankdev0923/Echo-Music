@@ -145,14 +145,9 @@ fun AppearanceSettings(
 highlightKey: String? = null) {
     val scrollState = androidx.compose.foundation.rememberScrollState()
 
-    val (dynamicTheme, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
     val (heavyVisuals, onHeavyVisualsChange) = rememberPreference(
         iad1tya.echo.music.constants.HeavyVisualsKey,
         defaultValue = true
-    )
-    val (enableLegacyIcon, onEnableLegacyIconChange) = rememberPreference(
-        iad1tya.echo.music.constants.EnableLegacyIconKey,
-        defaultValue = false
     )
     val (enableHighRefreshRate, onEnableHighRefreshRateChange) = rememberPreference(
         iad1tya.echo.music.constants.EnableHighRefreshRateKey,
@@ -166,25 +161,6 @@ highlightKey: String? = null) {
     val isUsingCustomColor = selectedThemeColorInt != DefaultThemeColor.toArgb()
     val coroutineScope = rememberCoroutineScope()
 
-    fun handleIconChange(legacyEnabled: Boolean) {
-        onEnableLegacyIconChange(legacyEnabled)
-        IconUtils.setIcon(activity, false, legacyEnabled)
-        coroutineScope.launch {
-            val result = snackbarHostState.showSnackbar(
-                message = "Icon updated, restart to apply",
-                actionLabel = "Restart"
-            )
-            if (result == SnackbarResult.ActionPerformed) {
-                val packageManager = activity.packageManager
-                val intent = packageManager.getLaunchIntentForPackage(activity.packageName)
-                val componentName = intent?.component
-                val mainIntent = Intent.makeRestartActivityTask(componentName)
-                activity.startActivity(mainIntent)
-                Runtime.getRuntime().exit(0)
-            }
-        }
-    }
-
 
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) = rememberPreference(
         UseNewPlayerDesignKey,
@@ -196,7 +172,7 @@ highlightKey: String? = null) {
     )
     val (hidePlayerSlider, onHidePlayerSliderChange) = rememberPreference(
         iad1tya.echo.music.constants.HidePlayerSliderKey,
-        defaultValue = false
+        defaultValue = true
     )
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(
         HidePlayerThumbnailKey,
@@ -209,7 +185,7 @@ highlightKey: String? = null) {
     val (playerBackground, onPlayerBackgroundChange) =
         rememberEnumPreference(PlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.APPLE_MUSIC)
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
-        rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.GLOW_ANIMATED)
+        rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.DEFAULT)
 
     val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(
         DefaultOpenTabKey,
@@ -244,7 +220,7 @@ highlightKey: String? = null) {
     )
     val (squigglySlider, onSquigglySliderChange) = rememberPreference(
         SquigglySliderKey,
-        defaultValue = false
+        defaultValue = true
     )
     val (swipeThumbnail, onSwipeThumbnailChange) = rememberPreference(
         SwipeThumbnailKey,
@@ -290,12 +266,12 @@ highlightKey: String? = null) {
 
     val (swipeToSong, onSwipeToSongChange) = rememberPreference(
         SwipeToSongKey,
-        defaultValue = false
+        defaultValue = true
     )
 
     val (swipeToRemoveSong, onSwipeToRemoveSongChange) = rememberPreference(
         SwipeToRemoveSongKey,
-        defaultValue = false
+        defaultValue = true
     )
 
     val (showLikedPlaylist, onShowLikedPlaylistChange) = rememberPreference(
@@ -1002,31 +978,7 @@ highlightKey: String? = null) {
 
 
 
-                add(
-                    Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.legacy_icon)),
-                        icon = painterResource(R.drawable.legacy_icon_raster),
-                        tintIcon = false,
-                        title = { Text(stringResource(R.string.legacy_icon)) },
-                        description = { Text(stringResource(R.string.legacy_icon_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = enableLegacyIcon,
-                                onCheckedChange = { handleIconChange(it) },
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (enableLegacyIcon) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize)
-                                    )
-                                }
-                            )
-                        },
-                        onClick = { handleIconChange(!enableLegacyIcon) }
-                    )
-                )
+
                 add(
                     Material3SettingsItem(
     isHighlighted = (highlightKey == stringResource(R.string.theme)),
@@ -1085,32 +1037,6 @@ highlightKey: String? = null) {
                     )
                 )
                 
-                
-                if (!isUsingCustomColor) {
-                    add(
-                        Material3SettingsItem(
-    isHighlighted = (highlightKey == stringResource(R.string.enable_dynamic_theme)),
-                            icon = painterResource(R.drawable.palette),
-                            title = { Text(stringResource(R.string.enable_dynamic_theme)) },
-                            trailingContent = {
-                                Switch(
-                                    checked = dynamicTheme,
-                                    onCheckedChange = onDynamicThemeChange,
-                                    thumbContent = {
-                                        Icon(
-                                            painter = painterResource(
-                                                id = if (dynamicTheme) R.drawable.check else R.drawable.close
-                                            ),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize)
-                                        )
-                                    }
-                                )
-                            },
-                            onClick = { onDynamicThemeChange(!dynamicTheme) }
-                        )
-                    )
-                }
             }
         )
 

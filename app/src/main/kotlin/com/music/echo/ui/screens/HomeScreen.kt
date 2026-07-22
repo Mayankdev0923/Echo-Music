@@ -183,6 +183,7 @@ import iad1tya.echo.music.ui.screens.settings.DarkMode
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.NightsStay
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.statusBarsPadding
 import com.music.echo.ui.component.appleGlass
@@ -237,6 +238,7 @@ fun CommunityPlaylistCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
+                    .blur(50.dp)
             )
             if (isDark) {
                 // Dark mode: blurred art + dark scrim

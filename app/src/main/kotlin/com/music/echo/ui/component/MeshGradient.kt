@@ -26,9 +26,23 @@ fun AnimatedMeshBackground(
     pureBlack: Boolean, 
     modifier: Modifier = Modifier
 ) {
-    if (meshTheme == MeshTheme.NONE || pureBlack) {
+    if (pureBlack) {
         Box(modifier = modifier.background(Color.Black))
         return
+    }
+
+    val baseColor = if (isDarkTheme) Color(0xFF222222) else Color(0xFFDDDDDD)
+
+    val noiseBitmap = remember {
+        val width = 128
+        val height = 128
+        val pixels = IntArray(width * height)
+        for (i in pixels.indices) {
+            val v = (Math.random() * 255).toInt()
+            pixels[i] = android.graphics.Color.argb(30, v, v, v) // Low alpha noise
+        }
+        android.graphics.Bitmap.createBitmap(pixels, width, height, android.graphics.Bitmap.Config.ARGB_8888)
+            .asImageBitmap()
     }
 
     val infiniteTransition = rememberInfiniteTransition(label = "mesh-transition")
@@ -53,15 +67,15 @@ fun AnimatedMeshBackground(
         label = "offset2"
     )
     
-    val baseColor = if (isDarkTheme) Color(0xFF191919) else Color(0xFFE6E6E6)
+    val subtleGray = if (isDarkTheme) Color(0xFF333333) else Color(0xFFCCCCCC)
     val colorPair = when (meshTheme) {
-        MeshTheme.KNIGHT -> Pair(baseColor, Color(0xFF6A0DAD))
-        MeshTheme.COFFEE -> Pair(baseColor, Color(0xFFC4A484))
-        MeshTheme.BLUSH -> Pair(baseColor, Color(0xFFFFC0CB))
-        MeshTheme.SUNFLOWER -> Pair(baseColor, Color(0xFFFFD700))
-        MeshTheme.MINT -> Pair(baseColor, Color(0xFF98FF98))
-        MeshTheme.HAKI -> Pair(baseColor, Color(0xFF8B0000))
-        else -> Pair(baseColor, Color.DarkGray)
+        MeshTheme.KNIGHT -> Pair(baseColor, if (isDarkTheme) Color(0xFF4B2E83) else Color(0xFFB39DDB))
+        MeshTheme.COFFEE -> Pair(baseColor, if (isDarkTheme) Color(0xFF8C7355) else Color(0xFFD7CCC8))
+        MeshTheme.BLUSH -> Pair(baseColor, if (isDarkTheme) Color(0xFFAD5E71) else Color(0xFFF8BBD0))
+        MeshTheme.SUNFLOWER -> Pair(baseColor, if (isDarkTheme) Color(0xFFA68A36) else Color(0xFFFFF59D))
+        MeshTheme.MINT -> Pair(baseColor, if (isDarkTheme) Color(0xFF4C8C4C) else Color(0xFFA5D6A7))
+        MeshTheme.HAKI -> Pair(baseColor, if (isDarkTheme) Color(0xFF732626) else Color(0xFFEF9A9A))
+        MeshTheme.NONE -> Pair(baseColor, subtleGray)
     }
 
     val animatedColor1 by infiniteTransition.animateColor(
@@ -96,17 +110,7 @@ fun AnimatedMeshBackground(
         baseColor, baseColor, animatedColor2
     )
 
-    val noiseBitmap = remember {
-        val width = 128
-        val height = 128
-        val pixels = IntArray(width * height)
-        for (i in pixels.indices) {
-            val v = (Math.random() * 255).toInt()
-            pixels[i] = android.graphics.Color.argb(30, v, v, v) // Low alpha noise
-        }
-        android.graphics.Bitmap.createBitmap(pixels, width, height, android.graphics.Bitmap.Config.ARGB_8888)
-            .asImageBitmap()
-    }
+
 
     Box(modifier = modifier) {
         MeshGradient(
