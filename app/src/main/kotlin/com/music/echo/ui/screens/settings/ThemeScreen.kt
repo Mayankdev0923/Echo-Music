@@ -143,7 +143,7 @@ highlightKey: String? = null) {
     val (_, onDynamicThemeChange) = rememberPreference(DynamicThemeKey, defaultValue = false)
 
     val selectedThemeColor = Color(selectedThemeColorInt)
-    val (meshTheme, onMeshThemeChange) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
+    val (meshTheme, onMeshThemeChange) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.NONE)
 
     val handleColorSelection: (Color) -> Unit = { color ->
         onSelectedThemeColorChange(color.toArgb())

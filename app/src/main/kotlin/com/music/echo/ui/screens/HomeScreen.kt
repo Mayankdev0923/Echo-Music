@@ -193,7 +193,7 @@ import iad1tya.echo.music.LocalShowSettingsDialog
 sealed class HomeSection(val id: String, val baseWeight: Int) {
     data object SpeedDial : HomeSection("speed_dial", 100)
     data object QuickPicks : HomeSection("quick_picks", 90)
-    data object EchoBrainPlaylists : HomeSection("echo_brain_playlists", 85)
+
     data object DailyDiscover : HomeSection("daily_discover", 80)
     data object KeepListening : HomeSection("keep_listening", 50)
     data object AccountPlaylists : HomeSection("account_playlists", 40)
@@ -625,7 +625,7 @@ fun HomeScreen(
     val explorePage by viewModel.explorePage.collectAsState()
     val dailyDiscover by viewModel.dailyDiscover.collectAsState()
     val communityPlaylists by viewModel.communityPlaylists.collectAsState()
-    val echoBrainPlaylists by viewModel.echoBrainPlaylists.collectAsState()
+
 
     val allLocalItems by viewModel.allLocalItems.collectAsState()
     val allYtItems by viewModel.allYtItems.collectAsState()
@@ -892,7 +892,7 @@ fun HomeScreen(
                     HomeSection.KeepListening -> 70
                     HomeSection.AccountPlaylists -> 60
                     HomeSection.ForgottenFavorites -> 50
-                    HomeSection.EchoBrainPlaylists -> 40
+
                     HomeSection.MoodAndGenres -> 10
                 }
             }
@@ -1012,7 +1012,7 @@ fun HomeScreen(
             val baseDarkTheme = remember(darkMode, isSystemInDark) {
                 if (darkMode == DarkMode.AUTO) isSystemInDark else darkMode == DarkMode.ON
             }
-            val (meshTheme) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
+            val (meshTheme) = rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.NONE)
             val useDarkTheme = remember(meshTheme, baseDarkTheme, darkMode) {
                 if (darkMode != DarkMode.AUTO) {
                     darkMode == DarkMode.ON
@@ -1383,65 +1383,7 @@ fun HomeScreen(
                                 }
                             }
                         }
-                        HomeSection.EchoBrainPlaylists -> {
-                            echoBrainPlaylists?.takeIf { it.isNotEmpty() }?.let { playlists ->
-                                item(key = "echo_brain_playlists_title") {
-                                    NavigationTitle(
-                                        title = "Echo Brain Recommends",
-                                        modifier = Modifier
-                                    )
-                                }
 
-                                item(key = "echo_brain_playlists_content") {
-                                    LazyRow(
-                                        contentPadding = PaddingValues(horizontal = 16.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        modifier = Modifier
-                                    ) {
-                                        items(playlists, key = { it.playlist.id }) { item ->
-                                            CommunityPlaylistCard(
-                                                item = item,
-                                                onClick = {
-                                                    if (item.playlist.id == "echo_brain_mix_local") {
-                                                        playerConnection.playQueue(
-                                                            ListQueue(
-                                                                title = item.playlist.title,
-                                                                items = item.songs.map { it.toMediaMetadata().toMediaItem() }
-                                                            )
-                                                        )
-                                                    } else {
-                                                        playerConnection.playQueue(
-                                                            YouTubeQueue(
-                                                                WatchEndpoint(videoId = item.playlist.id.removePrefix("RDAMVM"), playlistId = item.playlist.id)
-                                                            )
-                                                        )
-                                                    }
-                                                },
-                                                onSongClick = { song ->
-                                                    if (item.playlist.id == "echo_brain_mix_local") {
-                                                        val index = item.songs.indexOf(song).takeIf { it >= 0 } ?: 0
-                                                        playerConnection.playQueue(
-                                                            ListQueue(
-                                                                title = item.playlist.title,
-                                                                items = item.songs.map { it.toMediaMetadata().toMediaItem() },
-                                                                startIndex = index
-                                                            )
-                                                        )
-                                                    } else {
-                                                        playerConnection.playQueue(
-                                                            YouTubeQueue(
-                                                                song.endpoint ?: WatchEndpoint(videoId = song.id),
-                                                                song.toMediaMetadata()
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
                         HomeSection.FromTheCommunity -> {
                             communityPlaylists?.takeIf { it.isNotEmpty() }?.let { playlists ->
                                 item(key = "community_playlists_title") {

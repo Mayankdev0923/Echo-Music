@@ -263,11 +263,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
 
-    @Inject
-    lateinit var echoBrainEngine: iad1tya.echo.music.engine.EchoBrainEngine
 
-    @Inject
-    lateinit var echoBrainRepository: iad1tya.echo.music.data.EchoBrainRepository
 
     private lateinit var navController: NavHostController
     private var pendingIntent: Intent? = null
@@ -282,7 +278,6 @@ class MainActivity : ComponentActivity() {
                     Timber.tag("MainActivity").d("PlayerConnection created successfully")
                     
                     listenTogetherManager.setPlayerConnection(playerConnection)
-                    playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                 } catch (e: Exception) {
                     Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
                     
@@ -291,7 +286,6 @@ class MainActivity : ComponentActivity() {
                         try {
                             playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
                             listenTogetherManager.setPlayerConnection(playerConnection)
-                            playerConnection?.let { echoBrainEngine.initialize(it, lifecycleScope) }
                         } catch (e2: Exception) {
                             Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
                         }
@@ -390,14 +384,7 @@ class MainActivity : ComponentActivity() {
                 }
         }
 
-        lifecycleScope.launch {
-            dataStore.data
-                .map { it[iad1tya.echo.music.constants.EchoBrainEnabledKey] ?: true }
-                .distinctUntilChanged()
-                .collectLatest { enabled ->
-                    echoBrainEngine.isEnabled.value = enabled
-                }
-        }
+
 
         setContent {
             echomusicApp(
@@ -480,7 +467,7 @@ class MainActivity : ComponentActivity() {
         val baseDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
             if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
         }
-        val meshTheme by rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.HAKI)
+        val meshTheme by rememberEnumPreference(MeshThemeKey, defaultValue = MeshTheme.NONE)
         val useDarkTheme = remember(meshTheme, baseDarkTheme, darkTheme) {
             if (darkTheme != DarkMode.AUTO) {
                 darkTheme == DarkMode.ON
@@ -1273,7 +1260,7 @@ class MainActivity : ComponentActivity() {
 
                                 val bottomScrimHeight = bottomInsetDp +
                                     (if (shouldShowNavigationBar) navPadding else 0.dp) +
-                                    MiniPlayerHeight + 60.dp   // extra 48dp to reach behind mini player
+                                    MiniPlayerHeight + 56.dp   // match top scrim's 56.dp extra
 
                                 Box(
                                     modifier = Modifier
@@ -1284,7 +1271,7 @@ class MainActivity : ComponentActivity() {
                                             Brush.verticalGradient(
                                                 listOf(
                                                     Color.Transparent,
-                                                    bottomScrimColor.copy(alpha = bottomScrimColor.alpha * 0.6f),
+                                                    bottomScrimColor.copy(alpha = bottomScrimColor.alpha * 0.4f),
                                                     bottomScrimColor
                                                 )
                                             )

@@ -31,7 +31,7 @@ fun AnimatedMeshBackground(
         return
     }
 
-    val baseColor = if (isDarkTheme) Color(0xFF222222) else Color(0xFFDDDDDD)
+    val baseColor = if (isDarkTheme) Color(0xFF141414) else Color(0xFFDDDDDD)
 
     val noiseBitmap = remember {
         val width = 128
