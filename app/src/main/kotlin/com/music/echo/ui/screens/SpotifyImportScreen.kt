@@ -315,6 +315,7 @@ private fun SpotifyLoginSheet(
                         settings.setSupportZoom(true)
                         settings.builtInZoomControls = true
                         settings.displayZoomControls = false
+                        settings.userAgentString = settings.userAgentString.replace("; wv", "").replace("Version/4.0 ", "")
                         webViewClient = object : WebViewClient() {
                             private fun captureCookies(url: String?): Boolean {
                                 if (captured) return true

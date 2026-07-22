@@ -80,6 +80,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -1224,14 +1225,7 @@ fun Lyrics(
                             this.alpha = if (item.isBackground) alpha * 0.8f else alpha
                             this.scaleX = scale * bgScale
                             this.scaleY = scale * bgScale
-                            if (blurRadius > 0f && heavyVisuals) {
-                                this.renderEffect = android.graphics.RenderEffect.createBlurEffect(
-                                    blurRadius * density.density,
-                                    blurRadius * density.density,
-                                    android.graphics.Shader.TileMode.CLAMP
-                                ).asComposeRenderEffect()
-                            }
-                        },
+                        }.blur(if (heavyVisuals) blurRadius.dp else 0.dp),
                         horizontalAlignment = agentAlignment
                     ) {
                         

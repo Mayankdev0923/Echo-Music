@@ -75,7 +75,7 @@ constructor(
     @PlayerCache val playerCache: SimpleCache,
 ) {
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
-    private val downloadQuality by enumPreference(context, iad1tya.echo.music.constants.DownloadQualityKey, iad1tya.echo.music.constants.DownloadQuality.YOUTUBE)
+    private val downloadQuality by enumPreference(context, iad1tya.echo.music.constants.DownloadQualityKey, iad1tya.echo.music.constants.DownloadQuality.OPUS)
     private val ipVersion by enumPreference(context, IpVersionKey, IpVersion.AUTO)
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
 
@@ -117,11 +117,7 @@ constructor(
             val playbackData = runBlocking(Dispatchers.IO) {
                 YTPlayerUtils.playerResponseForPlayback(
                     mediaId,
-                    audioQuality = when (downloadQuality) {
-                        iad1tya.echo.music.constants.DownloadQuality.LOSSLESS -> AudioQuality.LOSSLESS
-                        iad1tya.echo.music.constants.DownloadQuality.SAAVN -> AudioQuality.SAAVN
-                        else -> AudioQuality.OPUS
-                    },
+                    audioQuality = AudioQuality.OPUS,
                     connectivityManager = connectivityManager,
                     context = context,
                     isDownload = true

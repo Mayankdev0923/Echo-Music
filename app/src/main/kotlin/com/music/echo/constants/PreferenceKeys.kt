@@ -112,17 +112,13 @@ val IpVersionKey = stringPreferencesKey("ipVersion")
 const val LOSSLESS_ENABLED = true
 
 enum class AudioQuality {
-    OPUS,
-    SAAVN,
-    LOSSLESS,
+    OPUS
 }
 
 val DownloadQualityKey = stringPreferencesKey("downloadQuality")
 
 enum class DownloadQuality {
-    YOUTUBE,
-    SAAVN,
-    LOSSLESS,
+    OPUS
 }
 
 val AudioOffload = booleanPreferencesKey("enableOffload")

@@ -694,15 +694,9 @@ class MusicService :
             updateWidgetUI(player.isPlaying)
         }
 
-        combine(
-            currentMediaMetadata.distinctUntilChangedBy { it?.id },
-            dataStore.data.map { it[ShowLyricsKey] ?: false }.distinctUntilChanged(),
-        ) { mediaMetadata, showLyrics ->
-            mediaMetadata to showLyrics
-        }.collectLatest(scope) { (mediaMetadata, showLyrics) ->
-            if (showLyrics && mediaMetadata != null && database.lyrics(mediaMetadata.id)
-                    .first() == null
-            ) {
+        currentMediaMetadata.distinctUntilChangedBy { it?.id }
+            .collectLatest(scope) { mediaMetadata ->
+            if (mediaMetadata != null && database.lyrics(mediaMetadata.id).first() == null) {
                 val lyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
                 database.query {
                     upsert(
@@ -2673,30 +2667,13 @@ class MusicService :
                 .takeIf { it != androidx.media3.common.C.LENGTH_UNSET.toLong() } ?: dbFormat?.contentLength ?: -1L
             val isFullyDownloaded = cachedLength > 0 && downloadCache.isCached(mediaId, 0, cachedLength)
             
-            val lockedQuality = if (isCurrentlyPlaying && dbFormat != null) {
-                val isReFetch = songUrlCache.containsKey("${mediaId}_${dbFormat.codecs}")
-                if (isReFetch) {
-                    when {
-                        dbFormat.mimeType.contains("flac", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.LOSSLESS
-                        dbFormat.mimeType.contains("mp4", ignoreCase = true) || dbFormat.mimeType.contains("m4a", ignoreCase = true) -> iad1tya.echo.music.constants.AudioQuality.SAAVN
-                        else -> iad1tya.echo.music.constants.AudioQuality.OPUS
-                    }
-                } else {
-                    audioQuality
-                }
-            } else {
-                audioQuality
-            }
+            val lockedQuality = audioQuality
 
             if (!shouldBypassCache && !isFullyDownloaded && dbFormat != null) {
                 val isLosslessCache = dbFormat.codecs == "flac"
                 val isSaavnCache = dbFormat.codecs == "mp4a.40.2" || dbFormat.mimeType.contains("mp4", ignoreCase = true)
                 
-                val cacheMatchesTarget = when (lockedQuality) {
-                    iad1tya.echo.music.constants.AudioQuality.LOSSLESS -> isLosslessCache
-                    iad1tya.echo.music.constants.AudioQuality.SAAVN -> isSaavnCache
-                    iad1tya.echo.music.constants.AudioQuality.OPUS -> !isLosslessCache && !isSaavnCache
-                }
+                val cacheMatchesTarget = !isLosslessCache && !isSaavnCache
                 
                 if (!cacheMatchesTarget) {
                     shouldBypassCache = true

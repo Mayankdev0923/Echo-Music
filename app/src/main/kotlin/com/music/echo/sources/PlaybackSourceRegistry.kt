@@ -39,11 +39,7 @@ object PlaybackSourceRegistry {
             return ytResolver()
         }
 
-        val primaryTimeoutMs = when (audioQuality) {
-            AudioQuality.LOSSLESS -> 12_000L
-            AudioQuality.SAAVN -> 15_000L
-            else -> 0L
-        }
+        val primaryTimeoutMs = 0L
 
         return resolveParallel(
             videoId = videoId,
@@ -161,10 +157,6 @@ object PlaybackSourceRegistry {
     }
 
     private fun PlaybackSource.isEligible(quality: AudioQuality): Boolean {
-        return when (this) {
-            is SaavnPlaybackSource -> quality != AudioQuality.OPUS
-            is QobuzPlaybackSource -> quality == AudioQuality.LOSSLESS
-            else -> false
-        }
+        return false
     }
 }

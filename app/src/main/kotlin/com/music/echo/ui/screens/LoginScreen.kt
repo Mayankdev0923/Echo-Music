@@ -124,6 +124,7 @@ fun LoginScreen(
                     setSupportZoom(true)
                     builtInZoomControls = true
                     displayZoomControls = false
+                    userAgentString = userAgentString.replace("; wv", "").replace("Version/4.0 ", "")
                 }
                 addJavascriptInterface(object {
                     @JavascriptInterface
