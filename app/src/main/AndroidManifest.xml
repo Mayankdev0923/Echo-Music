@@ -51,7 +51,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.echomusic"
+        android:theme="@style/Theme.akai"
         tools:targetApi="tiramisu">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -60,7 +60,7 @@
         <activity
             android:name=".ui.screens.CrashActivity"
             android:exported="false"
-            android:theme="@style/Theme.echomusic"
+            android:theme="@style/Theme.akai"
             android:excludeFromRecents="true"
             android:process=":crash" />
 
@@ -68,7 +68,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.echomusic"
+            android:theme="@style/Theme.akai"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,7 +97,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="echomusic-listen-together.onrender.com" />
+                <data android:host="akai-listen-together.onrender.com" />
                 <data android:pathPrefix="/listen" />
             </intent-filter>
 
@@ -108,11 +108,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="echomusic" />
+                <data android:scheme="akai" />
                 <data android:host="listen" />
             </intent-filter>
 
-            <!-- Echo Music Share Links -->
+            <!-- Akai Share Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -121,7 +121,7 @@
 
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="share.echomusic.fun" />
+                <data android:host="share.akai.fun" />
                 <data android:pathPrefix="/" />
             </intent-filter>
 

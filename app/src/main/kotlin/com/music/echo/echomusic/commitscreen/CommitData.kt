@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.commitscreen
+package iad1tya.echo.music.akai.commitscreen
 
 data class CommitData(
     val message: String,

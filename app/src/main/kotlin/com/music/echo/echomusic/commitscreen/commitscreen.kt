@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.commitscreen
+package iad1tya.echo.music.akai.commitscreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn

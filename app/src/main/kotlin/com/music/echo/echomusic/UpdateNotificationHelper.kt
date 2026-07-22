@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic
+package iad1tya.echo.music.akai
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -32,9 +32,9 @@ object UpdateNotificationHelper {
 
         
         val apkUrl = if (versionName.contains("nightly", ignoreCase = true)) {
-            "https://nightly.link/EchoMusicApp/workflows/nightly.yml/main/echomusic-gms-nightly.zip"
+            "https://nightly.link/AkaiApp/workflows/nightly.yml/main/akai-gms-nightly.zip"
         } else {
-            "https://github.com/EchoMusicApp/Echo-Music/releases/download/$versionName/echomusic.apk"
+            "https://github.com/AkaiApp/Akai/releases/download/$versionName/akai.apk"
         }
         val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
 

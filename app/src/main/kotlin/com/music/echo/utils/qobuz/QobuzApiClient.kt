@@ -105,7 +105,7 @@ class QobuzApiClient {
     private val httpClient: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .header("User-Agent", "Echo-Music/1.0")
+                .header("User-Agent", "Akai/1.0")
                 .build()
             chain.proceed(request)
         }

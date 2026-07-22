@@ -916,7 +916,7 @@ fun Lyrics(
                     key = { index, item -> "$index-${item.time}" } 
                 ) { index, item ->
                     val isSelected = selectedIndices.contains(index)
-                    if (lyricsAnimationStyle == LyricsAnimationStyle.echomusic_1 && item.words?.isNotEmpty() == true) {
+                    if (lyricsAnimationStyle == LyricsAnimationStyle.akai_1 && item.words?.isNotEmpty() == true) {
                         val currentLineTime = if (displayedCurrentLineIndex >= 0 && displayedCurrentLineIndex < lines.size) {
                             lines[displayedCurrentLineIndex].time
                         } else -1L
@@ -924,7 +924,7 @@ fun Lyrics(
                         val isActiveByIndex = index == displayedCurrentLineIndex
                         val isActiveByTime = isLineAtSameTime && displayedCurrentLineIndex >= 0
 
-                        echomusicLyricsLine(
+                        akaiLyricsLine(
                             entry = item,
                             nextEntryTime = lines.getOrNull(index + 1)?.time,
                             effectivePlaybackPosition = effectivePlaybackPosition,
@@ -1980,7 +1980,7 @@ fun Lyrics(
                                     action = Intent.ACTION_SEND
                                     type = "text/plain"
                                     val songLink =
-                                        "https://share.echomusic.fun/watch?v=${mediaMetadata?.id}"
+                                        "https://share.akai.fun/watch?v=${mediaMetadata?.id}"
                                     
                                     putExtra(
                                         Intent.EXTRA_TEXT,
@@ -2314,10 +2314,10 @@ fun Lyrics(
 }
 
 
-private const val echomusic_AUTO_SCROLL_DURATION = 1500L 
-private const val echomusic_INITIAL_SCROLL_DURATION = 1000L 
-private const val echomusic_SEEK_DURATION = 800L 
-private const val echomusic_FAST_SEEK_DURATION = 600L 
+private const val akai_AUTO_SCROLL_DURATION = 1500L 
+private const val akai_INITIAL_SCROLL_DURATION = 1000L 
+private const val akai_SEEK_DURATION = 800L 
+private const val akai_FAST_SEEK_DURATION = 600L 
 
 
 val LyricsPreviewTime = 2.seconds

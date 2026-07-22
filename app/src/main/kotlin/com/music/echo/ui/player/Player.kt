@@ -186,10 +186,10 @@ import iad1tya.echo.music.extensions.toggleRepeatMode
 import iad1tya.echo.music.listentogether.RoomRole
 import iad1tya.echo.music.models.MediaMetadata
 import iad1tya.echo.music.playback.ExoDownloadService
-import iad1tya.echo.music.echomusic.getConnectedBluetoothDeviceName
-import iad1tya.echo.music.echomusic.isBuds
-import iad1tya.echo.music.echomusic.isSpeaker
-import iad1tya.echo.music.echomusic.AudioDeviceBottomSheet
+import iad1tya.echo.music.akai.getConnectedBluetoothDeviceName
+import iad1tya.echo.music.akai.isBuds
+import iad1tya.echo.music.akai.isSpeaker
+import iad1tya.echo.music.akai.AudioDeviceBottomSheet
 import iad1tya.echo.music.ui.component.BottomSheet
 import iad1tya.echo.music.ui.component.BottomSheetState
 import iad1tya.echo.music.ui.component.CastButton
@@ -207,7 +207,7 @@ import iad1tya.echo.music.ui.component.VolumeSlider
 import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.theme.PlayerColorExtractor
 import iad1tya.echo.music.ui.theme.PlayerSliderColors
-import iad1tya.echo.music.ui.theme.echomusicTheme
+import iad1tya.echo.music.ui.theme.akaiTheme
 import iad1tya.echo.music.ui.utils.ShowMediaInfo
 import iad1tya.echo.music.ui.utils.ShowOffsetDialog
 import iad1tya.echo.music.utils.makeTimeString
@@ -246,7 +246,7 @@ import iad1tya.echo.music.extensions.metadata
 import iad1tya.echo.music.ui.player.CanvasArtworkPlaybackCache
 import iad1tya.echo.music.ui.player.normalizeCanvasArtistName
 import iad1tya.echo.music.ui.player.normalizeCanvasSongTitle
-import iad1tya.echo.music.echomusiccanvas.echomusicCanvasProvider
+import iad1tya.echo.music.akaicanvas.akaiCanvasProvider
 import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
@@ -632,7 +632,7 @@ fun BottomSheetPlayer(
             val s = normalizeCanvasSongTitle(requestedTitle)
             val a = normalizeCanvasArtistName(requestedArtist)
             
-            val fetched = echomusicCanvasProvider.getBySongArtist(s, a)
+            val fetched = akaiCanvasProvider.getBySongArtist(s, a)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
                 ?: TidalCanvasProvider.getBySongArtist(s, a, requestedAlbum)
                 ?.takeIf { !it.preferredAnimationUrl.isNullOrBlank() }
@@ -896,7 +896,7 @@ fun BottomSheetPlayer(
 
     val backgroundAlpha = state.progress.coerceIn(0f, 1f)
 
-    echomusicTheme(
+    akaiTheme(
         darkTheme = useDarkTheme,
         pureBlack = pureBlack,
         themeColor = themeColor,

@@ -67,7 +67,7 @@ val AppleDarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun echomusicTheme(
+fun akaiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     pureBlack: Boolean = false,
     themeColor: Color = DefaultThemeColor,

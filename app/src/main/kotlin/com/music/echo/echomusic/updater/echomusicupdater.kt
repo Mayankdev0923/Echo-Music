@@ -1,6 +1,6 @@
 
 
-package iad1tya.echo.music.echomusic.updater
+package iad1tya.echo.music.akai.updater
 
 
 import android.content.Context
@@ -64,8 +64,8 @@ import iad1tya.echo.music.R
 import coil3.compose.AsyncImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import iad1tya.echo.music.echomusic.updater.downloadmanager.UpdateDownloadWorker
-import iad1tya.echo.music.echomusic.updater.downloadmanager.DownloadNotificationManager
+import iad1tya.echo.music.akai.updater.downloadmanager.UpdateDownloadWorker
+import iad1tya.echo.music.akai.updater.downloadmanager.DownloadNotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -335,7 +335,7 @@ fun UpdateScreen(navController: NavHostController) {
                                                 ContextCompat.startActivity(context, installIntent, null)
                                             }
                                         } else {
-                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/EchoMusicApp/Echo-Music/releases/download/${currentStatus.version}/echomusic.apk"
+                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/AkaiApp/Akai/releases/download/${currentStatus.version}/akai.apk"
                                             
                                             val constraints = Constraints.Builder()
                                                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -662,7 +662,7 @@ suspend fun checkForUpdate(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://api.github.com/repos/EchoMusicApp/Echo-Music/releases/latest")
+            val url = URL("https://api.github.com/repos/AkaiApp/Akai/releases/latest")
             val json = url.openStream().bufferedReader().use { it.readText() }
             val targetRelease = JSONObject(json)
             
@@ -682,7 +682,7 @@ suspend fun checkForUpdate(
                 var imageUrl: String? = null
                 try {
                     val changelogUrl =
-                        URL("https://github.com/EchoMusicApp/Echo-Music/releases/download/$tagWithPrefix/changelog.json")
+                        URL("https://github.com/AkaiApp/Akai/releases/download/$tagWithPrefix/changelog.json")
                     val changelogJson = changelogUrl.openStream().bufferedReader().use { it.readText() }
                     val changelogData = JSONObject(changelogJson)
 

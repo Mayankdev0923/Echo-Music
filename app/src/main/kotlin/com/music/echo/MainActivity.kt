@@ -165,12 +165,12 @@ import iad1tya.echo.music.constants.MiniPlayerBottomSpacing
 import iad1tya.echo.music.constants.MiniPlayerHeight
 import iad1tya.echo.music.constants.NavigationBarAnimationSpec
 import iad1tya.echo.music.constants.NavigationBarHeight
-import iad1tya.echo.music.echomusic.updater.checkForUpdate
-import iad1tya.echo.music.echomusic.updater.getAutoUpdateCheckSetting
-import iad1tya.echo.music.echomusic.updater.isNewerVersion
-import iad1tya.echo.music.echomusic.updater.saveUpdateAvailableState
-import iad1tya.echo.music.echomusic.updater.getUpdateNotificationsSetting
-import iad1tya.echo.music.echomusic.UpdateNotificationHelper
+import iad1tya.echo.music.akai.updater.checkForUpdate
+import iad1tya.echo.music.akai.updater.getAutoUpdateCheckSetting
+import iad1tya.echo.music.akai.updater.isNewerVersion
+import iad1tya.echo.music.akai.updater.saveUpdateAvailableState
+import iad1tya.echo.music.akai.updater.getUpdateNotificationsSetting
+import iad1tya.echo.music.akai.UpdateNotificationHelper
 import android.util.Log
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -210,7 +210,7 @@ import iad1tya.echo.music.ui.screens.settings.DarkMode
 import iad1tya.echo.music.ui.screens.settings.NavigationTab
 import iad1tya.echo.music.ui.theme.ColorSaver
 import iad1tya.echo.music.ui.theme.DefaultThemeColor
-import iad1tya.echo.music.ui.theme.echomusicTheme
+import iad1tya.echo.music.ui.theme.akaiTheme
 import iad1tya.echo.music.ui.theme.extractThemeColor
 import iad1tya.echo.music.ui.utils.appBarScrollBehavior
 import iad1tya.echo.music.ui.utils.resetHeightOffset
@@ -387,7 +387,7 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            echomusicApp(
+            akaiApp(
                 playerConnection = playerConnection,
                 database = database,
                 downloadUtil = downloadUtil,
@@ -399,7 +399,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
     @Composable
-    private fun echomusicApp(
+    private fun akaiApp(
         playerConnection: PlayerConnection?,
         database: MusicDatabase,
         downloadUtil: DownloadUtil,
@@ -547,7 +547,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        echomusicTheme(
+        akaiTheme(
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
             themeColor = finalThemeColor,
@@ -849,7 +849,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val currentTitle = when (navBackStackEntry?.destination?.route) {
-                    Screens.Home.route -> "Echo Music"
+                    Screens.Home.route -> "Akai"
                     Screens.Search.route -> stringResource(R.string.search)
                     Screens.Library.route -> stringResource(R.string.filter_library)
                     Screens.ListenTogether.route -> stringResource(R.string.together)

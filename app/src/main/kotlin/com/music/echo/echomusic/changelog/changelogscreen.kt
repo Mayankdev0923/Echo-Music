@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.changelog
+package iad1tya.echo.music.akai.changelog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

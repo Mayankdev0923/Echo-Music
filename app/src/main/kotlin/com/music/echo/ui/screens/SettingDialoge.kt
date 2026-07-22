@@ -88,7 +88,7 @@ fun SettingDialoge(
                         .padding(start = 14.dp)
                 ) {
                     Text(
-                        text = "Echo Music",
+                        text = "Akai",
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         color = primaryColor,
                         textAlign = TextAlign.Start,
@@ -202,14 +202,14 @@ fun SettingDialoge(
                         text = "Privacy Policy",
                         style = MaterialTheme.typography.bodySmall,
                         color = onSecondaryColor,
-                        modifier = Modifier.clickable { uriHandler.openUri("https://echomusic.fun/p/privacy-policy") }.padding(4.dp)
+                        modifier = Modifier.clickable { uriHandler.openUri("https://akai.fun/p/privacy-policy") }.padding(4.dp)
                     )
                     Text(text = " | ", color = onSecondaryColor, style = MaterialTheme.typography.bodySmall)
                     Text(
                         text = "Terms of Service",
                         style = MaterialTheme.typography.bodySmall,
                         color = onSecondaryColor,
-                        modifier = Modifier.clickable { uriHandler.openUri("https://echomusic.fun/p/toc") }.padding(4.dp)
+                        modifier = Modifier.clickable { uriHandler.openUri("https://akai.fun/p/toc") }.padding(4.dp)
                     )
                 }
             }

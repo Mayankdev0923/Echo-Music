@@ -11,10 +11,10 @@ We release patches for security vulnerabilities in the following versions:
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Echo Music, please report it responsibly:
+If you discover a security vulnerability in Akai, please report it responsibly:
 
 1. **Do NOT** create a public GitHub issue
-2. Email us at: [security@echomusic.fun](mailto:security@echomusic.fun)
+2. Email us at: [security@akai.fun](mailto:security@akai.fun)
 3. Include the following information:
    - Description of the vulnerability
    - Steps to reproduce
@@ -48,7 +48,7 @@ The following files contain sensitive information and should never be committed:
 
 ## Data Privacy
 
-Echo Music is committed to user privacy:
+Akai is committed to user privacy:
 
 - **No personal data collection**: We don't collect personal information
 - **Local storage**: User data is stored locally on the device
@@ -59,7 +59,7 @@ Echo Music is committed to user privacy:
 
 For security-related questions or to report vulnerabilities:
 
-- Email: [security@echomusic.fun](mailto:security@echomusic.fun)
+- Email: [security@akai.fun](mailto:security@akai.fun)
 - GitHub: Create a private security advisory
 
-Thank you for helping keep Echo Music secure!
+Thank you for helping keep Akai secure!

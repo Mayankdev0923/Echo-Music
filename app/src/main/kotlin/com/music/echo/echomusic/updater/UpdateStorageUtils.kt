@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusic.updater
+package iad1tya.echo.music.akai.updater
 
 import android.content.Context
 import android.os.Environment

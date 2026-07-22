@@ -298,7 +298,7 @@ function discoverAndInit() {
     }
 
     companion object {
-        private const val TAG = "echomusic_CipherWebView"
+        private const val TAG = "akai_CipherWebView"
         private const val JS_INTERFACE = "CipherBridge"
 
         suspend fun create(

@@ -166,7 +166,7 @@ import iad1tya.echo.music.utils.YTPlayerUtils
 import iad1tya.echo.music.utils.dataStore
 import iad1tya.echo.music.utils.get
 import iad1tya.echo.music.utils.reportException
-import iad1tya.echo.music.widget.EchoMusicWidgetManager
+import iad1tya.echo.music.widget.AkaiWidgetManager
 import iad1tya.echo.music.widget.MusicWidgetReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import iad1tya.echo.music.utils.isLocalMediaId
@@ -231,7 +231,7 @@ class MusicService :
     lateinit var eqProfileRepository: EQProfileRepository
 
     @Inject
-    lateinit var widgetManager: EchoMusicWidgetManager
+    lateinit var widgetManager: AkaiWidgetManager
 
     @Inject
     lateinit var listenTogetherManager: iad1tya.echo.music.listentogether.ListenTogetherManager
@@ -3096,7 +3096,7 @@ class MusicService :
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "https://share.echomusic.fun/watch?v=$songId")
+            putExtra(Intent.EXTRA_TEXT, "https://share.akai.fun/watch?v=$songId")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         startActivity(Intent.createChooser(shareIntent, null).apply {

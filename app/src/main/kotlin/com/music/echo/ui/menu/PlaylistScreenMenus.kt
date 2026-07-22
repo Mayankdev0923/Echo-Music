@@ -211,7 +211,7 @@ fun LocalPlaylistMenu(
                 },
                 onClick = {
                     val shareText = if (isYouTubePlaylist) {
-                        "https://share.echomusic.fun/playlist?list=${playlist.playlist.browseId}"
+                        "https://share.akai.fun/playlist?list=${playlist.playlist.browseId}"
                     } else {
                         songs.joinToString("\n") { it.song.song.title }
                     }

@@ -20,7 +20,7 @@ import kotlin.coroutines.resumeWithException
 
 
 object EjsNTransformSolver {
-    private const val TAG = "echomusic_EjsNSolver"
+    private const val TAG = "akai_EjsNSolver"
 
     private var solverWebView: SolverWebView? = null
 

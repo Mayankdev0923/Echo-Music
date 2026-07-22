@@ -1,4 +1,4 @@
-package iad1tya.echo.music.echomusiccanvas
+package iad1tya.echo.music.akaicanvas
 
 import iad1tya.echo.music.canvas.CanvasArtwork
 import io.ktor.client.HttpClient
@@ -15,19 +15,19 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class echomusicCanvasManifest(
-    val items: List<echomusicCanvasItem> = emptyList()
+data class akaiCanvasManifest(
+    val items: List<akaiCanvasItem> = emptyList()
 )
 
 @Serializable
-data class echomusicCanvasItem(
+data class akaiCanvasItem(
     val song: String,
     val artist: String,
     val url: String
 )
 
-object echomusicCanvasProvider {
-    private const val BASE_URL = "https://canvas.echomusic.fun/canvas.json"
+object akaiCanvasProvider {
+    private const val BASE_URL = "https://canvas.akai.fun/canvas.json"
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -53,7 +53,7 @@ object echomusicCanvasProvider {
     }
 
     private data class CacheEntry(
-        val value: echomusicCanvasManifest?,
+        val value: akaiCanvasManifest?,
         val expiresAtMs: Long,
     )
 
@@ -61,14 +61,14 @@ object echomusicCanvasProvider {
     // Cache TTL 1 minute (re-fetches json index every minute max for instant updates)
     private val ttlMs = 60_000L
 
-    private suspend fun fetchManifest(): echomusicCanvasManifest? {
+    private suspend fun fetchManifest(): akaiCanvasManifest? {
         val currentCache = manifestCache
         if (currentCache != null && currentCache.expiresAtMs > System.currentTimeMillis()) {
             return currentCache.value
         }
 
         return try {
-            val manifest: echomusicCanvasManifest = client.get(BASE_URL).body()
+            val manifest: akaiCanvasManifest = client.get(BASE_URL).body()
             
             manifestCache = CacheEntry(
                 value = manifest,

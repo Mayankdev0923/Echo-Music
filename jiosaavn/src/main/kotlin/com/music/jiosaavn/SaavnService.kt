@@ -1,9 +1,9 @@
 /**
- * echomusic Project (C) 2026
+ * akai Project (C) 2026
  * Licensed under GPL-3.0 | See git history for contributors
  *
  * JioSaavn audio streaming service.
- * Uses the Melo API (saavn.echomusic.fun) which is an open wrapper around JioSaavn.
+ * Uses the Melo API (saavn.akai.fun) which is an open wrapper around JioSaavn.
  *
  * API endpoints used:
  *   - GET /api/search/songs?query={q}        → search songs by name+artist
@@ -107,7 +107,7 @@ object SaavnService {
             }
             defaultRequest {
                 headers.append(HttpHeaders.Accept, "application/json")
-                headers.append(HttpHeaders.UserAgent, "EchoMusic/1.0")
+                headers.append(HttpHeaders.UserAgent, "Akai/1.0")
             }
             expectSuccess = false
         }

@@ -37,21 +37,21 @@ import iad1tya.echo.music.ui.component.IconButton
 import iad1tya.echo.music.ui.glass.components.LiquidTopAppBar
 import iad1tya.echo.music.ui.component.Material3SettingsGroup
 import iad1tya.echo.music.ui.component.Material3SettingsItem
-import iad1tya.echo.music.echomusic.component.UpdateInfoDialog
+import iad1tya.echo.music.akai.component.UpdateInfoDialog
 import iad1tya.echo.music.ui.utils.backToMain
-import iad1tya.echo.music.echomusic.updater.getAutoUpdateCheckSetting
-import iad1tya.echo.music.echomusic.updater.saveAutoUpdateCheckSetting
-import iad1tya.echo.music.echomusic.updater.getUpdateAvailableState
-import iad1tya.echo.music.echomusic.updater.saveUpdateAvailableState
-import iad1tya.echo.music.echomusic.updater.getUpdateNotificationsSetting
-import iad1tya.echo.music.echomusic.updater.saveUpdateNotificationsSetting
+import iad1tya.echo.music.akai.updater.getAutoUpdateCheckSetting
+import iad1tya.echo.music.akai.updater.saveAutoUpdateCheckSetting
+import iad1tya.echo.music.akai.updater.getUpdateAvailableState
+import iad1tya.echo.music.akai.updater.saveUpdateAvailableState
+import iad1tya.echo.music.akai.updater.getUpdateNotificationsSetting
+import iad1tya.echo.music.akai.updater.saveUpdateNotificationsSetting
 import android.widget.Toast
 import androidx.compose.ui.res.pluralStringResource
-import iad1tya.echo.music.echomusic.updater.getDownloadedApkCount
-import iad1tya.echo.music.echomusic.updater.clearDownloadedApks
-import iad1tya.echo.music.echomusic.updater.getBetaUpdatesSetting
-import iad1tya.echo.music.echomusic.updater.saveBetaUpdatesSetting
-import iad1tya.echo.music.echomusic.updater.autoClearOldApks
+import iad1tya.echo.music.akai.updater.getDownloadedApkCount
+import iad1tya.echo.music.akai.updater.clearDownloadedApks
+import iad1tya.echo.music.akai.updater.getBetaUpdatesSetting
+import iad1tya.echo.music.akai.updater.saveBetaUpdatesSetting
+import iad1tya.echo.music.akai.updater.autoClearOldApks
 import androidx.compose.material3.MaterialTheme
 import iad1tya.echo.music.BuildConfig
 
@@ -113,7 +113,7 @@ fun UpdateSettings(
                     onClick = {
                         val isFoss = !BuildConfig.CAST_AVAILABLE
                         if (isFoss) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/EchoMusicApp/Echo-Music"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/AkaiApp/Akai"))
                             context.startActivity(intent)
                         } else {
                             navController.navigate("update")

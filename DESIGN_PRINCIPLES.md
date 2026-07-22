@@ -1,6 +1,6 @@
-# Echo Music Design Principles (FlamingoSank Optimized)
+# Akai Design Principles (FlamingoSank Optimized)
 
-This document outlines the design principles, standardized spacing, typography, and UI components for the Echo Music project, inspired by the Flamingo Design Guide and Apple Music.
+This document outlines the design principles, standardized spacing, typography, and UI components for the Akai project, inspired by the Flamingo Design Guide and Apple Music.
 
 ## 1. Core Principles
 - **Motion as First-Class Citizen**: Transitions should feel physics-based. Shared elements (artwork) and layout animations (mini-player expansion) are preferred over traditional screen-replace transitions.
@@ -32,7 +32,7 @@ Consistent spacing ensures a breathable and organized layout.
 - **No Dividers**: Use breathing room (padding) rather than horizontal lines to separate list items.
 
 ## 5. Glass Effects (`appleGlass`)
-Echo Music uses a multi-layered glass effect to achieve depth while maintaining performance.
+Akai uses a multi-layered glass effect to achieve depth while maintaining performance.
 - **Standard Glass**: High depth, includes shadow, glass-edge border, and dual-layer translucency.
 - **Light Glass**: Optimized for lists and high-density screens. Skips shadows to reduce draw calls.
 - **Frosted Glass**: API 31+ native blur effect for top-tier immersion.

@@ -123,9 +123,9 @@ fun getAllSearchableSettings(): List<Triple<String, String, String>> {
 
             Triple(stringResource(R.string.echo_equalizer), "Player and audio", "settings/player"),
             Triple(stringResource(R.string.echo_equalizer_desc), "Player and audio", "settings/player"),
-            Triple(stringResource(R.string.echomusic_1), "Appearance", "settings/appearance"),
-            Triple(stringResource(R.string.echomusic_canvas), "Appearance", "settings/appearance"),
-            Triple(stringResource(R.string.echomusic_canvas_desc), "Appearance", "settings/appearance"),
+            Triple(stringResource(R.string.akai_1), "Appearance", "settings/appearance"),
+            Triple(stringResource(R.string.akai_canvas), "Appearance", "settings/appearance"),
+            Triple(stringResource(R.string.akai_canvas_desc), "Appearance", "settings/appearance"),
             Triple(stringResource(R.string.enable), "Player and audio", "settings/player"),
             Triple(stringResource(R.string.enable_authentication), "Content", "settings/content"),
             Triple(stringResource(R.string.enable_better_lyrics), "Content", "settings/content"),
