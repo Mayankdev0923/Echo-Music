@@ -217,11 +217,7 @@ inline fun ListItem(
             .height(ListItemHeight)
             .padding(horizontal = horizontalPadding)
             .clip(shape)
-            .then(
-                if (isActive || isSelected == true) {
-                    Modifier.appleGlassLight(shape = shape)
-                } else Modifier
-            )
+            .appleGlassLight(shape = shape)
     ) {
         Box(
             modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 12.dp, bottom = 4.dp),
@@ -1858,8 +1854,7 @@ fun SwipeToSongBox(
         Box(
             modifier = Modifier
                 .offset { IntOffset(offset.floatValue.roundToInt(), 0) }
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface),
+                .fillMaxWidth(),
             content = content
         )
     }
