@@ -54,8 +54,8 @@ constructor(
                         val parsedItem = if (parsedUrl != null) fetchParsedUrlItem(parsedUrl) else null
                         
                         val result = if (parsedUrl != null) null else YouTube.searchSuggestions(query).getOrNull()
-                        val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                        val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
 
                         database
                             .searchHistory(query)

@@ -1249,8 +1249,8 @@ class MusicService :
             val initialStatus =
                 withContext(Dispatchers.IO) {
                     queue.getInitialStatus()
-                        .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterExplicit(dataStore.get(HideExplicitKey, true))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, true))
                 }
             if (queue.preloadItem != null && player.playbackState == STATE_IDLE) return@launch
             if (initialStatus.title != null) {
@@ -1313,8 +1313,8 @@ class MusicService :
             try {
                 val initialStatus = withContext(Dispatchers.IO) {
                     radioQueue.getInitialStatus()
-                        .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterExplicit(dataStore.get(HideExplicitKey, true))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, true))
                 }
 
                 if (initialStatus.title != null) {
@@ -1355,8 +1355,8 @@ class MusicService :
                             val radioItems = songs
                                 .filter { it.id != currentMediaId }
                                 .map { it.toMediaItem() }
-                                .filterExplicit(dataStore.get(HideExplicitKey, false))
-                                .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                                .filterExplicit(dataStore.get(HideExplicitKey, true))
+                                .filterVideoSongs(dataStore.get(HideVideoSongsKey, true))
 
                             if (radioItems.isNotEmpty()) {
                                 val itemCount = player.mediaItemCount
@@ -1837,8 +1837,8 @@ class MusicService :
             scope.launch(SilentHandler) {
                 val mediaItems = withContext(Dispatchers.IO) {
                     currentQueue.nextPage()
-                        .filterExplicit(dataStore.get(HideExplicitKey, false))
-                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                        .filterExplicit(dataStore.get(HideExplicitKey, true))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, true))
                 }
                 if (player.playbackState != STATE_IDLE && mediaItems.isNotEmpty()) {
                     player.addMediaItems(mediaItems)

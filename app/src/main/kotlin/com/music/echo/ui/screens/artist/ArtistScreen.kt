@@ -172,7 +172,7 @@ fun ArtistScreen(
     val libraryAlbums by viewModel.libraryAlbums.collectAsState()
     val artistVideoUrl by viewModel.artistVideoUrl.collectAsState()
     val artistVideoSong by viewModel.artistVideoSong.collectAsState()
-    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = true)
     val showArtistDescription by rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val showArtistSubscriberCount by rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
     val showMonthlyListeners by rememberPreference(key = ShowMonthlyListenersKey, defaultValue = true)

@@ -45,8 +45,8 @@ constructor(
                         params = params,
                     ),
                 ).onSuccess { artistItemsPage ->
-                    val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                    val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
                     title.value = artistItemsPage.title
                     itemsPage.value =
                         ItemsPage(
@@ -69,8 +69,8 @@ constructor(
             YouTube
                 .artistItemsContinuation(continuation)
                 .onSuccess { artistItemsContinuationPage ->
-                    val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                    val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
                     itemsPage.update {
                         ItemsPage(
                             items =

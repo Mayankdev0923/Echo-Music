@@ -318,7 +318,7 @@ fun BottomSheetPlayer(
         defaultValue = true
     )
     val showCodecOnPlayer by rememberPreference(iad1tya.echo.music.constants.ShowCodecOnPlayerKey, false)
-    val hidePlayerSlider by rememberPreference(iad1tya.echo.music.constants.HidePlayerSliderKey, false)
+    val hidePlayerSlider by rememberPreference(iad1tya.echo.music.constants.HidePlayerSliderKey, true)
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(HidePlayerThumbnailKey, false)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -418,7 +418,7 @@ fun BottomSheetPlayer(
         defaultValue = AudioQuality.OPUS
     )
     val sliderStyle by rememberEnumPreference(SliderStyleKey, SliderStyle.DEFAULT)
-    val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = false)
+    val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = true)
     
     
     val listenTogetherManager = LocalListenTogetherManager.current

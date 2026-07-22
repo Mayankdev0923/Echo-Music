@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 
 import iad1tya.echo.music.ui.utils.scrollToOnHighlight
 import androidx.compose.foundation.ScrollState
+import com.music.echo.ui.component.appleGlass
 
 @Composable
 fun Material3SettingsGroup(
@@ -75,10 +76,11 @@ fun Material3SettingsGroup(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .animateContentSize(),
+                        .animateContentSize()
+                        .appleGlass(shape, elevation = 0.dp),
                     shape = shape,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        containerColor = androidx.compose.ui.graphics.Color.Transparent
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {

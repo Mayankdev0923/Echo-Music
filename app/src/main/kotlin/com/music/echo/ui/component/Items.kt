@@ -502,7 +502,7 @@ fun SongListItem(
     index: Int = -1,
     count: Int = -1,
 ) {
-    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
+    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = true)
 
     val content: @Composable () -> Unit = {
         ListItem(
@@ -1154,7 +1154,7 @@ fun YouTubeListItem(
     index: Int = -1,
     count: Int = -1,
 ) {
-    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
+    val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = true)
 
     val content: @Composable () -> Unit = {
         ListItem(

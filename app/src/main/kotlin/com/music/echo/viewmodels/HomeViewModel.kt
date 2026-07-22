@@ -242,7 +242,7 @@ class HomeViewModel @Inject constructor(
     private var isProcessingAccountData = false
 
     private suspend fun getDailyDiscover() {
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
         val likedSongs = database.likedSongsByCreateDateAsc().first()
         if (likedSongs.isEmpty()) return
 
@@ -290,7 +290,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getQuickPicks() {
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
         when (quickPicksEnum.first()) {
             QuickPicks.QUICK_PICKS -> {
                 val relatedSongs = database.quickPicks().first().filterVideoSongs(hideVideoSongs)
@@ -441,7 +441,7 @@ class HomeViewModel @Inject constructor(
 
     
     private suspend fun loadLocalDataPhase() {
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
 
         getQuickPicks()
 
@@ -463,8 +463,8 @@ class HomeViewModel @Inject constructor(
 
     
     private suspend fun loadSimilarRecommendations() {
-        val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
         val fromTimeStamp = System.currentTimeMillis() - 86400000L * 7 * 2
 
         coroutineScope {
@@ -547,8 +547,8 @@ class HomeViewModel @Inject constructor(
 
     
     private suspend fun loadNetworkDataPhase() {
-        val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
         val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
 
         coroutineScope {
@@ -600,8 +600,8 @@ class HomeViewModel @Inject constructor(
     private val _isLoadingMore = MutableStateFlow(false)
     fun loadMoreYouTubeItems(continuation: String?) {
         if (continuation == null || _isLoadingMore.value) return
-        val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+        val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
         val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -655,8 +655,8 @@ class HomeViewModel @Inject constructor(
         )
 
         chipLoadJob = viewModelScope.launch(Dispatchers.IO) {
-            val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+            val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
             val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
             val nextSections = YouTube.home(params = chip.endpoint?.params).getOrNull() ?: return@launch
 

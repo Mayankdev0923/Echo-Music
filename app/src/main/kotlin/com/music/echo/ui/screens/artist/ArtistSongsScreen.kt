@@ -78,7 +78,7 @@ fun ArtistSongsScreen(
         ArtistSongSortDescendingKey,
         true
     )
-    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = true)
     val artist by viewModel.artist.collectAsState()
     val songs by viewModel.songs.collectAsState()
     val lazyListState = rememberLazyListState()

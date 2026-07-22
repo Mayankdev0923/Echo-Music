@@ -447,11 +447,7 @@ fun SearchScreen(
                         )
                         tabs.forEachIndexed { index, title ->
                             val isSelected = selectedTabIndex == index
-                            val backgroundColor = if (isSelected) {
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                            } else {
-                                Color.Transparent
-                            }
+                            val backgroundColor = Color.Transparent
                             val contentColor = if (isSelected) {
                                 MaterialTheme.colorScheme.primary
                             } else {
@@ -600,15 +596,9 @@ fun ExploreTabContent(
                             .padding(6.dp)
                             .height(64.dp)
                             
-                        val finalModifier = if (isDark) {
-                            baseModifier
-                                .clip(CircleShape)
-                                .background(colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        } else {
-                            baseModifier
-                                .clip(CircleShape)
-                                .appleGlass(CircleShape, elevation = 2.dp)
-                        }
+                        val finalModifier = baseModifier
+                            .clip(CircleShape)
+                            .appleGlass(CircleShape, elevation = 0.dp)
 
                         Box(
                             contentAlignment = Alignment.CenterStart,

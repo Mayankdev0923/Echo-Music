@@ -166,19 +166,11 @@ fun MoodAndGenresButton(
     val baseModifier = modifier
         .height(MoodAndGenresButtonHeight)
         
-    val finalModifier = if (isDark) {
-        baseModifier
-            .clip(androidx.compose.foundation.shape.CircleShape)
-            .background(colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp)
-    } else {
-        baseModifier
-            .clip(androidx.compose.foundation.shape.CircleShape)
-            .appleGlass(androidx.compose.foundation.shape.CircleShape)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp)
-    }
+    val finalModifier = baseModifier
+        .clip(androidx.compose.foundation.shape.CircleShape)
+        .appleGlass(androidx.compose.foundation.shape.CircleShape, elevation = 0.dp)
+        .clickable(onClick = onClick)
+        .padding(horizontal = 16.dp)
 
     Box(
         contentAlignment = Alignment.CenterStart,

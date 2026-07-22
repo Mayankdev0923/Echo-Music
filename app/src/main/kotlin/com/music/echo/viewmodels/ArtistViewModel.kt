@@ -57,14 +57,14 @@ class ArtistViewModel @Inject constructor(
     val libraryArtist = database.artist(artistId)
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
     val librarySongs = context.dataStore.data
-        .map { (it[HideExplicitKey] ?: false) to (it[HideVideoSongsKey] ?: false) }
+        .map { (it[HideExplicitKey] ?: true) to (it[HideVideoSongsKey] ?: true) }
         .distinctUntilChanged()
         .flatMapLatest { (hideExplicit, hideVideoSongs) ->
             database.artistSongsPreview(artistId).map { it.filterExplicit(hideExplicit).filterVideoSongsLocal(hideVideoSongs) }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     val libraryAlbums = context.dataStore.data
-        .map { it[HideExplicitKey] ?: false }
+        .map { it[HideExplicitKey] ?: true }
         .distinctUntilChanged()
         .flatMapLatest { hideExplicit ->
             database.artistAlbumsPreview(artistId).map { it.filterExplicitAlbums(hideExplicit) }
@@ -77,8 +77,8 @@ class ArtistViewModel @Inject constructor(
             context.dataStore.data
                 .map {
                     Triple(
-                        it[HideExplicitKey] ?: false,
-                        it[HideVideoSongsKey] ?: false,
+                        it[HideExplicitKey] ?: true,
+                        it[HideVideoSongsKey] ?: true,
                         it[HideYoutubeShortsKey] ?: true
                     )
                 }
@@ -91,8 +91,8 @@ class ArtistViewModel @Inject constructor(
 
     fun fetchArtistsFromYTM() {
         viewModelScope.launch {
-            val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+            val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
             val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
             YouTube.artist(artistId)
                 .onSuccess { page ->

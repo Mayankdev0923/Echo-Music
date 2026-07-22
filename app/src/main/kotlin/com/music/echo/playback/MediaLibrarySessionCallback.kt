@@ -251,8 +251,8 @@ constructor(
                                 try {
                                     val songs = YouTube.playlist(playlistId).getOrNull()?.songs
                                         ?.take(100)
-                                        ?.filterExplicit(context.dataStore.get(HideExplicitKey, false))
-                                        ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, false))
+                                        ?.filterExplicit(context.dataStore.get(HideExplicitKey, true))
+                                        ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, true))
                                         ?: emptyList()
 
                                     listOf(shuffleMediaItem(parentId)) + songs.map { it.toMediaItem(parentId) }
@@ -343,8 +343,8 @@ constructor(
                         .getOrNull()
                         ?.items
                         ?.filterIsInstance<SongItem>()
-                        ?.filterExplicit(context.dataStore.get(HideExplicitKey, false))
-                        ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, false))
+                        ?.filterExplicit(context.dataStore.get(HideExplicitKey, true))
+                        ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, true))
                         ?.filter { onlineSong ->
                             !allLocalSongs.any { localSong ->
                                 localSong.id == onlineSong.id ||
@@ -538,8 +538,8 @@ constructor(
                             .getOrNull()
                             ?.items
                             ?.filterIsInstance<SongItem>()
-                            ?.filterExplicit(context.dataStore.get(HideExplicitKey, false))
-                            ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, false))
+                            ?.filterExplicit(context.dataStore.get(HideExplicitKey, true))
+                            ?.filterVideoSongs(context.dataStore.get(HideVideoSongsKey, true))
                             ?.filter { onlineSong ->
                                 !allLocalSongs.any { localSong ->
                                     localSong.id == onlineSong.id ||

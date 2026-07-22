@@ -83,7 +83,7 @@ constructor(
                         (it[SongSortDescendingKey] ?: true),
                     ),
                     it[ExportedSongIdsKey] ?: "",
-                    Pair(it[HideExplicitKey] ?: false, it[HideVideoSongsKey] ?: false)
+                    Pair(it[HideExplicitKey] ?: true, it[HideVideoSongsKey] ?: true)
                 )
             }.distinctUntilChanged()
             .flatMapLatest { (filterSort, exportedSongIds, hideConfig) ->
@@ -181,7 +181,7 @@ constructor(
                         it[AlbumSortTypeKey].toEnum(AlbumSortType.CREATE_DATE),
                         it[AlbumSortDescendingKey] ?: true,
                     ),
-                    it[HideExplicitKey] ?: false
+                    it[HideExplicitKey] ?: true
                 )
             }.distinctUntilChanged()
             .flatMapLatest { (filterSort, hideExplicit) ->
@@ -275,8 +275,8 @@ constructor(
                 Triple(
                     it[ArtistSongSortTypeKey].toEnum(ArtistSongSortType.CREATE_DATE) to (it[ArtistSongSortDescendingKey]
                         ?: true),
-                    it[HideExplicitKey] ?: false,
-                    it[HideVideoSongsKey] ?: false
+                    it[HideExplicitKey] ?: true,
+                    it[HideVideoSongsKey] ?: true
                 )
             }.distinctUntilChanged()
             .flatMapLatest { (sortDesc, hideExplicit, hideVideoSongs) ->
@@ -321,7 +321,7 @@ constructor(
                 true,
             ).stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var albums = context.dataStore.data
-        .map { it[HideExplicitKey] ?: false }
+        .map { it[HideExplicitKey] ?: true }
         .distinctUntilChanged()
         .flatMapLatest { hideExplicit ->
             database.albumsLiked(AlbumSortType.CREATE_DATE, true).map { it.filterExplicitAlbums(hideExplicit) }

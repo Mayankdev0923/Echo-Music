@@ -53,8 +53,8 @@ constructor(
                         YouTube
                             .searchSummary(query)
                             .onSuccess {
-                                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                                val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
                                 val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
                                 summaryPage =
                                     it.filterExplicit(
@@ -69,8 +69,8 @@ constructor(
                         YouTube
                             .search(query, filter)
                             .onSuccess { result ->
-                                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                                val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
                                 val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
                                 viewStateMap[filter.value] =
                                     ItemsPage(
@@ -104,8 +104,8 @@ constructor(
             if (continuation != null) {
                 val searchResult =
                     YouTube.searchContinuation(continuation).getOrNull() ?: return@launch
-                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                val hideExplicit = context.dataStore.get(HideExplicitKey, true)
+                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, true)
                 val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, true)
                 val newItems = searchResult.items
                     .filterExplicit(hideExplicit)

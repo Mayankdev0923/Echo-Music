@@ -247,7 +247,7 @@ private fun NewMiniPlayer(
         if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
     }
     
-    val miniPlayerBackground by rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.GLOW_ANIMATED)
+    val miniPlayerBackground by rememberEnumPreference(MiniPlayerBackgroundStyleKey, defaultValue = iad1tya.echo.music.constants.PlayerBackgroundStyle.DEFAULT)
     
     
     val playbackState by playerConnection.playbackState.collectAsState()

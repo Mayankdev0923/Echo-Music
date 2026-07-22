@@ -102,7 +102,7 @@ fun LibraryAlbumsScreen(
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
-    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
+    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = true)
 
     val filterContent = @Composable {
         Row(verticalAlignment = Alignment.CenterVertically) {

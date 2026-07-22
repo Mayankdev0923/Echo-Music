@@ -53,8 +53,8 @@ constructor(
                 Triple(
                     Triple(
                         it[SongSortTypeKey].toEnum(SongSortType.CREATE_DATE) to (it[SongSortDescendingKey] ?: true),
-                        it[HideExplicitKey] ?: false,
-                        it[HideVideoSongsKey] ?: false
+                        it[HideExplicitKey] ?: true,
+                        it[HideVideoSongsKey] ?: true
                     ),
                     it[ExportedSongIdsKey] ?: "",
                     Unit

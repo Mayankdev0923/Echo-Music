@@ -154,8 +154,8 @@ fun AlbumScreen(
     val releasesForYou by viewModel.releasesForYou.collectAsState()
     val description by viewModel.description.collectAsState()
     val descriptionRuns by viewModel.descriptionRuns.collectAsState()
-    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
-    val hideVideoSongs by rememberPreference(key = HideVideoSongsKey, defaultValue = false)
+    val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = true)
+    val hideVideoSongs by rememberPreference(key = HideVideoSongsKey, defaultValue = true)
     val albumCanvasEnabled by rememberPreference(AlbumCanvasEnabledKey, defaultValue = true)
 
     val canvasArtwork = rememberAlbumCanvas(

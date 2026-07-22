@@ -38,7 +38,7 @@ constructor(
     val topSongs =
         combine(
             topPeriod,
-            context.dataStore.data.map { it[HideVideoSongsKey] ?: false }.distinctUntilChanged()
+            context.dataStore.data.map { it[HideVideoSongsKey] ?: true }.distinctUntilChanged()
         ) { period, hideVideoSongs -> period to hideVideoSongs }
             .flatMapLatest { (period, hideVideoSongs) ->
                 database.mostPlayedSongs(period.toTimeMillis(), top.toInt()).map { songs ->
